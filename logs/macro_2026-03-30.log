@@ -1,0 +1,1543 @@
+[23:16:30] INFO     [대기중] F5=시작 / F6=중지
+[23:17:15] INFO     [대기중] F5=시작 / F6=중지
+[23:19:55] INFO     매크로 중지!
+[23:20:03] INFO     [대기중] F5=시작 / F6=중지
+[23:21:15] INFO     [대기중] F5=시작 / F6=중지 / Ctrl+C=종료
+[23:22:22] INFO     게임 창 발견: HWND=199058
+[23:22:22] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:22:54] INFO     매크로 중지!
+[23:22:54] INFO     프로그램 종료
+[23:22:56] INFO     [대기중] F5=시작 / F6=중지 / Ctrl+C=종료
+[23:23:01] INFO     매크로 중지!
+[23:23:01] INFO     프로그램 종료
+[23:28:05] INFO     [대기중] F5=시작 / F6=중지 / Ctrl+C=종료
+[23:28:10] INFO     게임 창 발견: HWND=199058
+[23:28:10] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:28:10] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:28:10] INFO     사냥 루프 시작
+[23:28:10] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:10] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:11] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:11] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:11] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:11] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:12] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:12] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:12] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:12] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:13] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:13] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:13] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:13] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:14] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:14] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:14] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:14] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:15] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:15] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:15] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:15] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:16] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:16] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:16] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:16] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:17] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:17] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:17] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:17] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:18] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:18] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:18] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:18] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:19] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:19] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:19] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:19] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:20] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:20] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:20] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:20] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:21] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:21] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:21] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:21] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:22] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:22] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:22] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:22] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:23] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:23] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:23] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:23] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:24] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:24] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:24] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:24] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:25] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:25] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:25] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:25] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:26] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:26] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:26] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:26] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:27] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:27] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:27] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:27] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:28] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:28] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:28] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:28] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:29] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:29] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:29] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:29] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:30] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:30] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:30] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:30] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:31] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:31] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:31] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:31] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:32] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:32] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:32] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:32] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:33] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:33] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:33] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:33] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:34] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:34] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:34] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:34] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:35] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:35] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:35] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:35] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:36] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:36] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:36] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:36] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:37] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:37] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:37] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:37] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:38] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:38] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:38] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:38] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:39] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:39] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:39] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:39] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:40] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:40] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:40] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:40] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:41] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:41] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:41] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:41] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:42] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:42] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:42] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:42] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:43] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:43] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:43] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:43] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:44] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:44] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:44] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:44] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:45] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:45] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:45] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:45] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:46] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:46] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:46] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:46] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:47] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:47] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:47] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:47] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:48] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:48] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:48] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:48] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:49] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:49] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:49] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:49] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:50] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:50] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:50] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:50] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:51] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:51] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:51] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:51] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:52] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:52] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:52] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:52] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:53] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:53] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:53] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:53] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:54] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:54] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:54] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:54] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:55] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:55] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:55] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:55] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:56] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:56] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:56] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:56] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:57] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:57] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:57] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:57] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:58] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:58] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:58] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:58] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:59] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:59] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:28:59] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:28:59] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:29:00] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:29:00] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:29:00] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:29:00] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:29:01] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:29:01] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:29:01] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:29:01] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:29:02] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:29:02] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:29:02] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:29:02] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:29:03] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:29:03] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:29:03] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:29:03] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:29:04] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:29:04] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:29:04] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:29:04] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:29:05] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:29:05] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:29:05] ERROR    화면 캡처 실패: '_thread._local' object has no attribute 'srcdc'
+[23:29:07] DEBUG    트래커 초기화
+[23:29:07] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:29:07] INFO     매크로 중지 요청
+[23:29:07] INFO     매크로 중지!
+[23:29:08] INFO     사냥 루프 종료
+[23:30:41] DEBUG    트래커 초기화
+[23:30:41] INFO     매크로 중지 요청
+[23:30:41] INFO     매크로 중지!
+[23:30:41] INFO     프로그램 종료
+[23:30:44] INFO     [대기중] F5=시작 / F6=중지 / Ctrl+C=종료
+[23:30:50] INFO     게임 창 발견: HWND=199058
+[23:30:50] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:30:50] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:30:50] INFO     사냥 루프 시작
+[23:30:50] DEBUG    템플릿 로딩: monster_bottom.png ((108, 135))
+[23:30:50] DEBUG    템플릿 로딩: monster_left.png ((88, 207))
+[23:30:50] DEBUG    템플릿 로딩: monster_left_bottom.png ((98, 161))
+[23:30:50] DEBUG    템플릿 로딩: monster_left_top.png ((99, 167))
+[23:30:50] DEBUG    템플릿 로딩: monster_right.png ((73, 153))
+[23:30:50] DEBUG    템플릿 로딩: monster_right_bottom.png ((121, 178))
+[23:30:50] DEBUG    템플릿 로딩: monster_right_top.png ((90, 147))
+[23:30:50] DEBUG    템플릿 로딩: monster_top.png ((128, 80))
+[23:30:50] INFO     늑대 템플릿 8개 로딩 완료
+[23:30:51] DEBUG    몬스터 미발견
+[23:30:51] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:30:52] DEBUG    몬스터 미발견
+[23:30:52] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:30:53] DEBUG    몬스터 미발견
+[23:30:53] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:30:54] DEBUG    몬스터 미발견
+[23:30:54] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:30:56] DEBUG    몬스터 미발견
+[23:30:56] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:30:57] DEBUG    몬스터 미발견
+[23:30:57] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:30:58] DEBUG    몬스터 미발견
+[23:30:58] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:30:59] DEBUG    몬스터 미발견
+[23:30:59] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:31:00] DEBUG    늑대 감지: 1마리
+[23:31:00] DEBUG      → (165,205) 80x128 score=0.801 [monster_top.png]
+[23:31:00] INFO     가장 가까운 몬스터: (165,205) score=0.801 [monster_top.png]
+[23:31:00] INFO     늑대 추적 시작: bbox=(165, 205, 80, 128), 중심=(205, 269)
+[23:31:00] DEBUG    [sendinput] 클릭: (207, 272) → abs(28123, 25544)
+[23:31:00] INFO     공격: (205, 272)
+[23:31:01] DEBUG    추적 중: (204, 166)
+[23:31:01] DEBUG    [sendinput] 클릭: (206, 164) → abs(28102, 21856)
+[23:31:01] INFO     공격: (204, 166)
+[23:31:01] DEBUG    추적 중: (128, 147)
+[23:31:02] DEBUG    [sendinput] 클릭: (129, 148) → abs(26419, 21309)
+[23:31:02] INFO     공격: (128, 147)
+[23:31:02] DEBUG    추적 중: (74, 140)
+[23:31:02] DEBUG    [sendinput] 클릭: (73, 138) → abs(25195, 20968)
+[23:31:02] INFO     공격: (74, 140)
+[23:31:02] DEBUG    추적 중: (33, 140)
+[23:31:03] DEBUG    [sendinput] 클릭: (34, 139) → abs(24343, 21002)
+[23:31:03] INFO     공격: (33, 140)
+[23:31:03] DEBUG    추적 중: (103, 84)
+[23:31:03] DEBUG    [sendinput] 클릭: (101, 85) → abs(25807, 19158)
+[23:31:03] INFO     공격: (103, 84)
+[23:31:04] DEBUG    추적 중: (106, 83)
+[23:31:04] DEBUG    [sendinput] 클릭: (104, 82) → abs(25873, 19056)
+[23:31:04] INFO     공격: (106, 83)
+[23:31:04] DEBUG    추적 중: (105, 80)
+[23:31:04] DEBUG    [sendinput] 클릭: (103, 82) → abs(25851, 19056)
+[23:31:04] INFO     공격: (105, 80)
+[23:31:05] DEBUG    추적 중: (106, 80)
+[23:31:05] DEBUG    [sendinput] 클릭: (105, 79) → abs(25894, 18953)
+[23:31:05] INFO     공격: (106, 80)
+[23:31:05] DEBUG    추적 중: (103, 82)
+[23:31:05] DEBUG    [sendinput] 클릭: (102, 84) → abs(25829, 19124)
+[23:31:05] INFO     공격: (103, 82)
+[23:31:06] DEBUG    추적 중: (105, 86)
+[23:31:06] DEBUG    [sendinput] 클릭: (106, 88) → abs(25916, 19260)
+[23:31:06] INFO     공격: (105, 86)
+[23:31:06] DEBUG    추적 중: (102, 82)
+[23:31:06] DEBUG    [sendinput] 클릭: (104, 82) → abs(25873, 19056)
+[23:31:06] INFO     공격: (102, 82)
+[23:31:07] DEBUG    추적 중: (104, 84)
+[23:31:07] DEBUG    [sendinput] 클릭: (105, 85) → abs(25894, 19158)
+[23:31:07] INFO     공격: (104, 84)
+[23:31:07] DEBUG    추적 중: (103, 81)
+[23:31:07] DEBUG    [sendinput] 클릭: (105, 83) → abs(25894, 19090)
+[23:31:07] INFO     공격: (103, 81)
+[23:31:08] DEBUG    추적 중: (104, 83)
+[23:31:08] DEBUG    [sendinput] 클릭: (104, 85) → abs(25873, 19158)
+[23:31:08] INFO     공격: (104, 83)
+[23:31:08] DEBUG    추적 중: (104, 81)
+[23:31:08] DEBUG    [sendinput] 클릭: (104, 81) → abs(25873, 19021)
+[23:31:08] INFO     공격: (104, 81)
+[23:31:09] DEBUG    추적 중: (105, 82)
+[23:31:09] DEBUG    [sendinput] 클릭: (107, 83) → abs(25938, 19090)
+[23:31:09] INFO     공격: (105, 82)
+[23:31:09] DEBUG    추적 중: (105, 82)
+[23:31:09] DEBUG    [sendinput] 클릭: (103, 80) → abs(25851, 18987)
+[23:31:09] INFO     공격: (105, 82)
+[23:31:10] DEBUG    추적 중: (105, 81)
+[23:31:10] DEBUG    [sendinput] 클릭: (107, 83) → abs(25938, 19090)
+[23:31:10] INFO     공격: (105, 81)
+[23:31:10] DEBUG    추적 중: (105, 84)
+[23:31:10] DEBUG    [sendinput] 클릭: (103, 84) → abs(25851, 19124)
+[23:31:10] INFO     공격: (105, 84)
+[23:31:11] DEBUG    추적 중: (105, 80)
+[23:31:11] DEBUG    [sendinput] 클릭: (104, 80) → abs(25873, 18987)
+[23:31:11] INFO     공격: (105, 80)
+[23:31:11] DEBUG    추적 중: (105, 83)
+[23:31:11] DEBUG    [sendinput] 클릭: (106, 83) → abs(25916, 19090)
+[23:31:11] INFO     공격: (105, 83)
+[23:31:12] DEBUG    추적 중: (105, 81)
+[23:31:12] DEBUG    [sendinput] 클릭: (103, 82) → abs(25851, 19056)
+[23:31:12] INFO     공격: (105, 81)
+[23:31:12] DEBUG    추적 중: (105, 83)
+[23:31:12] DEBUG    트래커 초기화
+[23:31:12] INFO     매크로 중지 요청
+[23:31:12] INFO     매크로 중지!
+[23:31:12] DEBUG    [sendinput] 클릭: (107, 85) → abs(25938, 19158)
+[23:31:12] INFO     공격: (105, 83)
+[23:31:13] INFO     사냥 루프 종료
+[23:46:55] INFO     게임 창 발견: HWND=199058
+[23:46:55] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:46:55] DEBUG    템플릿 로딩: monster_bottom.png ((108, 135))
+[23:46:55] DEBUG    템플릿 로딩: monster_left.png ((88, 207))
+[23:46:55] DEBUG    템플릿 로딩: monster_left_bottom.png ((98, 161))
+[23:46:55] DEBUG    템플릿 로딩: monster_left_top.png ((99, 167))
+[23:46:55] DEBUG    템플릿 로딩: monster_right.png ((73, 153))
+[23:46:55] DEBUG    템플릿 로딩: monster_right_bottom.png ((121, 178))
+[23:46:55] DEBUG    템플릿 로딩: monster_right_top.png ((90, 147))
+[23:46:55] DEBUG    템플릿 로딩: monster_top.png ((128, 80))
+[23:46:55] INFO     늑대 템플릿 8개 로딩 완료
+[23:46:56] DEBUG    늑대 감지: 1마리
+[23:46:56] DEBUG      → (1125,237) 80x128 score=0.817 [monster_top.png]
+[23:47:15] INFO     게임 창 발견: HWND=199058
+[23:47:15] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:47:15] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:47:15] INFO     사냥 루프 시작
+[23:47:16] DEBUG    몬스터 미발견
+[23:47:16] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:47:17] DEBUG    몬스터 미발견
+[23:47:17] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:47:18] DEBUG    몬스터 미발견
+[23:47:18] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:47:20] DEBUG    몬스터 미발견
+[23:47:20] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:47:21] DEBUG    몬스터 미발견
+[23:47:21] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:47:22] DEBUG    늑대 감지: 1마리
+[23:47:22] DEBUG      → (102,535) 135x108 score=0.742 [monster_bottom.png]
+[23:47:22] INFO     가장 가까운 몬스터: (102,535) score=0.742 [monster_bottom.png]
+[23:47:22] INFO     늑대 추적 시작: bbox=(102, 535, 135, 108), 중심=(169, 589)
+[23:47:22] DEBUG    [sendinput] 클릭: (167, 594) → abs(27249, 36541)
+[23:47:22] INFO     공격: (169, 592)
+[23:47:23] DEBUG    추적 중: (139, 620)
+[23:47:23] DEBUG    [sendinput] 클릭: (141, 620) → abs(26681, 37429)
+[23:47:23] INFO     공격: (139, 620)
+[23:47:23] DEBUG    추적 중: (116, 613)
+[23:47:23] DEBUG    [sendinput] 클릭: (116, 611) → abs(26135, 37121)
+[23:47:23] INFO     공격: (116, 613)
+[23:47:24] DEBUG    추적 중: (27, 594)
+[23:47:24] DEBUG    [sendinput] 클릭: (25, 594) → abs(24146, 36541)
+[23:47:24] INFO     공격: (27, 594)
+[23:47:24] DEBUG    추적 중: (19, 585)
+[23:47:24] DEBUG    [sendinput] 클릭: (17, 587) → abs(23971, 36302)
+[23:47:24] INFO     공격: (19, 585)
+[23:47:25] DEBUG    추적 중: (19, 562)
+[23:47:25] DEBUG    [sendinput] 클릭: (19, 560) → abs(24015, 35380)
+[23:47:25] INFO     공격: (19, 562)
+[23:47:25] DEBUG    추적 중: (20, 570)
+[23:47:26] DEBUG    [sendinput] 클릭: (18, 572) → abs(23993, 35789)
+[23:47:26] INFO     공격: (20, 570)
+[23:47:26] DEBUG    추적 중: (44, 507)
+[23:47:26] DEBUG    [sendinput] 클릭: (45, 506) → abs(24583, 33535)
+[23:47:26] INFO     공격: (44, 507)
+[23:47:27] DEBUG    추적 중: (4, 490)
+[23:47:27] DEBUG    [sendinput] 클릭: (3, 488) → abs(23666, 32921)
+[23:47:27] INFO     공격: (4, 490)
+[23:47:27] DEBUG    추적 중: (0, 486)
+[23:47:27] DEBUG    [sendinput] 클릭: (0, 487) → abs(23600, 32887)
+[23:47:27] INFO     공격: (0, 486)
+[23:47:28] DEBUG    추적 중: (0, 465)
+[23:47:28] DEBUG    [sendinput] 클릭: (2, 463) → abs(23644, 32067)
+[23:47:28] INFO     공격: (0, 465)
+[23:47:28] DEBUG    추적 중: (0, 461)
+[23:47:28] DEBUG    [sendinput] 클릭: (-2, 461) → abs(23556, 31999)
+[23:47:28] INFO     공격: (0, 461)
+[23:47:29] DEBUG    HP 변화 감지: 0.21 → 0.62
+[23:47:29] DEBUG    추적 중: (0, 462)
+[23:47:29] DEBUG    [sendinput] 클릭: (-1, 460) → abs(23578, 31964)
+[23:47:29] INFO     공격: (0, 462)
+[23:47:29] DEBUG    추적 중: (-1, 463)
+[23:47:29] DEBUG    [sendinput] 클릭: (-3, 463) → abs(23534, 32067)
+[23:47:29] INFO     공격: (-1, 463)
+[23:47:30] DEBUG    추적 중: (-1, 465)
+[23:47:30] DEBUG    [sendinput] 클릭: (0, 463) → abs(23600, 32067)
+[23:47:30] INFO     공격: (-1, 465)
+[23:47:30] DEBUG    추적 중: (-1, 466)
+[23:47:31] DEBUG    [sendinput] 클릭: (-3, 464) → abs(23534, 32101)
+[23:47:31] INFO     공격: (-1, 466)
+[23:47:31] DEBUG    추적 중: (0, 465)
+[23:47:31] DEBUG    [sendinput] 클릭: (0, 465) → abs(23600, 32135)
+[23:47:31] INFO     공격: (0, 465)
+[23:47:31] DEBUG    추적 중: (0, 467)
+[23:47:32] DEBUG    [sendinput] 클릭: (1, 467) → abs(23622, 32204)
+[23:47:32] INFO     공격: (0, 467)
+[23:47:32] DEBUG    HP 변화 감지: 0.62 → 0.47
+[23:47:32] DEBUG    추적 중: (0, 465)
+[23:47:32] DEBUG    [sendinput] 클릭: (2, 463) → abs(23644, 32067)
+[23:47:32] INFO     공격: (0, 465)
+[23:47:33] DEBUG    추적 중: (0, 467)
+[23:47:33] DEBUG    [sendinput] 클릭: (2, 469) → abs(23644, 32272)
+[23:47:33] INFO     공격: (0, 467)
+[23:47:33] DEBUG    추적 중: (0, 464)
+[23:47:33] DEBUG    [sendinput] 클릭: (2, 464) → abs(23644, 32101)
+[23:47:33] INFO     공격: (0, 464)
+[23:47:33] DEBUG    추적 중: (0, 465)
+[23:47:34] DEBUG    [sendinput] 클릭: (1, 467) → abs(23622, 32204)
+[23:47:34] INFO     공격: (0, 465)
+[23:47:34] DEBUG    추적 중: (0, 464)
+[23:47:34] DEBUG    [sendinput] 클릭: (-1, 465) → abs(23578, 32135)
+[23:47:34] INFO     공격: (0, 464)
+[23:47:35] DEBUG    추적 중: (0, 464)
+[23:47:35] DEBUG    [sendinput] 클릭: (2, 464) → abs(23644, 32101)
+[23:47:35] INFO     공격: (0, 464)
+[23:47:35] DEBUG    HP 변화 감지: 0.47 → 0.35
+[23:47:35] DEBUG    추적 중: (0, 465)
+[23:47:35] DEBUG    [sendinput] 클릭: (2, 465) → abs(23644, 32135)
+[23:47:35] INFO     공격: (0, 465)
+[23:47:35] DEBUG    트래커 초기화
+[23:47:35] INFO     매크로 중지 요청
+[23:47:35] INFO     매크로 중지!
+[23:47:36] INFO     사냥 루프 종료
+[23:47:38] INFO     게임 창 발견: HWND=199058
+[23:47:38] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:47:38] DEBUG    템플릿 로딩: monster_bottom.png ((108, 135))
+[23:47:38] DEBUG    템플릿 로딩: monster_left.png ((88, 207))
+[23:47:38] DEBUG    템플릿 로딩: monster_left_bottom.png ((98, 161))
+[23:47:38] DEBUG    템플릿 로딩: monster_left_top.png ((99, 167))
+[23:47:38] DEBUG    템플릿 로딩: monster_right.png ((73, 153))
+[23:47:38] DEBUG    템플릿 로딩: monster_right_bottom.png ((121, 178))
+[23:47:38] DEBUG    템플릿 로딩: monster_right_top.png ((90, 147))
+[23:47:38] DEBUG    템플릿 로딩: monster_top.png ((128, 80))
+[23:47:38] INFO     늑대 템플릿 8개 로딩 완료
+[23:47:39] DEBUG    늑대 감지: 17마리
+[23:47:39] DEBUG      → (888,237) 72x115 score=0.573 [monster_top.png]
+[23:47:39] DEBUG      → (53,482) 122x58 score=0.559 [monster_right.png]
+[23:47:39] DEBUG      → (118,483) 122x58 score=0.535 [monster_right.png]
+[23:47:39] DEBUG      → (166,682) 122x58 score=0.525 [monster_right.png]
+[23:47:39] DEBUG      → (640,0) 122x58 score=0.524 [monster_right.png]
+[23:47:39] DEBUG      → (822,0) 122x58 score=0.522 [monster_right.png]
+[23:47:39] DEBUG      → (1080,0) 122x58 score=0.521 [monster_right.png]
+[23:47:39] DEBUG      → (459,331) 177x107 score=0.519 [monster_left_bottom.png]
+[23:47:39] DEBUG      → (727,0) 122x58 score=0.518 [monster_right.png]
+[23:47:39] DEBUG      → (1013,0) 122x58 score=0.518 [monster_right.png]
+[23:47:39] DEBUG      → (220,480) 122x58 score=0.518 [monster_right.png]
+[23:47:39] DEBUG      → (554,0) 122x58 score=0.516 [monster_right.png]
+[23:47:39] DEBUG      → (426,0) 122x58 score=0.515 [monster_right.png]
+[23:47:39] DEBUG      → (988,446) 122x58 score=0.513 [monster_right.png]
+[23:47:39] DEBUG      → (901,0) 122x58 score=0.513 [monster_right.png]
+[23:47:39] DEBUG      → (1152,0) 122x58 score=0.513 [monster_right.png]
+[23:47:39] DEBUG      → (360,0) 122x58 score=0.502 [monster_right.png]
+[23:47:41] INFO     게임 창 발견: HWND=199058
+[23:47:41] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:47:41] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:47:41] INFO     사냥 루프 시작
+[23:47:42] DEBUG    몬스터 미발견
+[23:47:42] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:47:43] DEBUG    몬스터 미발견
+[23:47:43] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:47:45] DEBUG    늑대 감지: 1마리
+[23:47:45] DEBUG      → (540,520) 161x98 score=0.871 [monster_left_bottom.png]
+[23:47:45] INFO     가장 가까운 몬스터: (540,520) score=0.871 [monster_left_bottom.png]
+[23:47:45] INFO     늑대 추적 시작: bbox=(540, 520, 161, 98), 중심=(620, 569)
+[23:47:45] DEBUG    [sendinput] 클릭: (619, 571) → abs(37127, 35755)
+[23:47:45] INFO     공격: (620, 572)
+[23:47:45] DEBUG    추적 중: (555, 585)
+[23:47:45] DEBUG    [sendinput] 클릭: (556, 586) → abs(35750, 36267)
+[23:47:45] INFO     공격: (555, 585)
+[23:47:46] DEBUG    추적 중: (493, 567)
+[23:47:46] DEBUG    [sendinput] 클릭: (495, 567) → abs(34417, 35619)
+[23:47:46] INFO     공격: (493, 567)
+[23:47:46] DEBUG    추적 중: (408, 562)
+[23:47:46] DEBUG    [sendinput] 클릭: (406, 563) → abs(32472, 35482)
+[23:47:46] INFO     공격: (408, 562)
+[23:47:47] DEBUG    추적 중: (395, 573)
+[23:47:47] DEBUG    [sendinput] 클릭: (396, 571) → abs(32253, 35755)
+[23:47:47] INFO     공격: (395, 573)
+[23:47:47] DEBUG    추적 중: (384, 569)
+[23:47:47] DEBUG    [sendinput] 클릭: (385, 568) → abs(32013, 35653)
+[23:47:47] INFO     공격: (384, 569)
+[23:47:48] DEBUG    추적 중: (339, 494)
+[23:47:48] DEBUG    [sendinput] 클릭: (339, 496) → abs(31008, 33194)
+[23:47:48] INFO     공격: (339, 494)
+[23:47:48] DEBUG    트래커 초기화
+[23:47:48] INFO     매크로 중지 요청
+[23:47:48] INFO     매크로 중지!
+[23:47:48] INFO     사냥 루프 종료
+[23:47:52] INFO     게임 창 발견: HWND=199058
+[23:47:52] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:47:52] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:47:52] INFO     사냥 루프 시작
+[23:47:52] DEBUG    몬스터 미발견
+[23:47:52] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:47:54] DEBUG    몬스터 미발견
+[23:47:54] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:47:55] DEBUG    몬스터 미발견
+[23:47:55] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:47:56] DEBUG    몬스터 미발견
+[23:47:56] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:47:57] DEBUG    늑대 감지: 1마리
+[23:47:57] DEBUG      → (840,258) 72x115 score=0.730 [monster_top.png]
+[23:47:57] INFO     가장 가까운 몬스터: (840,258) score=0.730 [monster_top.png]
+[23:47:57] INFO     늑대 추적 시작: bbox=(840, 258, 72, 115), 중심=(876, 315)
+[23:47:58] DEBUG    [sendinput] 클릭: (876, 317) → abs(42743, 27081)
+[23:47:58] INFO     공격: (876, 318)
+[23:47:58] DEBUG    추적 중: (841, 241)
+[23:47:58] DEBUG    [sendinput] 클릭: (842, 241) → abs(42000, 24485)
+[23:47:58] INFO     공격: (841, 241)
+[23:47:59] DEBUG    추적 중: (742, 214)
+[23:47:59] DEBUG    [sendinput] 클릭: (741, 213) → abs(39793, 23529)
+[23:47:59] INFO     공격: (742, 214)
+[23:47:59] DEBUG    추적 중: (635, 217)
+[23:47:59] DEBUG    [sendinput] 클릭: (636, 218) → abs(37498, 23700)
+[23:47:59] INFO     공격: (635, 217)
+[23:48:00] DEBUG    추적 중: (587, 303)
+[23:48:00] DEBUG    [sendinput] 클릭: (586, 302) → abs(36405, 26569)
+[23:48:00] INFO     공격: (587, 303)
+[23:48:00] DEBUG    트래커 초기화
+[23:48:00] INFO     매크로 중지 요청
+[23:48:00] INFO     매크로 중지!
+[23:48:00] INFO     사냥 루프 종료
+[23:48:48] INFO     게임 창 발견: HWND=199058
+[23:48:48] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:48:48] DEBUG    템플릿 로딩: monster_bottom.png ((108, 135))
+[23:48:48] DEBUG    템플릿 로딩: monster_left.png ((88, 207))
+[23:48:48] DEBUG    템플릿 로딩: monster_left_bottom.png ((98, 161))
+[23:48:48] DEBUG    템플릿 로딩: monster_left_top.png ((99, 167))
+[23:48:48] DEBUG    템플릿 로딩: monster_right.png ((73, 153))
+[23:48:48] DEBUG    템플릿 로딩: monster_right_bottom.png ((121, 178))
+[23:48:48] DEBUG    템플릿 로딩: monster_right_top.png ((90, 147))
+[23:48:48] DEBUG    템플릿 로딩: monster_top.png ((128, 80))
+[23:48:48] INFO     늑대 템플릿 8개 로딩 완료
+[23:48:49] DEBUG    늑대 감지: 2마리
+[23:48:49] DEBUG      → (925,157) 207x88 score=0.793 [monster_left.png]
+[23:48:49] DEBUG      → (1086,254) 167x99 score=0.783 [monster_left_top.png]
+[23:49:10] DEBUG    트래커 초기화
+[23:49:10] INFO     매크로 중지 요청
+[23:49:10] INFO     매크로 중지!
+[23:49:10] INFO     프로그램 종료
+[23:49:12] INFO     [대기중] F5=시작 / F6=중지 / Ctrl+C=종료
+[23:49:14] INFO     게임 창 발견: HWND=199058
+[23:49:14] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:49:14] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:49:14] INFO     사냥 루프 시작
+[23:49:14] DEBUG    템플릿 로딩: monster_bottom.png ((108, 135))
+[23:49:14] DEBUG    템플릿 로딩: monster_left.png ((88, 207))
+[23:49:14] DEBUG    템플릿 로딩: monster_left_bottom.png ((98, 161))
+[23:49:14] DEBUG    템플릿 로딩: monster_left_top.png ((99, 167))
+[23:49:14] DEBUG    템플릿 로딩: monster_right.png ((73, 153))
+[23:49:14] DEBUG    템플릿 로딩: monster_right_bottom.png ((121, 178))
+[23:49:14] DEBUG    템플릿 로딩: monster_right_top.png ((90, 147))
+[23:49:14] DEBUG    템플릿 로딩: monster_top.png ((128, 80))
+[23:49:14] INFO     늑대 템플릿 8개 로딩 완료
+[23:49:15] DEBUG    몬스터 미발견
+[23:49:15] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:49:16] DEBUG    늑대 감지: 1마리
+[23:49:16] DEBUG      → (540,136) 161x98 score=0.872 [monster_left_bottom.png]
+[23:49:16] INFO     가장 가까운 몬스터: (540,136) score=0.872 [monster_left_bottom.png]
+[23:49:16] INFO     늑대 추적 시작: bbox=(540, 136, 161, 98), 중심=(620, 185)
+[23:49:16] DEBUG    [sendinput] 클릭: (620, 187) → abs(37148, 22641)
+[23:49:16] INFO     공격: (620, 188)
+[23:49:17] DEBUG    추적 중: (563, 203)
+[23:49:17] DEBUG    [sendinput] 클릭: (562, 204) → abs(35881, 23222)
+[23:49:17] INFO     공격: (563, 203)
+[23:49:17] DEBUG    추적 중: (469, 203)
+[23:49:17] DEBUG    [sendinput] 클릭: (470, 202) → abs(33871, 23154)
+[23:49:17] INFO     공격: (469, 203)
+[23:49:18] DEBUG    추적 중: (384, 196)
+[23:49:18] DEBUG    [sendinput] 클릭: (386, 196) → abs(32035, 22949)
+[23:49:18] INFO     공격: (384, 196)
+[23:49:18] DEBUG    추적 중: (376, 199)
+[23:49:18] DEBUG    [sendinput] 클릭: (376, 198) → abs(31816, 23017)
+[23:49:18] INFO     공격: (376, 199)
+[23:49:19] DEBUG    추적 중: (341, 186)
+[23:49:19] DEBUG    [sendinput] 클릭: (340, 188) → abs(31030, 22675)
+[23:49:19] INFO     공격: (341, 186)
+[23:49:20] DEBUG    추적 중: (261, 197)
+[23:49:20] DEBUG    [sendinput] 클릭: (259, 196) → abs(29260, 22949)
+[23:49:20] INFO     공격: (261, 197)
+[23:49:20] DEBUG    추적 중: (146, 199)
+[23:49:20] DEBUG    [sendinput] 클릭: (148, 201) → abs(26834, 23119)
+[23:49:20] INFO     공격: (146, 199)
+[23:49:21] DEBUG    추적 중: (79, 215)
+[23:49:21] DEBUG    [sendinput] 클릭: (80, 215) → abs(25348, 23598)
+[23:49:21] INFO     공격: (79, 215)
+[23:49:21] DEBUG    추적 중: (24, 232)
+[23:49:21] DEBUG    [sendinput] 클릭: (22, 233) → abs(24081, 24212)
+[23:49:21] INFO     공격: (24, 232)
+[23:49:22] DEBUG    추적 중: (0, 269)
+[23:49:22] DEBUG    [sendinput] 클릭: (-2, 269) → abs(23556, 25442)
+[23:49:22] INFO     공격: (0, 269)
+[23:49:22] DEBUG    추적 실패 (1/10)
+[23:49:22] INFO     대상 사망 추정 → 아이템 줍기
+[23:49:22] DEBUG    트래커 초기화
+[23:49:22] INFO     매크로 중지 요청
+[23:49:22] INFO     매크로 중지!
+[23:49:23] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:49:23] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:49:23] INFO     아이템 줍기 완료 (Spacebar ×2)
+[23:49:23] INFO     사냥 루프 종료
+[23:49:31] INFO     게임 창 발견: HWND=199058
+[23:49:31] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:49:31] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:49:31] INFO     사냥 루프 시작
+[23:49:31] DEBUG    늑대 감지: 1마리
+[23:49:31] DEBUG      → (230,183) 135x108 score=0.887 [monster_bottom.png]
+[23:49:31] INFO     가장 가까운 몬스터: (230,183) score=0.887 [monster_bottom.png]
+[23:49:31] INFO     늑대 추적 시작: bbox=(230, 183, 135, 108), 중심=(297, 237)
+[23:49:32] DEBUG    [sendinput] 클릭: (298, 241) → abs(30112, 24485)
+[23:49:32] INFO     공격: (297, 240)
+[23:49:32] DEBUG    추적 중: (232, 294)
+[23:49:32] DEBUG    [sendinput] 클릭: (231, 295) → abs(28648, 26330)
+[23:49:32] INFO     공격: (232, 294)
+[23:49:33] DEBUG    추적 중: (156, 320)
+[23:49:33] DEBUG    [sendinput] 클릭: (158, 319) → abs(27053, 27149)
+[23:49:33] INFO     공격: (156, 320)
+[23:49:33] DEBUG    추적 중: (55, 345)
+[23:49:33] DEBUG    [sendinput] 클릭: (53, 345) → abs(24758, 28037)
+[23:49:33] INFO     공격: (55, 345)
+[23:49:34] DEBUG    추적 중: (-1, 351)
+[23:49:34] DEBUG    [sendinput] 클릭: (-3, 349) → abs(23534, 28174)
+[23:49:34] INFO     공격: (-1, 351)
+[23:49:34] DEBUG    추적 중: (-1, 446)
+[23:49:34] DEBUG    [sendinput] 클릭: (-1, 447) → abs(23578, 31521)
+[23:49:34] INFO     공격: (-1, 446)
+[23:49:35] DEBUG    트래커 초기화
+[23:49:35] INFO     매크로 중지 요청
+[23:49:35] INFO     매크로 중지!
+[23:49:35] INFO     사냥 루프 종료
+[23:51:52] INFO     게임 창 발견: HWND=199058
+[23:51:52] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:51:52] DEBUG    템플릿 로딩: monster_bottom.png ((108, 135))
+[23:51:52] DEBUG    템플릿 로딩: monster_left.png ((88, 207))
+[23:51:52] DEBUG    템플릿 로딩: monster_left_bottom.png ((98, 161))
+[23:51:52] DEBUG    템플릿 로딩: monster_left_top.png ((99, 167))
+[23:51:52] DEBUG    템플릿 로딩: monster_right.png ((73, 153))
+[23:51:52] DEBUG    템플릿 로딩: monster_right_bottom.png ((121, 178))
+[23:51:52] DEBUG    템플릿 로딩: monster_right_top.png ((90, 147))
+[23:51:52] DEBUG    템플릿 로딩: monster_top.png ((128, 80))
+[23:51:52] INFO     늑대 템플릿 8개 로딩 완료
+[23:51:52] DEBUG    늑대 감지: 1마리
+[23:51:52] DEBUG      → (74,219) 153x73 score=0.798 [monster_right.png]
+[23:51:52] INFO     가장 가까운 몬스터: (74,219) score=0.798 [monster_right.png]
+[23:51:52] INFO     몬스터 감지: (150,258) bbox=(74, 219, 153, 73)
+[23:51:53] INFO     대상 소실 → 사망 추정
+[23:51:54] DEBUG    늑대 감지: 1마리
+[23:51:54] DEBUG      → (138,443) 153x73 score=0.803 [monster_right.png]
+[23:51:54] INFO     가장 가까운 몬스터: (138,443) score=0.803 [monster_right.png]
+[23:51:54] INFO     몬스터 감지: (214,482) bbox=(138, 443, 153, 73)
+[23:52:28] DEBUG    트래커 초기화
+[23:52:28] INFO     매크로 중지 요청
+[23:52:28] INFO     매크로 중지!
+[23:52:28] INFO     프로그램 종료
+[23:52:29] INFO     [대기중] F5=시작 / F6=중지 / Ctrl+C=종료
+[23:52:32] INFO     게임 창 발견: HWND=199058
+[23:52:32] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:52:32] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:52:32] INFO     사냥 루프 시작
+[23:52:32] DEBUG    템플릿 로딩: monster_bottom.png ((108, 135))
+[23:52:32] DEBUG    템플릿 로딩: monster_left.png ((88, 207))
+[23:52:32] DEBUG    템플릿 로딩: monster_left_bottom.png ((98, 161))
+[23:52:32] DEBUG    템플릿 로딩: monster_left_top.png ((99, 167))
+[23:52:32] DEBUG    템플릿 로딩: monster_right.png ((73, 153))
+[23:52:32] DEBUG    템플릿 로딩: monster_right_bottom.png ((121, 178))
+[23:52:32] DEBUG    템플릿 로딩: monster_right_top.png ((90, 147))
+[23:52:32] DEBUG    템플릿 로딩: monster_top.png ((128, 80))
+[23:52:32] INFO     늑대 템플릿 8개 로딩 완료
+[23:52:33] DEBUG    늑대 감지: 2마리
+[23:52:33] DEBUG      → (340,525) 72x115 score=0.693 [monster_top.png]
+[23:52:33] DEBUG      → (212,348) 72x115 score=0.679 [monster_top.png]
+[23:52:33] INFO     가장 가까운 몬스터: (340,525) score=0.693 [monster_top.png]
+[23:52:33] INFO     몬스터 감지: (376,585) bbox=(340, 525, 72, 115)
+[23:52:33] DEBUG    [sendinput] 클릭: (375, 584) → abs(31795, 36199)
+[23:52:33] INFO     공격: (376, 585)
+[23:52:34] DEBUG    늑대 감지: 4마리
+[23:52:34] DEBUG      → (529,147) 72x115 score=0.714 [monster_top.png]
+[23:52:34] DEBUG      → (369,275) 72x115 score=0.681 [monster_top.png]
+[23:52:34] DEBUG      → (496,373) 135x108 score=0.680 [monster_bottom.png]
+[23:52:34] DEBUG      → (498,447) 72x115 score=0.669 [monster_top.png]
+[23:52:34] INFO     가장 가까운 몬스터: (496,373) score=0.680 [monster_bottom.png]
+[23:52:34] DEBUG    [sendinput] 클릭: (565, 429) → abs(35947, 30906)
+[23:52:34] INFO     공격: (563, 430)
+[23:52:35] DEBUG    늑대 감지: 5마리
+[23:52:35] DEBUG      → (793,135) 135x108 score=0.738 [monster_bottom.png]
+[23:52:35] DEBUG      → (250,190) 72x115 score=0.702 [monster_top.png]
+[23:52:35] DEBUG      → (410,372) 72x115 score=0.605 [monster_top.png]
+[23:52:35] DEBUG      → (209,480) 122x58 score=0.556 [monster_right.png]
+[23:52:35] DEBUG      → (131,481) 122x58 score=0.551 [monster_right.png]
+[23:52:35] INFO     가장 가까운 몬스터: (410,372) score=0.605 [monster_top.png]
+[23:52:35] DEBUG    [sendinput] 클릭: (445, 432) → abs(33324, 31008)
+[23:52:35] INFO     공격: (446, 432)
+[23:52:36] DEBUG    늑대 감지: 4마리
+[23:52:36] DEBUG      → (409,477) 207x88 score=0.831 [monster_left.png]
+[23:52:36] DEBUG      → (194,423) 135x108 score=0.710 [monster_bottom.png]
+[23:52:36] DEBUG      → (577,150) 135x108 score=0.618 [monster_bottom.png]
+[23:52:36] DEBUG      → (94,477) 137x65 score=0.569 [monster_right.png]
+[23:52:36] INFO     가장 가까운 몬스터: (577,150) score=0.618 [monster_bottom.png]
+[23:52:36] DEBUG    [sendinput] 클릭: (644, 206) → abs(37673, 23290)
+[23:52:36] INFO     공격: (644, 207)
+[23:52:38] DEBUG    늑대 감지: 3마리
+[23:52:38] DEBUG      → (30,445) 135x108 score=0.693 [monster_bottom.png]
+[23:52:38] DEBUG      → (449,180) 72x115 score=0.646 [monster_top.png]
+[23:52:38] DEBUG      → (32,365) 72x115 score=0.621 [monster_top.png]
+[23:52:38] INFO     가장 가까운 몬스터: (449,180) score=0.646 [monster_top.png]
+[23:52:38] DEBUG    [sendinput] 클릭: (487, 239) → abs(34242, 24417)
+[23:52:38] INFO     공격: (485, 240)
+[23:52:39] DEBUG    늑대 감지: 3마리
+[23:52:39] DEBUG      → (375,218) 161x98 score=0.822 [monster_left_bottom.png]
+[23:52:39] DEBUG      → (34,351) 72x115 score=0.624 [monster_top.png]
+[23:52:39] DEBUG      → (64,415) 80x128 score=0.605 [monster_top.png]
+[23:52:39] INFO     가장 가까운 몬스터: (375,218) score=0.822 [monster_left_bottom.png]
+[23:52:39] DEBUG    [sendinput] 클릭: (456, 272) → abs(33565, 25544)
+[23:52:39] INFO     공격: (455, 270)
+[23:52:39] DEBUG    HP 변화 감지: 0.09 → 0.06
+[23:52:40] DEBUG    늑대 감지: 1마리
+[23:52:40] DEBUG      → (248,312) 121x97 score=0.688 [monster_bottom.png]
+[23:52:40] INFO     가장 가까운 몬스터: (248,312) score=0.688 [monster_bottom.png]
+[23:52:40] DEBUG    [sendinput] 클릭: (309, 361) → abs(30352, 28584)
+[23:52:40] INFO     공격: (308, 363)
+[23:52:41] DEBUG    늑대 감지: 1마리
+[23:52:41] DEBUG      → (195,350) 80x128 score=0.894 [monster_top.png]
+[23:52:41] INFO     가장 가까운 몬스터: (195,350) score=0.894 [monster_top.png]
+[23:52:42] DEBUG    [sendinput] 클릭: (236, 417) → abs(28757, 30496)
+[23:52:42] INFO     공격: (235, 417)
+[23:52:43] DEBUG    늑대 감지: 1마리
+[23:52:43] DEBUG      → (162,378) 88x140 score=0.715 [monster_top.png]
+[23:52:43] INFO     가장 가까운 몬스터: (162,378) score=0.715 [monster_top.png]
+[23:52:43] DEBUG    [sendinput] 클릭: (205, 452) → abs(28080, 31691)
+[23:52:43] INFO     공격: (206, 451)
+[23:52:43] DEBUG    HP 변화 감지: 0.06 → 0.00
+[23:52:44] DEBUG    늑대 감지: 1마리
+[23:52:44] DEBUG      → (164,335) 80x128 score=0.725 [monster_top.png]
+[23:52:44] INFO     가장 가까운 몬스터: (164,335) score=0.725 [monster_top.png]
+[23:52:44] DEBUG    [sendinput] 클릭: (202, 404) → abs(28014, 30052)
+[23:52:44] INFO     공격: (204, 402)
+[23:52:45] DEBUG    늑대 감지: 1마리
+[23:52:45] DEBUG      → (168,323) 72x115 score=0.662 [monster_top.png]
+[23:52:45] INFO     가장 가까운 몬스터: (168,323) score=0.662 [monster_top.png]
+[23:52:45] DEBUG    [sendinput] 클릭: (204, 384) → abs(28058, 29369)
+[23:52:45] INFO     공격: (204, 383)
+[23:52:46] DEBUG    늑대 감지: 3마리
+[23:52:46] DEBUG      → (191,303) 135x108 score=0.723 [monster_bottom.png]
+[23:52:46] DEBUG      → (349,202) 135x108 score=0.661 [monster_bottom.png]
+[23:52:46] DEBUG      → (47,351) 108x86 score=0.581 [monster_bottom.png]
+[23:52:46] INFO     가장 가까운 몬스터: (349,202) score=0.661 [monster_bottom.png]
+[23:52:46] DEBUG    [sendinput] 클릭: (416, 261) → abs(32691, 25168)
+[23:52:46] INFO     공격: (416, 259)
+[23:52:46] DEBUG    트래커 초기화
+[23:52:46] INFO     매크로 중지 요청
+[23:52:46] INFO     매크로 중지!
+[23:52:47] INFO     사냥 루프 종료
+[23:53:29] INFO     게임 창 발견: HWND=199058
+[23:53:29] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:53:29] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:53:29] INFO     사냥 루프 시작
+[23:53:30] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:53:31] DEBUG    늑대 감지: 2마리
+[23:53:31] DEBUG      → (766,510) 167x99 score=0.768 [monster_left_top.png]
+[23:53:31] DEBUG      → (709,86) 135x108 score=0.733 [monster_bottom.png]
+[23:53:31] INFO     가장 가까운 몬스터: (766,510) score=0.768 [monster_left_top.png]
+[23:53:31] INFO     몬스터 감지: (849,562) bbox=(766, 510, 167, 99)
+[23:53:31] DEBUG    [sendinput] 클릭: (848, 564) → abs(42131, 35516)
+[23:53:31] INFO     공격: (849, 562)
+[23:53:32] DEBUG    늑대 감지: 2마리
+[23:53:32] DEBUG      → (687,510) 167x99 score=0.768 [monster_left_top.png]
+[23:53:32] DEBUG      → (637,149) 121x97 score=0.621 [monster_bottom.png]
+[23:53:32] INFO     가장 가까운 몬스터: (637,149) score=0.621 [monster_bottom.png]
+[23:53:32] DEBUG    [sendinput] 클릭: (696, 199) → abs(38809, 23051)
+[23:53:32] INFO     공격: (697, 200)
+[23:53:33] DEBUG    늑대 감지: 4마리
+[23:53:33] DEBUG      → (475,132) 178x121 score=0.722 [monster_right_bottom.png]
+[23:53:33] DEBUG      → (376,533) 72x115 score=0.601 [monster_top.png]
+[23:53:33] DEBUG      → (689,421) 183x108 score=0.557 [monster_left_top.png]
+[23:53:33] DEBUG      → (171,477) 137x65 score=0.554 [monster_right.png]
+[23:53:33] INFO     가장 가까운 몬스터: (689,421) score=0.557 [monster_left_top.png]
+[23:53:33] DEBUG    [sendinput] 클릭: (780, 478) → abs(40645, 32579)
+[23:53:33] INFO     공격: (780, 478)
+[23:53:34] DEBUG    트래커 초기화
+[23:53:34] INFO     매크로 중지 요청
+[23:53:34] INFO     매크로 중지!
+[23:53:34] INFO     사냥 루프 종료
+[23:53:50] INFO     게임 창 발견: HWND=199058
+[23:53:50] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:53:50] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:53:50] INFO     사냥 루프 시작
+[23:53:50] DEBUG    늑대 감지: 1마리
+[23:53:50] DEBUG      → (160,478) 122x58 score=0.553 [monster_right.png]
+[23:53:50] INFO     가장 가까운 몬스터: (160,478) score=0.553 [monster_right.png]
+[23:53:50] INFO     몬스터 감지: (221,510) bbox=(160, 478, 122, 58)
+[23:53:50] DEBUG    [sendinput] 클릭: (221, 508) → abs(28429, 33604)
+[23:53:50] INFO     공격: (221, 510)
+[23:53:52] DEBUG    늑대 감지: 1마리
+[23:53:52] DEBUG      → (766,478) 167x99 score=0.747 [monster_left_top.png]
+[23:53:52] INFO     가장 가까운 몬스터: (766,478) score=0.747 [monster_left_top.png]
+[23:53:52] DEBUG    [sendinput] 클릭: (848, 532) → abs(42131, 34423)
+[23:53:52] INFO     공격: (849, 530)
+[23:53:53] INFO     대상 소실 → 사망 추정
+[23:53:53] INFO     대상 사망 추정 → 아이템 줍기
+[23:53:53] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:53:53] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:53:53] INFO     아이템 줍기 완료 (Spacebar ×2)
+[23:53:54] DEBUG    늑대 감지: 1마리
+[23:53:54] DEBUG      → (1149,290) 80x128 score=0.693 [monster_top.png]
+[23:53:54] INFO     가장 가까운 몬스터: (1149,290) score=0.693 [monster_top.png]
+[23:53:54] INFO     몬스터 감지: (1189,357) bbox=(1149, 290, 80, 128)
+[23:53:54] DEBUG    [sendinput] 클릭: (1188, 358) → abs(49560, 28481)
+[23:53:54] INFO     공격: (1189, 357)
+[23:53:55] DEBUG    늑대 감지: 1마리
+[23:53:55] DEBUG      → (979,291) 72x115 score=0.692 [monster_top.png]
+[23:53:55] INFO     가장 가까운 몬스터: (979,291) score=0.692 [monster_top.png]
+[23:53:55] DEBUG    [sendinput] 클릭: (1017, 349) → abs(45824, 28174)
+[23:54:04] DEBUG    트래커 초기화
+[23:54:07] INFO     공격: (1015, 351)
+[23:54:07] INFO     매크로 중지 요청
+[23:54:07] INFO     매크로 중지!
+[23:54:07] INFO     사냥 루프 종료
+[23:54:14] DEBUG    트래커 초기화
+[23:54:14] INFO     매크로 중지 요청
+[23:54:14] INFO     매크로 중지!
+[23:54:17] INFO     게임 창 발견: HWND=199058
+[23:54:17] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:54:17] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:54:17] INFO     사냥 루프 시작
+[23:54:18] DEBUG    늑대 감지: 3마리
+[23:54:18] DEBUG      → (872,271) 72x115 score=0.703 [monster_top.png]
+[23:54:18] DEBUG      → (485,487) 135x108 score=0.646 [monster_bottom.png]
+[23:54:18] DEBUG      → (759,258) 147x90 score=0.582 [monster_right_top.png]
+[23:54:18] INFO     가장 가까운 몬스터: (485,487) score=0.646 [monster_bottom.png]
+[23:54:18] INFO     몬스터 감지: (552,544) bbox=(485, 487, 135, 108)
+[23:54:18] DEBUG    [sendinput] 클릭: (553, 542) → abs(35684, 34765)
+[23:54:18] INFO     공격: (552, 544)
+[23:54:19] INFO     대상 소실 → 사망 추정
+[23:54:19] INFO     대상 사망 추정 → 아이템 줍기
+[23:54:19] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:54:20] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:54:20] INFO     아이템 줍기 완료 (Spacebar ×2)
+[23:54:20] DEBUG    늑대 감지: 3마리
+[23:54:20] DEBUG      → (986,310) 88x140 score=0.731 [monster_top.png]
+[23:54:20] DEBUG      → (719,252) 147x90 score=0.672 [monster_right_top.png]
+[23:54:20] DEBUG      → (477,162) 135x108 score=0.560 [monster_bottom.png]
+[23:54:20] INFO     가장 가까운 몬스터: (719,252) score=0.672 [monster_right_top.png]
+[23:54:20] INFO     몬스터 감지: (792,300) bbox=(719, 252, 147, 90)
+[23:54:20] DEBUG    [sendinput] 클릭: (790, 298) → abs(40863, 26432)
+[23:54:20] INFO     공격: (792, 300)
+[23:54:22] DEBUG    늑대 감지: 4마리
+[23:54:22] DEBUG      → (872,269) 72x115 score=0.747 [monster_top.png]
+[23:54:22] DEBUG      → (631,128) 147x90 score=0.652 [monster_right_top.png]
+[23:54:22] DEBUG      → (391,165) 72x115 score=0.634 [monster_top.png]
+[23:54:22] DEBUG      → (585,524) 144x88 score=0.565 [monster_left_bottom.png]
+[23:54:22] INFO     가장 가까운 몬스터: (585,524) score=0.565 [monster_left_bottom.png]
+[23:54:22] DEBUG    [sendinput] 클릭: (657, 571) → abs(37957, 35755)
+[23:54:22] INFO     공격: (657, 571)
+[23:54:23] DEBUG    늑대 감지: 3마리
+[23:54:23] DEBUG      → (443,114) 147x90 score=0.750 [monster_right_top.png]
+[23:54:23] DEBUG      → (649,263) 135x108 score=0.692 [monster_bottom.png]
+[23:54:23] DEBUG      → (206,198) 64x102 score=0.580 [monster_top.png]
+[23:54:23] INFO     가장 가까운 몬스터: (649,263) score=0.692 [monster_bottom.png]
+[23:54:23] DEBUG    [sendinput] 클릭: (717, 321) → abs(39268, 27218)
+[23:54:23] INFO     공격: (716, 320)
+[23:54:24] DEBUG    늑대 감지: 3마리
+[23:54:24] DEBUG      → (505,277) 135x108 score=0.685 [monster_bottom.png]
+[23:54:24] DEBUG      → (46,476) 137x65 score=0.561 [monster_right.png]
+[23:54:24] DEBUG      → (61,135) 64x102 score=0.559 [monster_top.png]
+[23:54:24] INFO     가장 가까운 몬스터: (505,277) score=0.685 [monster_bottom.png]
+[23:54:24] DEBUG    [sendinput] 클릭: (573, 333) → abs(36121, 27627)
+[23:54:24] INFO     공격: (572, 334)
+[23:54:25] DEBUG    늑대 감지: 2마리
+[23:54:25] DEBUG      → (152,362) 88x140 score=0.726 [monster_top.png]
+[23:54:25] DEBUG      → (290,341) 121x97 score=0.638 [monster_bottom.png]
+[23:54:25] INFO     가장 가까운 몬스터: (290,341) score=0.638 [monster_bottom.png]
+[23:54:25] DEBUG    [sendinput] 클릭: (352, 391) → abs(31292, 29608)
+[23:54:25] INFO     공격: (350, 392)
+[23:54:25] DEBUG    트래커 초기화
+[23:54:25] INFO     매크로 중지 요청
+[23:54:25] INFO     매크로 중지!
+[23:54:26] INFO     사냥 루프 종료
+[23:54:28] INFO     게임 창 발견: HWND=199058
+[23:54:28] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:54:28] DEBUG    템플릿 로딩: monster_bottom.png ((108, 135, 3))
+[23:54:28] DEBUG    템플릿 로딩: monster_left.png ((88, 207, 3))
+[23:54:28] DEBUG    템플릿 로딩: monster_left_bottom.png ((98, 161, 3))
+[23:54:28] DEBUG    템플릿 로딩: monster_left_top.png ((99, 167, 3))
+[23:54:28] DEBUG    템플릿 로딩: monster_right.png ((73, 153, 3))
+[23:54:28] DEBUG    템플릿 로딩: monster_right_bottom.png ((121, 178, 3))
+[23:54:28] DEBUG    템플릿 로딩: monster_right_top.png ((90, 147, 3))
+[23:54:28] DEBUG    템플릿 로딩: monster_top.png ((128, 80, 3))
+[23:54:28] INFO     몬스터 템플릿 8개 로딩 완료
+[23:54:32] INFO     게임 창 발견: HWND=199058
+[23:54:32] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:54:32] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:54:32] INFO     사냥 루프 시작
+[23:54:33] DEBUG    늑대 감지: 1마리
+[23:54:33] DEBUG      → (801,366) 148x118 score=0.762 [monster_bottom.png]
+[23:54:33] INFO     가장 가까운 몬스터: (801,366) score=0.762 [monster_bottom.png]
+[23:54:33] INFO     몬스터 감지: (875,428) bbox=(801, 366, 148, 118)
+[23:54:33] DEBUG    [sendinput] 클릭: (876, 429) → abs(42743, 30906)
+[23:54:33] INFO     공격: (875, 428)
+[23:54:34] INFO     대상 소실 → 사망 추정
+[23:54:34] INFO     대상 사망 추정 → 아이템 줍기
+[23:54:34] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:54:35] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:54:35] INFO     아이템 줍기 완료 (Spacebar ×2)
+[23:54:35] DEBUG    트래커 초기화
+[23:54:35] INFO     매크로 중지 요청
+[23:54:35] INFO     매크로 중지!
+[23:54:35] DEBUG    늑대 감지: 3마리
+[23:54:35] DEBUG      → (427,510) 72x115 score=0.684 [monster_top.png]
+[23:54:35] DEBUG      → (845,476) 72x115 score=0.618 [monster_top.png]
+[23:54:35] DEBUG      → (306,203) 161x99 score=0.555 [monster_right_top.png]
+[23:54:35] INFO     가장 가까운 몬스터: (427,510) score=0.684 [monster_top.png]
+[23:54:35] INFO     몬스터 감지: (463,570) bbox=(427, 510, 72, 115)
+[23:54:35] DEBUG    [sendinput] 클릭: (464, 570) → abs(33739, 35721)
+[23:54:35] INFO     공격: (463, 570)
+[23:54:36] INFO     사냥 루프 종료
+[23:54:43] INFO     게임 창 발견: HWND=199058
+[23:54:43] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:54:43] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:54:43] INFO     사냥 루프 시작
+[23:54:44] DEBUG    늑대 감지: 3마리
+[23:54:44] DEBUG      → (669,141) 207x88 score=0.703 [monster_left.png]
+[23:54:44] DEBUG      → (423,238) 72x115 score=0.692 [monster_top.png]
+[23:54:44] DEBUG      → (296,355) 72x115 score=0.609 [monster_top.png]
+[23:54:44] INFO     가장 가까운 몬스터: (423,238) score=0.692 [monster_top.png]
+[23:54:44] INFO     몬스터 감지: (459,298) bbox=(423, 238, 72, 115)
+[23:54:44] DEBUG    [sendinput] 클릭: (459, 298) → abs(33630, 26432)
+[23:54:44] INFO     공격: (459, 298)
+[23:54:45] DEBUG    늑대 감지: 2마리
+[23:54:45] DEBUG      → (60,481) 122x58 score=0.557 [monster_right.png]
+[23:54:45] DEBUG      → (195,477) 137x65 score=0.551 [monster_right.png]
+[23:54:45] INFO     가장 가까운 몬스터: (195,477) score=0.551 [monster_right.png]
+[23:54:46] DEBUG    [sendinput] 클릭: (263, 511) → abs(29347, 33706)
+[23:54:46] INFO     공격: (263, 512)
+[23:54:47] DEBUG    늑대 감지: 4마리
+[23:54:47] DEBUG      → (914,292) 80x128 score=0.895 [monster_top.png]
+[23:54:47] DEBUG      → (1083,389) 121x97 score=0.612 [monster_bottom.png]
+[23:54:47] DEBUG      → (93,463) 183x87 score=0.562 [monster_right.png]
+[23:54:47] DEBUG      → (211,477) 137x65 score=0.558 [monster_right.png]
+[23:54:47] INFO     가장 가까운 몬스터: (914,292) score=0.895 [monster_top.png]
+[23:54:47] DEBUG    [sendinput] 클릭: (955, 359) → abs(44469, 28515)
+[23:54:47] INFO     공격: (954, 359)
+[23:54:48] DEBUG    늑대 감지: 2마리
+[23:54:48] DEBUG      → (805,190) 80x128 score=0.641 [monster_top.png]
+[23:54:48] DEBUG      → (1002,388) 64x102 score=0.589 [monster_top.png]
+[23:54:48] INFO     가장 가까운 몬스터: (805,190) score=0.641 [monster_top.png]
+[23:54:48] DEBUG    [sendinput] 클릭: (843, 256) → abs(42021, 24998)
+[23:54:48] INFO     공격: (845, 257)
+[23:54:49] DEBUG    늑대 감지: 1마리
+[23:54:49] DEBUG      → (900,389) 121x97 score=0.690 [monster_bottom.png]
+[23:54:49] INFO     가장 가까운 몬스터: (900,389) score=0.690 [monster_bottom.png]
+[23:54:49] DEBUG    [sendinput] 클릭: (959, 440) → abs(44556, 31281)
+[23:54:49] INFO     공격: (960, 440)
+[23:54:51] DEBUG    늑대 감지: 1마리
+[23:54:51] DEBUG      → (797,445) 80x128 score=0.689 [monster_top.png]
+[23:54:51] INFO     가장 가까운 몬스터: (797,445) score=0.689 [monster_top.png]
+[23:54:51] DEBUG    [sendinput] 클릭: (839, 510) → abs(41934, 33672)
+[23:54:51] INFO     공격: (837, 512)
+[23:54:51] DEBUG    HP 변화 감지: 0.72 → 0.14
+[23:54:52] DEBUG    늑대 감지: 1마리
+[23:54:52] DEBUG      → (732,445) 207x88 score=0.814 [monster_left.png]
+[23:54:52] INFO     가장 가까운 몬스터: (732,445) score=0.814 [monster_left.png]
+[23:54:52] DEBUG    [sendinput] 클릭: (833, 490) → abs(41803, 32989)
+[23:54:52] INFO     공격: (835, 492)
+[23:54:53] DEBUG    늑대 감지: 2마리
+[23:54:53] DEBUG      → (184,413) 207x88 score=0.827 [monster_left.png]
+[23:54:53] DEBUG      → (382,369) 88x140 score=0.684 [monster_top.png]
+[23:54:53] INFO     가장 가까운 몬스터: (382,369) score=0.684 [monster_top.png]
+[23:54:53] DEBUG    [sendinput] 클릭: (425, 444) → abs(32887, 31418)
+[23:54:53] INFO     공격: (426, 442)
+[23:54:54] DEBUG    늑대 감지: 3마리
+[23:54:54] DEBUG      → (112,397) 227x96 score=0.620 [monster_left.png]
+[23:54:54] DEBUG      → (8,420) 150x89 score=0.585 [monster_left_top.png]
+[23:54:54] DEBUG      → (312,400) 183x108 score=0.552 [monster_left_top.png]
+[23:54:54] INFO     가장 가까운 몬스터: (312,400) score=0.552 [monster_left_top.png]
+[23:54:54] DEBUG    [sendinput] 클릭: (401, 458) → abs(32363, 31896)
+[23:54:54] INFO     공격: (403, 457)
+[23:54:55] DEBUG    HP 변화 감지: 0.14 → 0.01
+[23:54:56] DEBUG    늑대 감지: 4마리
+[23:54:56] DEBUG      → (165,397) 80x128 score=0.831 [monster_top.png]
+[23:54:56] DEBUG      → (215,544) 147x90 score=0.763 [monster_right_top.png]
+[23:54:56] DEBUG      → (62,382) 167x99 score=0.678 [monster_left_top.png]
+[23:54:56] DEBUG      → (317,415) 167x99 score=0.603 [monster_left_top.png]
+[23:54:56] INFO     가장 가까운 몬스터: (317,415) score=0.603 [monster_left_top.png]
+[23:54:56] DEBUG    [sendinput] 클릭: (401, 469) → abs(32363, 32272)
+[23:54:56] INFO     공격: (400, 467)
+[23:54:57] DEBUG    늑대 감지: 3마리
+[23:54:57] DEBUG      → (182,528) 147x90 score=0.760 [monster_right_top.png]
+[23:54:57] DEBUG      → (135,397) 72x115 score=0.710 [monster_top.png]
+[23:54:57] DEBUG      → (284,399) 167x99 score=0.603 [monster_left_top.png]
+[23:54:57] INFO     가장 가까운 몬스터: (284,399) score=0.603 [monster_left_top.png]
+[23:54:57] DEBUG    [sendinput] 클릭: (368, 450) → abs(31642, 31623)
+[23:54:57] INFO     공격: (367, 451)
+[23:54:58] DEBUG    트래커 초기화
+[23:54:58] INFO     매크로 중지 요청
+[23:54:58] INFO     매크로 중지!
+[23:54:58] DEBUG    늑대 감지: 3마리
+[23:54:58] DEBUG      → (128,399) 72x115 score=0.683 [monster_top.png]
+[23:54:58] DEBUG      → (180,347) 167x99 score=0.602 [monster_left_top.png]
+[23:54:58] DEBUG      → (1,311) 153x73 score=0.565 [monster_right.png]
+[23:54:58] INFO     가장 가까운 몬스터: (180,347) score=0.602 [monster_left_top.png]
+[23:54:58] INFO     몬스터 감지: (263,399) bbox=(180, 347, 167, 99)
+[23:54:58] DEBUG    [sendinput] 클릭: (264, 398) → abs(29369, 29847)
+[23:54:58] INFO     공격: (263, 399)
+[23:54:58] INFO     사냥 루프 종료
+[23:55:00] INFO     게임 창 발견: HWND=199058
+[23:55:00] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:55:00] DEBUG    템플릿 로딩: monster_bottom.png ((108, 135, 3))
+[23:55:00] DEBUG    템플릿 로딩: monster_left.png ((88, 207, 3))
+[23:55:00] DEBUG    템플릿 로딩: monster_left_bottom.png ((98, 161, 3))
+[23:55:00] DEBUG    템플릿 로딩: monster_left_top.png ((99, 167, 3))
+[23:55:00] DEBUG    템플릿 로딩: monster_right.png ((73, 153, 3))
+[23:55:00] DEBUG    템플릿 로딩: monster_right_bottom.png ((121, 178, 3))
+[23:55:00] DEBUG    템플릿 로딩: monster_right_top.png ((90, 147, 3))
+[23:55:00] DEBUG    템플릿 로딩: monster_top.png ((128, 80, 3))
+[23:55:00] INFO     몬스터 템플릿 8개 로딩 완료
+[23:55:01] INFO     게임 창 발견: HWND=199058
+[23:55:01] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:55:01] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:55:01] INFO     사냥 루프 시작
+[23:55:02] DEBUG    늑대 감지: 2마리
+[23:55:02] DEBUG      → (191,163) 64x102 score=0.665 [monster_top.png]
+[23:55:02] DEBUG      → (285,340) 72x115 score=0.652 [monster_top.png]
+[23:55:02] INFO     가장 가까운 몬스터: (285,340) score=0.652 [monster_top.png]
+[23:55:02] INFO     몬스터 감지: (321,400) bbox=(285, 340, 72, 115)
+[23:55:02] DEBUG    [sendinput] 클릭: (323, 401) → abs(30658, 29950)
+[23:55:02] INFO     공격: (321, 400)
+[23:55:03] DEBUG    늑대 감지: 2마리
+[23:55:03] DEBUG      → (99,281) 135x108 score=0.749 [monster_bottom.png]
+[23:55:03] DEBUG      → (16,290) 108x86 score=0.592 [monster_bottom.png]
+[23:55:03] DEBUG    늑대 감지: 2마리
+[23:55:03] DEBUG      → (403,221) 72x115 score=0.664 [monster_top.png]
+[23:55:03] DEBUG      → (467,389) 72x115 score=0.661 [monster_top.png]
+[23:55:03] INFO     가장 가까운 몬스터: (467,389) score=0.661 [monster_top.png]
+[23:55:03] DEBUG    트래커 초기화
+[23:55:03] INFO     매크로 중지 요청
+[23:55:03] INFO     매크로 중지!
+[23:55:04] DEBUG    [sendinput] 클릭: (503, 448) → abs(34592, 31555)
+[23:55:04] INFO     공격: (503, 449)
+[23:55:04] INFO     사냥 루프 종료
+[23:55:07] INFO     게임 창 발견: HWND=199058
+[23:55:07] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:55:07] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:55:07] INFO     사냥 루프 시작
+[23:55:08] DEBUG    늑대 감지: 5마리
+[23:55:08] DEBUG      → (543,247) 135x108 score=0.784 [monster_bottom.png]
+[23:55:08] DEBUG      → (457,125) 227x96 score=0.637 [monster_left.png]
+[23:55:08] DEBUG      → (705,365) 72x115 score=0.598 [monster_top.png]
+[23:55:08] DEBUG      → (20,477) 137x65 score=0.554 [monster_right.png]
+[23:55:08] DEBUG      → (214,477) 137x65 score=0.552 [monster_right.png]
+[23:55:08] INFO     가장 가까운 몬스터: (543,247) score=0.784 [monster_bottom.png]
+[23:55:08] INFO     몬스터 감지: (610,304) bbox=(543, 247, 135, 108)
+[23:55:08] DEBUG    [sendinput] 클릭: (612, 306) → abs(36974, 26705)
+[23:55:08] INFO     공격: (610, 304)
+[23:55:09] DEBUG    트래커 초기화
+[23:55:09] INFO     매크로 중지 요청
+[23:55:09] INFO     매크로 중지!
+[23:55:09] DEBUG    늑대 감지: 4마리
+[23:55:09] DEBUG      → (702,310) 135x108 score=0.728 [monster_bottom.png]
+[23:55:09] DEBUG      → (574,229) 135x108 score=0.652 [monster_bottom.png]
+[23:55:09] DEBUG      → (865,381) 72x115 score=0.621 [monster_top.png]
+[23:55:09] DEBUG      → (193,481) 122x58 score=0.552 [monster_right.png]
+[23:55:09] INFO     가장 가까운 몬스터: (574,229) score=0.652 [monster_bottom.png]
+[23:55:09] INFO     몬스터 감지: (641,286) bbox=(574, 229, 135, 108)
+[23:55:09] DEBUG    [sendinput] 클릭: (642, 287) → abs(37629, 26056)
+[23:55:09] INFO     공격: (641, 286)
+[23:55:09] INFO     사냥 루프 종료
+[23:55:14] INFO     게임 창 발견: HWND=199058
+[23:55:14] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:55:14] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:55:14] INFO     사냥 루프 시작
+[23:55:15] DEBUG    늑대 감지: 1마리
+[23:55:15] DEBUG      → (892,162) 227x96 score=0.552 [monster_left.png]
+[23:55:15] INFO     가장 가까운 몬스터: (892,162) score=0.552 [monster_left.png]
+[23:55:15] INFO     몬스터 감지: (1005,213) bbox=(892, 162, 227, 96)
+[23:55:15] DEBUG    [sendinput] 클릭: (1005, 214) → abs(45562, 23563)
+[23:55:15] INFO     공격: (1005, 213)
+[23:55:16] INFO     대상 소실 → 사망 추정
+[23:55:16] INFO     대상 사망 추정 → 아이템 줍기
+[23:55:16] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:55:16] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:55:16] INFO     아이템 줍기 완료 (Spacebar ×2)
+[23:55:17] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:55:18] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:55:20] DEBUG    늑대 감지: 1마리
+[23:55:20] DEBUG      → (811,556) 121x97 score=0.627 [monster_bottom.png]
+[23:55:20] INFO     가장 가까운 몬스터: (811,556) score=0.627 [monster_bottom.png]
+[23:55:20] INFO     몬스터 감지: (871,607) bbox=(811, 556, 121, 97)
+[23:55:20] DEBUG    [sendinput] 클릭: (869, 609) → abs(42590, 37053)
+[23:55:20] INFO     공격: (871, 607)
+[23:55:21] DEBUG    늑대 감지: 1마리
+[23:55:21] DEBUG      → (162,203) 153x73 score=0.848 [monster_right.png]
+[23:55:21] INFO     가장 가까운 몬스터: (162,203) score=0.848 [monster_right.png]
+[23:55:21] DEBUG    [sendinput] 클릭: (237, 241) → abs(28779, 24485)
+[23:55:21] INFO     공격: (238, 242)
+[23:55:22] INFO     대상 소실 → 사망 추정
+[23:55:22] INFO     대상 사망 추정 → 아이템 줍기
+[23:55:22] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:55:22] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:55:22] INFO     아이템 줍기 완료 (Spacebar ×2)
+[23:55:23] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:55:24] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:55:26] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:55:27] DEBUG    늑대 감지: 1마리
+[23:55:27] DEBUG      → (298,459) 153x73 score=0.792 [monster_right.png]
+[23:55:27] INFO     가장 가까운 몬스터: (298,459) score=0.792 [monster_right.png]
+[23:55:27] INFO     몬스터 감지: (374,498) bbox=(298, 459, 153, 73)
+[23:55:27] DEBUG    [sendinput] 클릭: (375, 498) → abs(31795, 33262)
+[23:55:27] INFO     공격: (374, 498)
+[23:55:28] INFO     대상 소실 → 사망 추정
+[23:55:28] INFO     대상 사망 추정 → 아이템 줍기
+[23:55:28] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:55:28] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:55:28] INFO     아이템 줍기 완료 (Spacebar ×2)
+[23:55:29] DEBUG    트래커 초기화
+[23:55:29] INFO     매크로 중지 요청
+[23:55:29] INFO     매크로 중지!
+[23:55:29] DEBUG    늑대 감지: 1마리
+[23:55:29] DEBUG      → (462,429) 80x128 score=0.754 [monster_top.png]
+[23:55:29] INFO     가장 가까운 몬스터: (462,429) score=0.754 [monster_top.png]
+[23:55:29] INFO     몬스터 감지: (502,496) bbox=(462, 429, 80, 128)
+[23:55:29] DEBUG    [sendinput] 클릭: (502, 495) → abs(34570, 33160)
+[23:55:29] INFO     공격: (502, 496)
+[23:55:30] INFO     사냥 루프 종료
+[23:55:32] DEBUG    트래커 초기화
+[23:55:32] INFO     매크로 중지 요청
+[23:55:32] INFO     매크로 중지!
+[23:55:34] DEBUG    트래커 초기화
+[23:55:34] INFO     매크로 중지 요청
+[23:55:34] INFO     매크로 중지!
+[23:55:34] INFO     프로그램 종료
+[23:55:35] INFO     [대기중] F5=시작 / F6=중지 / Ctrl+C=종료
+[23:55:38] INFO     게임 창 발견: HWND=199058
+[23:55:38] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:55:38] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:55:38] INFO     사냥 루프 시작
+[23:55:38] DEBUG    템플릿 로딩: monster_bottom.png ((108, 135, 3))
+[23:55:38] DEBUG    템플릿 로딩: monster_left.png ((88, 207, 3))
+[23:55:38] DEBUG    템플릿 로딩: monster_left_bottom.png ((98, 161, 3))
+[23:55:38] DEBUG    템플릿 로딩: monster_left_top.png ((99, 167, 3))
+[23:55:38] DEBUG    템플릿 로딩: monster_right.png ((73, 153, 3))
+[23:55:38] DEBUG    템플릿 로딩: monster_right_bottom.png ((121, 178, 3))
+[23:55:38] DEBUG    템플릿 로딩: monster_right_top.png ((90, 147, 3))
+[23:55:38] DEBUG    템플릿 로딩: monster_top.png ((128, 80, 3))
+[23:55:38] INFO     몬스터 템플릿 8개 로딩 완료
+[23:55:41] DEBUG    늑대 감지: 1마리
+[23:55:41] DEBUG      → (1224,387) 72x115 score=0.583 [monster_top.png]
+[23:55:41] INFO     가장 가까운 몬스터: (1224,387) score=0.583 [monster_top.png]
+[23:55:41] INFO     몬스터 감지: (1260,447) bbox=(1224, 387, 72, 115)
+[23:55:41] DEBUG    [sendinput] 클릭: (1260, 447) → abs(51134, 31521)
+[23:55:41] INFO     공격: (1260, 447)
+[23:55:45] DEBUG    늑대 감지: 2마리
+[23:55:45] DEBUG      → (805,429) 135x108 score=0.746 [monster_bottom.png]
+[23:55:45] DEBUG      → (1224,390) 72x115 score=0.595 [monster_top.png]
+[23:55:45] INFO     가장 가까운 몬스터: (805,429) score=0.746 [monster_bottom.png]
+[23:55:45] DEBUG    [sendinput] 클릭: (873, 487) → abs(42677, 32887)
+[23:55:45] INFO     공격: (872, 486)
+[23:55:48] DEBUG    늑대 감지: 1마리
+[23:55:48] DEBUG      → (637,461) 207x88 score=0.729 [monster_left.png]
+[23:55:48] INFO     가장 가까운 몬스터: (637,461) score=0.729 [monster_left.png]
+[23:55:48] DEBUG    [sendinput] 클릭: (742, 507) → abs(39814, 33570)
+[23:55:48] INFO     공격: (740, 508)
+[23:55:49] DEBUG    HP 변화 감지: 0.45 → 0.12
+[23:55:51] DEBUG    늑대 감지: 1마리
+[23:55:51] DEBUG      → (402,453) 177x107 score=0.558 [monster_left_bottom.png]
+[23:55:51] INFO     가장 가까운 몬스터: (402,453) score=0.558 [monster_left_bottom.png]
+[23:55:52] DEBUG    [sendinput] 클릭: (490, 507) → abs(34308, 33570)
+[23:55:52] INFO     공격: (490, 509)
+[23:55:52] DEBUG    HP 변화 감지: 0.12 → 0.24
+[23:55:55] INFO     대상 소실 → 사망 추정
+[23:55:55] INFO     대상 사망 추정 → 아이템 줍기
+[23:55:55] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:55:55] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:55:55] INFO     아이템 줍기 완료 (Spacebar ×2)
+[23:55:58] DEBUG    늑대 감지: 2마리
+[23:55:58] DEBUG      → (285,157) 207x88 score=0.833 [monster_left.png]
+[23:55:58] DEBUG      → (107,244) 178x121 score=0.676 [monster_right_bottom.png]
+[23:55:58] INFO     가장 가까운 몬스터: (285,157) score=0.833 [monster_left.png]
+[23:55:58] INFO     몬스터 감지: (388,204) bbox=(285, 157, 207, 88)
+[23:55:58] DEBUG    [sendinput] 클릭: (387, 205) → abs(32057, 23256)
+[23:55:58] INFO     공격: (388, 204)
+[23:56:01] INFO     대상 소실 → 사망 추정
+[23:56:01] INFO     대상 사망 추정 → 아이템 줍기
+[23:56:02] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:56:02] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:56:02] INFO     아이템 줍기 완료 (Spacebar ×2)
+[23:56:04] DEBUG    트래커 초기화
+[23:56:04] INFO     매크로 중지 요청
+[23:56:04] INFO     매크로 중지!
+[23:56:05] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:56:05] INFO     사냥 루프 종료
+[23:56:05] INFO     게임 창 발견: HWND=199058
+[23:56:05] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:56:05] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:56:05] INFO     사냥 루프 시작
+[23:56:08] DEBUG    트래커 초기화
+[23:56:08] INFO     매크로 중지 요청
+[23:56:08] INFO     매크로 중지!
+[23:56:08] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:56:09] INFO     사냥 루프 종료
+[23:57:12] INFO     게임 창 발견: HWND=199058
+[23:57:12] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:57:12] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:57:12] INFO     사냥 루프 시작
+[23:57:14] DEBUG    늑대 감지: 1마리
+[23:57:14] DEBUG      → (1077,377) 167x99 score=0.810 [monster_left_top.png]
+[23:57:14] INFO     가장 가까운 몬스터: (1077,377) score=0.810 [monster_left_top.png]
+[23:57:14] INFO     몬스터 감지: (1160,429) bbox=(1077, 377, 167, 99)
+[23:57:15] DEBUG    [sendinput] 클릭: (1161, 427) → abs(48970, 30837)
+[23:57:15] INFO     공격: (1160, 429)
+[23:57:18] INFO     대상 소실 → 사망 추정
+[23:57:18] INFO     대상 사망 추정 → 아이템 줍기
+[23:57:18] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:57:18] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:57:18] INFO     아이템 줍기 완료 (Spacebar ×2)
+[23:57:21] DEBUG    늑대 감지: 2마리
+[23:57:21] DEBUG      → (464,157) 227x96 score=0.614 [monster_left.png]
+[23:57:21] DEBUG      → (925,253) 207x88 score=0.586 [monster_left.png]
+[23:57:21] INFO     가장 가까운 몬스터: (464,157) score=0.614 [monster_left.png]
+[23:57:21] INFO     몬스터 감지: (577,208) bbox=(464, 157, 227, 96)
+[23:57:21] DEBUG    [sendinput] 클릭: (575, 207) → abs(36165, 23324)
+[23:57:21] INFO     공격: (577, 208)
+[23:57:24] DEBUG    트래커 초기화
+[23:57:24] INFO     매크로 중지 요청
+[23:57:24] INFO     매크로 중지!
+[23:57:25] DEBUG    늑대 감지: 2마리
+[23:57:25] DEBUG      → (780,370) 108x86 score=0.619 [monster_bottom.png]
+[23:57:25] DEBUG      → (716,351) 64x102 score=0.562 [monster_top.png]
+[23:57:25] INFO     가장 가까운 몬스터: (716,351) score=0.562 [monster_top.png]
+[23:57:25] INFO     몬스터 감지: (748,405) bbox=(716, 351, 64, 102)
+[23:57:25] DEBUG    [sendinput] 클릭: (747, 407) → abs(39924, 30154)
+[23:57:25] INFO     공격: (748, 405)
+[23:57:25] INFO     사냥 루프 종료
+[23:57:44] INFO     게임 창 발견: HWND=199058
+[23:57:44] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:57:44] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:57:44] INFO     사냥 루프 시작
+[23:57:47] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:57:50] DEBUG    늑대 감지: 2마리
+[23:57:50] DEBUG      → (549,182) 150x89 score=0.626 [monster_left_top.png]
+[23:57:50] DEBUG      → (390,314) 227x96 score=0.550 [monster_left.png]
+[23:57:50] INFO     가장 가까운 몬스터: (390,314) score=0.550 [monster_left.png]
+[23:57:50] INFO     몬스터 감지: (503,365) bbox=(390, 314, 227, 96)
+[23:57:50] DEBUG    [sendinput] 클릭: (503, 367) → abs(34592, 28788)
+[23:57:50] INFO     공격: (503, 365)
+[23:57:53] DEBUG    늑대 감지: 3마리
+[23:57:53] DEBUG      → (1110,160) 147x90 score=0.749 [monster_right_top.png]
+[23:57:53] DEBUG      → (485,247) 135x108 score=0.740 [monster_bottom.png]
+[23:57:53] DEBUG      → (295,271) 72x115 score=0.677 [monster_top.png]
+[23:57:53] INFO     가장 가까운 몬스터: (485,247) score=0.740 [monster_bottom.png]
+[23:57:54] DEBUG    [sendinput] 클릭: (553, 306) → abs(35684, 26705)
+[23:57:54] INFO     공격: (552, 304)
+[23:57:57] DEBUG    늑대 감지: 1마리
+[23:57:57] DEBUG      → (170,267) 153x73 score=0.826 [monster_right.png]
+[23:57:57] INFO     가장 가까운 몬스터: (170,267) score=0.826 [monster_right.png]
+[23:57:57] DEBUG    [sendinput] 클릭: (248, 307) → abs(29019, 26739)
+[23:57:57] INFO     공격: (246, 306)
+[23:57:57] DEBUG    HP 변화 감지: 0.06 → 0.20
+[23:58:00] DEBUG    늑대 감지: 2마리
+[23:58:00] DEBUG      → (280,190) 72x115 score=0.671 [monster_top.png]
+[23:58:00] DEBUG      → (622,479) 167x99 score=0.614 [monster_left_top.png]
+[23:58:00] INFO     가장 가까운 몬스터: (622,479) score=0.614 [monster_left_top.png]
+[23:58:00] DEBUG    [sendinput] 클릭: (704, 529) → abs(38984, 34321)
+[23:58:00] INFO     공격: (705, 531)
+[23:58:01] DEBUG    HP 변화 감지: 0.20 → 0.18
+[23:58:04] DEBUG    늑대 감지: 2마리
+[23:58:04] DEBUG      → (512,479) 167x99 score=0.615 [monster_left_top.png]
+[23:58:04] DEBUG      → (68,265) 88x140 score=0.612 [monster_top.png]
+[23:58:04] INFO     가장 가까운 몬스터: (512,479) score=0.615 [monster_left_top.png]
+[23:58:04] DEBUG    [sendinput] 클릭: (595, 529) → abs(36602, 34321)
+[23:58:04] INFO     공격: (595, 531)
+[23:58:04] DEBUG    트래커 초기화
+[23:58:04] INFO     매크로 중지 요청
+[23:58:04] INFO     매크로 중지!
+[23:58:04] INFO     사냥 루프 종료
+[23:58:05] INFO     게임 창 발견: HWND=199058
+[23:58:05] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:58:06] DEBUG    템플릿 로딩: monster_bottom.png ((108, 135, 3))
+[23:58:06] DEBUG    템플릿 로딩: monster_left.png ((88, 207, 3))
+[23:58:06] DEBUG    템플릿 로딩: monster_left_bottom.png ((98, 161, 3))
+[23:58:06] DEBUG    템플릿 로딩: monster_left_top.png ((99, 167, 3))
+[23:58:06] DEBUG    템플릿 로딩: monster_right.png ((73, 153, 3))
+[23:58:06] DEBUG    템플릿 로딩: monster_right_bottom.png ((121, 178, 3))
+[23:58:06] DEBUG    템플릿 로딩: monster_right_top.png ((90, 147, 3))
+[23:58:06] DEBUG    템플릿 로딩: monster_top.png ((128, 80, 3))
+[23:58:06] INFO     몬스터 템플릿 8개 로딩 완료
+[23:58:09] DEBUG    늑대 감지: 1마리
+[23:58:09] DEBUG      → (7,411) 135x108 score=0.690 [monster_bottom.png]
+[23:58:17] INFO     게임 창 발견: HWND=199058
+[23:58:17] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:58:17] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:58:17] INFO     사냥 루프 시작
+[23:58:20] DEBUG    늑대 감지: 2마리
+[23:58:20] DEBUG      → (720,249) 88x140 score=0.624 [monster_top.png]
+[23:58:20] DEBUG      → (1111,364) 72x115 score=0.570 [monster_top.png]
+[23:58:20] INFO     가장 가까운 몬스터: (720,249) score=0.624 [monster_top.png]
+[23:58:20] INFO     몬스터 감지: (764,322) bbox=(720, 249, 88, 140)
+[23:58:20] DEBUG    [sendinput] 클릭: (766, 324) → abs(40339, 27320)
+[23:58:20] INFO     공격: (764, 322)
+[23:58:23] DEBUG    늑대 감지: 3마리
+[23:58:23] DEBUG      → (1162,231) 80x128 score=0.701 [monster_top.png]
+[23:58:23] DEBUG      → (611,206) 167x99 score=0.613 [monster_left_top.png]
+[23:58:23] DEBUG      → (399,571) 153x73 score=0.601 [monster_right.png]
+[23:58:23] INFO     가장 가까운 몬스터: (611,206) score=0.613 [monster_left_top.png]
+[23:58:23] DEBUG    [sendinput] 클릭: (692, 256) → abs(38722, 24998)
+[23:58:23] INFO     공격: (694, 258)
+[23:58:27] DEBUG    늑대 감지: 2마리
+[23:58:27] DEBUG      → (781,296) 161x98 score=0.854 [monster_left_bottom.png]
+[23:58:27] DEBUG      → (534,102) 135x108 score=0.744 [monster_bottom.png]
+[23:58:27] INFO     가장 가까운 몬스터: (781,296) score=0.854 [monster_left_bottom.png]
+[23:58:27] DEBUG    [sendinput] 클릭: (860, 350) → abs(42393, 28208)
+[23:58:27] INFO     공격: (861, 348)
+[23:58:27] DEBUG    HP 변화 감지: 0.22 → 0.16
+[23:58:28] DEBUG    트래커 초기화
+[23:58:28] INFO     매크로 중지 요청
+[23:58:28] INFO     매크로 중지!
+[23:58:30] INFO     게임 창 발견: HWND=199058
+[23:58:30] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:58:30] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:58:30] INFO     사냥 루프 시작
+[23:58:30] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:58:31] INFO     사냥 루프 종료
+[23:58:33] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:58:36] DEBUG    늑대 감지: 1마리
+[23:58:36] DEBUG      → (75,547) 121x97 score=0.714 [monster_bottom.png]
+[23:58:36] INFO     가장 가까운 몬스터: (75,547) score=0.714 [monster_bottom.png]
+[23:58:36] INFO     몬스터 감지: (135,598) bbox=(75, 547, 121, 97)
+[23:58:36] DEBUG    [sendinput] 클릭: (136, 597) → abs(26572, 36643)
+[23:58:36] INFO     공격: (135, 598)
+[23:58:40] DEBUG    늑대 감지: 2마리
+[23:58:40] DEBUG      → (410,120) 88x140 score=0.746 [monster_top.png]
+[23:58:40] DEBUG      → (181,117) 161x98 score=0.716 [monster_left_bottom.png]
+[23:58:40] INFO     가장 가까운 몬스터: (410,120) score=0.746 [monster_top.png]
+[23:58:40] DEBUG    [sendinput] 클릭: (456, 193) → abs(33565, 22846)
+[23:58:40] INFO     공격: (454, 193)
+[23:58:43] INFO     대상 소실 → 사망 추정
+[23:58:43] INFO     대상 사망 추정 → 아이템 줍기
+[23:58:44] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:58:44] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:58:44] INFO     아이템 줍기 완료 (Spacebar ×2)
+[23:58:47] DEBUG    늑대 감지: 1마리
+[23:58:47] DEBUG      → (529,332) 108x86 score=0.598 [monster_bottom.png]
+[23:58:47] INFO     가장 가까운 몬스터: (529,332) score=0.598 [monster_bottom.png]
+[23:58:47] INFO     몬스터 감지: (583,378) bbox=(529, 332, 108, 86)
+[23:58:47] DEBUG    [sendinput] 클릭: (581, 380) → abs(36296, 29232)
+[23:58:47] INFO     공격: (583, 378)
+[23:58:50] DEBUG    늑대 감지: 2마리
+[23:58:50] DEBUG      → (360,170) 72x115 score=0.726 [monster_top.png]
+[23:58:50] DEBUG      → (554,427) 72x115 score=0.630 [monster_top.png]
+[23:58:50] INFO     가장 가까운 몬스터: (554,427) score=0.630 [monster_top.png]
+[23:58:50] DEBUG    [sendinput] 클릭: (588, 489) → abs(36449, 32955)
+[23:58:50] INFO     공격: (590, 487)
+[23:58:54] INFO     대상 소실 → 사망 추정
+[23:58:54] INFO     대상 사망 추정 → 아이템 줍기
+[23:58:54] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:58:54] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:58:54] INFO     아이템 줍기 완료 (Spacebar ×2)
+[23:58:57] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:59:01] DEBUG    트래커 초기화
+[23:59:01] INFO     매크로 중지 요청
+[23:59:01] INFO     매크로 중지!
+[23:59:01] DEBUG    늑대 감지: 1마리
+[23:59:01] DEBUG      → (254,286) 167x99 score=0.710 [monster_left_top.png]
+[23:59:01] INFO     가장 가까운 몬스터: (254,286) score=0.710 [monster_left_top.png]
+[23:59:01] INFO     몬스터 감지: (337,338) bbox=(254, 286, 167, 99)
+[23:59:01] DEBUG    [sendinput] 클릭: (335, 336) → abs(30920, 27730)
+[23:59:01] INFO     공격: (337, 338)
+[23:59:01] INFO     사냥 루프 종료
+[23:59:15] INFO     게임 창 발견: HWND=199058
+[23:59:15] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:59:15] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:59:15] INFO     사냥 루프 시작
+[23:59:18] DEBUG    늑대 감지: 1마리
+[23:59:18] DEBUG      → (326,348) 108x86 score=0.569 [monster_bottom.png]
+[23:59:18] INFO     가장 가까운 몬스터: (326,348) score=0.569 [monster_bottom.png]
+[23:59:18] INFO     몬스터 감지: (380,394) bbox=(326, 348, 108, 86)
+[23:59:18] DEBUG    [sendinput] 클릭: (379, 392) → abs(31882, 29642)
+[23:59:18] INFO     공격: (380, 394)
+[23:59:21] INFO     대상 소실 → 사망 추정
+[23:59:21] INFO     대상 사망 추정 → 아이템 줍기
+[23:59:21] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:59:22] DEBUG    [sendinput] 키 입력: scan=0x39
+[23:59:22] INFO     아이템 줍기 완료 (Spacebar ×2)
+[23:59:24] INFO     대상 없음 (사유: not_found), 재탐색 대기...
+[23:59:28] DEBUG    늑대 감지: 1마리
+[23:59:28] DEBUG      → (759,304) 147x90 score=0.615 [monster_right_top.png]
+[23:59:28] INFO     가장 가까운 몬스터: (759,304) score=0.615 [monster_right_top.png]
+[23:59:28] INFO     몬스터 감지: (832,352) bbox=(759, 304, 147, 90)
+[23:59:28] DEBUG    [sendinput] 클릭: (834, 354) → abs(41825, 28344)
+[23:59:28] INFO     공격: (832, 352)
+[23:59:29] DEBUG    트래커 초기화
+[23:59:29] INFO     매크로 중지 요청
+[23:59:29] INFO     매크로 중지!
+[23:59:31] DEBUG    늑대 감지: 2마리
+[23:59:31] DEBUG      → (1019,302) 80x128 score=0.739 [monster_top.png]
+[23:59:31] DEBUG      → (832,220) 144x88 score=0.592 [monster_left_bottom.png]
+[23:59:31] INFO     가장 가까운 몬스터: (832,220) score=0.592 [monster_left_bottom.png]
+[23:59:31] INFO     몬스터 감지: (904,267) bbox=(832, 220, 144, 88)
+[23:59:31] DEBUG    [sendinput] 클릭: (902, 267) → abs(43311, 25373)
+[23:59:31] INFO     공격: (904, 267)
+[23:59:32] INFO     사냥 루프 종료
+[23:59:34] DEBUG    트래커 초기화
+[23:59:34] INFO     매크로 중지 요청
+[23:59:34] INFO     매크로 중지!
+[23:59:34] INFO     프로그램 종료
+[23:59:35] INFO     [대기중] F5=시작 / F6=중지 / Ctrl+C=종료
+[23:59:40] INFO     게임 창 발견: HWND=199058
+[23:59:40] DEBUG    게임 창 영역: x=0, y=3, w=1296, h=759
+[23:59:40] INFO     매크로 시작! (방식: sendinput, 영역: (0, 3, 1296, 759))
+[23:59:40] INFO     사냥 루프 시작
+[23:59:40] DEBUG    템플릿 로딩: monster_bottom.png ((108, 135, 3))
+[23:59:40] DEBUG    템플릿 로딩: monster_left.png ((88, 207, 3))
+[23:59:40] DEBUG    템플릿 로딩: monster_left_bottom.png ((98, 161, 3))
+[23:59:40] DEBUG    템플릿 로딩: monster_left_top.png ((99, 167, 3))
+[23:59:40] DEBUG    템플릿 로딩: monster_right.png ((73, 153, 3))
+[23:59:40] DEBUG    템플릿 로딩: monster_right_bottom.png ((121, 178, 3))
+[23:59:40] DEBUG    템플릿 로딩: monster_right_top.png ((90, 147, 3))
+[23:59:40] DEBUG    템플릿 로딩: monster_top.png ((128, 80, 3))
+[23:59:40] INFO     몬스터 템플릿 8개 로딩 완료
+[23:59:43] DEBUG    늑대 감지: 2마리
+[23:59:43] DEBUG      → (864,110) 148x118 score=0.796 [monster_bottom.png]
+[23:59:43] DEBUG      → (647,525) 72x115 score=0.576 [monster_top.png]
+[23:59:43] INFO     가장 가까운 몬스터: (647,525) score=0.576 [monster_top.png]
+[23:59:43] INFO     몬스터 감지: (683,585) bbox=(647, 525, 72, 115)
+[23:59:43] DEBUG    [sendinput] 클릭: (684, 586) → abs(38547, 36267)
+[23:59:43] INFO     공격: (683, 585)
+[23:59:46] DEBUG    늑대 감지: 3마리
+[23:59:46] DEBUG      → (580,345) 80x128 score=0.631 [monster_top.png]
+[23:59:46] DEBUG      → (862,456) 167x99 score=0.562 [monster_left_top.png]
+[23:59:46] DEBUG      → (444,562) 161x98 score=0.555 [monster_left_bottom.png]
+[23:59:46] INFO     가장 가까운 몬스터: (580,345) score=0.631 [monster_top.png]
+[23:59:46] DEBUG    [sendinput] 클릭: (618, 412) → abs(37105, 30325)
+[23:59:46] INFO     공격: (620, 412)
+[23:59:49] DEBUG    늑대 감지: 2마리
+[23:59:49] DEBUG      → (360,212) 72x115 score=0.592 [monster_top.png]
+[23:59:49] DEBUG      → (793,202) 161x98 score=0.572 [monster_left_bottom.png]
+[23:59:49] INFO     가장 가까운 몬스터: (793,202) score=0.572 [monster_left_bottom.png]
+[23:59:50] DEBUG    [sendinput] 클릭: (873, 254) → abs(42677, 24929)
+[23:59:50] INFO     공격: (873, 254)
+[23:59:50] DEBUG    HP 변화 감지: 0.58 → 0.27
+[23:59:53] DEBUG    늑대 감지: 2마리
+[23:59:53] DEBUG      → (676,94) 80x128 score=0.731 [monster_top.png]
+[23:59:53] DEBUG      → (362,340) 64x102 score=0.598 [monster_top.png]
+[23:59:53] INFO     가장 가까운 몬스터: (676,94) score=0.731 [monster_top.png]
+[23:59:53] DEBUG    [sendinput] 클릭: (715, 160) → abs(39224, 21719)
+[23:59:53] INFO     공격: (716, 161)
+[23:59:53] DEBUG    HP 변화 감지: 0.27 → 0.39
+[23:59:56] DEBUG    늑대 감지: 3마리
+[23:59:56] DEBUG      → (745,541) 64x102 score=0.569 [monster_top.png]
+[23:59:56] DEBUG      → (184,312) 183x108 score=0.555 [monster_left_top.png]
+[23:59:56] DEBUG      → (774,103) 248x105 score=0.552 [monster_left.png]
+[23:59:56] INFO     가장 가까운 몬스터: (745,541) score=0.569 [monster_top.png]
+[23:59:56] DEBUG    [sendinput] 클릭: (776, 594) → abs(40557, 36541)
+[23:59:56] INFO     공격: (777, 595)
+[23:59:57] DEBUG    HP 변화 감지: 0.39 → 0.32
+[00:00:00] DEBUG    늑대 감지: 1마리
+[00:00:00] DEBUG      → (791,416) 147x90 score=0.731 [monster_right_top.png]
+[00:00:00] INFO     가장 가까운 몬스터: (791,416) score=0.731 [monster_right_top.png]
+[00:00:00] DEBUG    [sendinput] 클릭: (866, 462) → abs(42524, 32033)
+[00:00:00] INFO     공격: (864, 464)
+[00:00:00] WARNING  타겟 타임아웃 (17.6초 경과) → 타겟 전환
+[00:00:00] INFO     대상 포기: (864, 461) → 스킵 목록 등록
+[00:00:00] INFO     대상 없음 (사유: timeout), 재탐색 대기...
+[00:00:04] DEBUG    늑대 감지: 2마리
+[00:00:04] DEBUG      → (626,342) 135x108 score=0.699 [monster_bottom.png]
+[00:00:04] DEBUG      → (376,531) 121x97 score=0.691 [monster_bottom.png]
+[00:00:04] INFO     가장 가까운 몬스터: (626,342) score=0.699 [monster_bottom.png]
+[00:00:04] INFO     몬스터 감지: (693,399) bbox=(626, 342, 135, 108)
+[00:00:04] DEBUG    [sendinput] 클릭: (695, 399) → abs(38787, 29881)
+[00:00:04] INFO     공격: (693, 399)
+[00:00:07] DEBUG    늑대 감지: 3마리
+[00:00:07] DEBUG      → (286,206) 167x99 score=0.810 [monster_left_top.png]
+[00:00:07] DEBUG      → (0,190) 167x99 score=0.598 [monster_left_top.png]
+[00:00:07] DEBUG      → (50,463) 108x86 score=0.578 [monster_bottom.png]
+[00:00:07] INFO     가장 가까운 몬스터: (286,206) score=0.810 [monster_left_top.png]
+[00:00:07] DEBUG    [sendinput] 클릭: (370, 260) → abs(31685, 25134)
+[00:00:07] INFO     공격: (369, 258)
+[00:00:10] DEBUG    늑대 감지: 2마리
+[00:00:10] DEBUG      → (37,429) 135x108 score=0.748 [monster_bottom.png]
+[00:00:10] DEBUG      → (584,516) 72x115 score=0.647 [monster_top.png]
+[00:00:10] INFO     가장 가까운 몬스터: (584,516) score=0.647 [monster_top.png]
+[00:00:10] DEBUG    [sendinput] 클릭: (621, 578) → abs(37170, 35994)
+[00:00:10] INFO     공격: (620, 576)
+[00:00:11] DEBUG    HP 변화 감지: 0.17 → 0.28
+[00:00:13] DEBUG    트래커 초기화
+[00:00:13] INFO     매크로 중지 요청
+[00:00:13] INFO     매크로 중지!
+[00:00:14] DEBUG    늑대 감지: 2마리
+[00:00:14] DEBUG      → (517,425) 135x108 score=0.711 [monster_bottom.png]
+[00:00:14] DEBUG      → (619,423) 178x121 score=0.639 [monster_right_bottom.png]
+[00:00:14] INFO     가장 가까운 몬스터: (517,425) score=0.711 [monster_bottom.png]
+[00:00:14] INFO     몬스터 감지: (584,482) bbox=(517, 425, 135, 108)
+[00:00:14] DEBUG    [sendinput] 클릭: (586, 483) → abs(36405, 32750)
+[00:00:14] INFO     공격: (584, 482)
+[00:00:14] INFO     사냥 루프 종료
+[00:00:18] DEBUG    트래커 초기화
+[00:00:18] INFO     매크로 중지 요청
+[00:00:18] INFO     매크로 중지!
+[00:00:18] INFO     프로그램 종료

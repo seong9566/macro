@@ -1,10 +1,20 @@
 import cv2
 import numpy as np
-import pyautogui
+import mss
+import threading
 import time
 import os
 import glob
 from logger import log
+
+_thread_local = threading.local()
+
+
+def _get_sct():
+    """스레드별 mss 인스턴스 반환 (스레드 안전)."""
+    if not hasattr(_thread_local, "sct"):
+        _thread_local.sct = mss.mss()
+    return _thread_local.sct
 
 # ── 템플릿 캐시 (동일 이미지 반복 로딩 방지) ──
 _template_cache = {}
@@ -66,9 +76,14 @@ def capture_screen(region=None):
         numpy.ndarray (BGR) 또는 None (캡처 실패 시)
     """
     try:
-        screenshot = pyautogui.screenshot(region=region)
-        screen = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
-        return screen
+        sct = _get_sct()
+        if region:
+            monitor = {"left": region[0], "top": region[1],
+                       "width": region[2], "height": region[3]}
+        else:
+            monitor = sct.monitors[0]
+        screenshot = sct.grab(monitor)
+        return cv2.cvtColor(np.array(screenshot), cv2.COLOR_BGRA2BGR)
     except Exception as e:
         log.error(f"화면 캡처 실패: {e}")
         return None

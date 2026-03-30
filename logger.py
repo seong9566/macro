@@ -29,7 +29,7 @@ def setup_logger(name="macro", log_dir="logs", level=logging.DEBUG):
 
     # 콘솔 핸들러
     console = logging.StreamHandler()
-    console.setLevel(logging.INFO)
+    console.setLevel(logging.DEBUG)
     console.setFormatter(fmt)
     logger.addHandler(console)
 

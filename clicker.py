@@ -8,10 +8,11 @@ from logger import log
 # Win32 INPUT 구조체 (올바른 Union 구조)
 # ══════════════════════════════════════════════
 
-MOUSEEVENTF_MOVE       = 0x0001
-MOUSEEVENTF_LEFTDOWN   = 0x0002
-MOUSEEVENTF_LEFTUP     = 0x0004
-MOUSEEVENTF_ABSOLUTE   = 0x8000
+MOUSEEVENTF_MOVE        = 0x0001
+MOUSEEVENTF_LEFTDOWN    = 0x0002
+MOUSEEVENTF_LEFTUP      = 0x0004
+MOUSEEVENTF_ABSOLUTE    = 0x8000
+MOUSEEVENTF_VIRTUALDESK = 0x4000  # 가상 데스크톱 전체 기준 (멀티모니터 필수)
 
 INPUT_MOUSE    = 0
 INPUT_KEYBOARD = 1
@@ -98,28 +99,34 @@ def click_directinput(x, y):
 # ── 방식 2: ctypes SendInput (하드웨어 위장) ──
 def click_sendinput(x, y):
     """ctypes SendInput으로 하드웨어 수준 클릭."""
-    screen_w = ctypes.windll.user32.GetSystemMetrics(0)
-    screen_h = ctypes.windll.user32.GetSystemMetrics(1)
-    abs_x = int(x * 65535 / screen_w)
-    abs_y = int(y * 65535 / screen_h)
+    # 가상 데스크톱 전체 기준 (멀티모니터 대응)
+    virt_x = ctypes.windll.user32.GetSystemMetrics(76)  # SM_XVIRTUALSCREEN
+    virt_y = ctypes.windll.user32.GetSystemMetrics(77)  # SM_YVIRTUALSCREEN
+    virt_w = ctypes.windll.user32.GetSystemMetrics(78)  # SM_CXVIRTUALSCREEN
+    virt_h = ctypes.windll.user32.GetSystemMetrics(79)  # SM_CYVIRTUALSCREEN
+    # 좌표 클램핑
+    cx = max(virt_x, min(x, virt_x + virt_w - 1))
+    cy = max(virt_y, min(y, virt_y + virt_h - 1))
+    abs_x = int((cx - virt_x) * 65535 / (virt_w - 1))
+    abs_y = int((cy - virt_y) * 65535 / (virt_h - 1))
 
-    # 이동
+    # 이동 (VIRTUALDESK: 멀티모니터 가상 데스크톱 전체 기준)
     _send_mouse_input(
-        MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE,
+        MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_VIRTUALDESK,
         abs_x, abs_y
     )
     time.sleep(0.05)
 
     # 다운
     _send_mouse_input(
-        MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_ABSOLUTE,
+        MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_VIRTUALDESK,
         abs_x, abs_y
     )
     time.sleep(random.uniform(0.03, 0.08))
 
     # 업
     _send_mouse_input(
-        MOUSEEVENTF_LEFTUP | MOUSEEVENTF_ABSOLUTE,
+        MOUSEEVENTF_LEFTUP | MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_VIRTUALDESK,
         abs_x, abs_y
     )
     log.debug(f"[sendinput] 클릭: ({x}, {y}) → abs({abs_x}, {abs_y})")
@@ -168,3 +175,48 @@ def click(x, y, method="sendinput"):
     # 사람처럼 보이게 약간의 랜덤 오프셋
     offset_x = random.randint(-2, 2)
     offset_y = random.randint(-2, 2)
+    final_x = x + offset_x
+    final_y = y + offset_y
+    CLICK_METHODS[method](final_x, final_y)
+
+
+# ══════════════════════════════════════════════
+# 키보드 입력 (SendInput 기반 — 마우스와 동일 경로)
+# ══════════════════════════════════════════════
+
+KEYEVENTF_SCANCODE = 0x0008
+KEYEVENTF_KEYUP = 0x0002
+
+
+def _send_key_input(scan_code, flags=0):
+    """SendInput으로 키보드 이벤트 1건 전송."""
+    inp = INPUT()
+    inp.type = INPUT_KEYBOARD
+    inp.union.ki.wVk = 0
+    inp.union.ki.wScan = scan_code
+    inp.union.ki.dwFlags = KEYEVENTF_SCANCODE | flags
+    inp.union.ki.time = 0
+    inp.union.ki.dwExtraInfo = 0
+
+    sent = ctypes.windll.user32.SendInput(
+        1, ctypes.byref(inp), ctypes.sizeof(INPUT)
+    )
+    if sent != 1:
+        log.warning(f"SendInput 키보드 실패: scan=0x{scan_code:02X}")
+
+
+def press_key(scan_code, hold_time=None):
+    """
+    스캔코드로 키 입력 (down → hold → up).
+
+    Args:
+        scan_code: 키 스캔코드 (예: 0x39 = Spacebar)
+        hold_time: 누르고 있는 시간 (초). None이면 랜덤 0.03~0.08초
+    """
+    if hold_time is None:
+        hold_time = random.uniform(0.03, 0.08)
+
+    _send_key_input(scan_code)  # key down
+    time.sleep(hold_time)
+    _send_key_input(scan_code, KEYEVENTF_KEYUP)  # key up
+    log.debug(f"[sendinput] 키 입력: scan=0x{scan_code:02X}")

@@ -1,0 +1,200 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1774868688502,
+  "projectRoot": "C:\\Users\\PC\\OneDrive\\바탕 화면\\workspace\\macro",
+  "techStack": {
+    "languages": [
+      {
+        "name": "Python",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "requirements.txt"
+        ]
+      }
+    ],
+    "frameworks": [],
+    "packageManager": "pip",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "images": {
+      "path": "images",
+      "purpose": null,
+      "fileCount": 8,
+      "lastAccessed": 1774868688476,
+      "keyFiles": [
+        "monster_bottom.png",
+        "monster_left.png",
+        "monster_left_bottom.png",
+        "monster_left_top.png",
+        "monster_right.png"
+      ]
+    },
+    "logs": {
+      "path": "logs",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1774868688477,
+      "keyFiles": [
+        "macro_2026-03-21.log"
+      ]
+    },
+    "venv": {
+      "path": "venv",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1774868688477,
+      "keyFiles": [
+        "pyvenv.cfg"
+      ]
+    },
+    "__pycache__": {
+      "path": "__pycache__",
+      "purpose": null,
+      "fileCount": 7,
+      "lastAccessed": 1774868688477,
+      "keyFiles": [
+        "clicker.cpython-312.pyc",
+        "config.cpython-312.pyc",
+        "image_finder.cpython-312.pyc",
+        "logger.cpython-312.pyc",
+        "macro_engine.cpython-312.pyc"
+      ]
+    },
+    "venv\\Lib": {
+      "path": "venv\\Lib",
+      "purpose": "Library code",
+      "fileCount": 0,
+      "lastAccessed": 1774868688479,
+      "keyFiles": []
+    },
+    "venv\\Scripts": {
+      "path": "venv\\Scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 15,
+      "lastAccessed": 1774868688479,
+      "keyFiles": [
+        "activate",
+        "activate.bat",
+        "Activate.ps1"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "monster_tracker.py",
+      "accessCount": 28,
+      "lastAccessed": 1774882479917,
+      "type": "file"
+    },
+    {
+      "path": "clicker.py",
+      "accessCount": 8,
+      "lastAccessed": 1774882733289,
+      "type": "file"
+    },
+    {
+      "path": "config.py",
+      "accessCount": 7,
+      "lastAccessed": 1774882093815,
+      "type": "file"
+    },
+    {
+      "path": "macro_engine.py",
+      "accessCount": 6,
+      "lastAccessed": 1774880347466,
+      "type": "file"
+    },
+    {
+      "path": "image_finder.py",
+      "accessCount": 6,
+      "lastAccessed": 1774880990601,
+      "type": "file"
+    },
+    {
+      "path": "main.py",
+      "accessCount": 5,
+      "lastAccessed": 1774880463358,
+      "type": "file"
+    },
+    {
+      "path": "requirements.txt",
+      "accessCount": 3,
+      "lastAccessed": 1774870222475,
+      "type": "file"
+    },
+    {
+      "path": "CLAUDE.md",
+      "accessCount": 2,
+      "lastAccessed": 1774868741429,
+      "type": "file"
+    },
+    {
+      "path": "",
+      "accessCount": 2,
+      "lastAccessed": 1774871749950,
+      "type": "directory"
+    },
+    {
+      "path": "logger.py",
+      "accessCount": 2,
+      "lastAccessed": 1774880352802,
+      "type": "file"
+    },
+    {
+      "path": "window_manager.py",
+      "accessCount": 1,
+      "lastAccessed": 1774868704773,
+      "type": "file"
+    },
+    {
+      "path": "온삼2_매크로_기획서_v2_1.md",
+      "accessCount": 1,
+      "lastAccessed": 1774871760723,
+      "type": "file"
+    },
+    {
+      "path": "debug_detection.png",
+      "accessCount": 1,
+      "lastAccessed": 1774882075974,
+      "type": "file"
+    },
+    {
+      "path": "debug_detection2.png",
+      "accessCount": 1,
+      "lastAccessed": 1774882136074,
+      "type": "file"
+    },
+    {
+      "path": "debug_detection3.png",
+      "accessCount": 1,
+      "lastAccessed": 1774882509898,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

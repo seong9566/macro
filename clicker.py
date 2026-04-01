@@ -115,14 +115,15 @@ def click_sendinput(x, y):
         MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_VIRTUALDESK,
         abs_x, abs_y
     )
-    time.sleep(0.05)
+    # 이동 후 안정화 대기 (가우시안 — 자연스러운 분포)
+    time.sleep(max(0.02, random.gauss(0.04, 0.01)))
 
-    # 다운
+    # 다운 (좌표 포함 — 일부 게임은 다운 시점의 좌표를 기준으로 판정)
     _send_mouse_input(
         MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_VIRTUALDESK,
         abs_x, abs_y
     )
-    time.sleep(random.uniform(0.03, 0.08))
+    time.sleep(max(0.02, random.gauss(0.05, 0.015)))
 
     # 업
     _send_mouse_input(

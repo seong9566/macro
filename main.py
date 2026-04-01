@@ -16,6 +16,24 @@ try:
 except Exception:
     ctypes.windll.user32.SetProcessDPIAware()
 
+
+def _check_admin():
+    """관리자 권한 실행 여부 확인. SendInput이 게임에 전달되려면 필수."""
+    try:
+        is_admin = ctypes.windll.shell32.IsUserAnAdmin()
+    except Exception:
+        is_admin = False
+    if not is_admin:
+        log.warning(
+            "⚠ 관리자 권한 없이 실행 중! "
+            "게임에 클릭이 전달되지 않을 수 있습니다. "
+            "cmd/터미널을 '관리자 권한으로 실행' 후 다시 시도하세요."
+        )
+    else:
+        log.info("관리자 권한 확인 완료")
+    return is_admin
+
+
 _lock = threading.Lock()
 engine = None
 
@@ -64,6 +82,9 @@ def stop_macro():
             engine.stop()
         log.info("매크로 중지!")
 
+
+# 관리자 권한 확인
+_check_admin()
 
 # 단축키 등록
 keyboard.add_hotkey(START_KEY, start_macro)

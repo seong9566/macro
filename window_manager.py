@@ -10,10 +10,21 @@ GetWindowTextW = user32.GetWindowTextW
 GetWindowTextLengthW = user32.GetWindowTextLengthW
 IsWindowVisible = user32.IsWindowVisible
 GetWindowRect = user32.GetWindowRect
+GetClientRect = user32.GetClientRect
+ClientToScreen = user32.ClientToScreen
+SetForegroundWindow = user32.SetForegroundWindow
+ShowWindow = user32.ShowWindow
+BringWindowToTop = user32.BringWindowToTop
+GetForegroundWindow = user32.GetForegroundWindow
+
+SW_RESTORE = 9
 
 WNDENUMPROC = ctypes.WINFUNCTYPE(
     ctypes.c_bool, wintypes.HWND, wintypes.LPARAM
 )
+
+# 마지막으로 찾은 게임 창 핸들 (포그라운드 전환용)
+_last_hwnd = None
 
 
 def find_game_window(title_keyword):
@@ -26,6 +37,7 @@ def find_game_window(title_keyword):
     Returns:
         HWND(int) 또는 None
     """
+    global _last_hwnd
     result = []
 
     def callback(hwnd, lparam):
@@ -41,6 +53,7 @@ def find_game_window(title_keyword):
     EnumWindows(WNDENUMPROC(callback), 0)
 
     if result:
+        _last_hwnd = result[0]
         log.info(f"게임 창 발견: HWND={result[0]}")
         return result[0]
 
@@ -48,10 +61,45 @@ def find_game_window(title_keyword):
     return None
 
 
-def get_window_region(hwnd):
+def activate_window(hwnd=None):
     """
-    윈도우 핸들로부터 (x, y, w, h) 영역을 반환.
-    image_finder의 region 파라미터에 직접 전달 가능.
+    게임 창을 포그라운드로 전환.
+    SendInput이 게임에 전달되려면 게임 창이 활성화 상태여야 함.
+
+    Args:
+        hwnd: 윈도우 핸들. None이면 마지막으로 찾은 게임 창 사용.
+
+    Returns:
+        True: 성공, False: 실패
+    """
+    target = hwnd or _last_hwnd
+    if target is None:
+        log.warning("포그라운드 전환 실패: HWND 없음")
+        return False
+
+    # 이미 포그라운드면 스킵
+    if GetForegroundWindow() == target:
+        return True
+
+    # ALT 키 트릭: Windows 포커스 도용 방지 정책 우회
+    # ALT를 SendInput으로 보내면 포그라운드 전환 권한 획득
+    from clicker import _send_key_input, KEYEVENTF_KEYUP
+    _send_key_input(0x38)  # ALT down (스캔코드)
+    _send_key_input(0x38, KEYEVENTF_KEYUP)  # ALT up
+
+    ShowWindow(target, SW_RESTORE)
+    SetForegroundWindow(target)
+    log.debug(f"게임 창 포그라운드 전환: HWND={target}")
+    return True
+
+
+def get_client_region(hwnd):
+    """
+    윈도우 핸들로부터 클라이언트 영역(타이틀바/테두리 제외)의
+    스크린 절대 좌표 (x, y, w, h)를 반환.
+
+    GetWindowRect는 DWM 투명 테두리를 포함해 좌표가 ~8px 틀어짐.
+    GetClientRect + ClientToScreen으로 실제 게임 렌더링 영역만 정확히 획득.
 
     Returns:
         (x, y, width, height) 또는 None
@@ -59,22 +107,38 @@ def get_window_region(hwnd):
     if hwnd is None:
         return None
 
-    rect = wintypes.RECT()
-    if GetWindowRect(hwnd, ctypes.byref(rect)):
-        x = rect.left
-        y = rect.top
-        w = rect.right - rect.left
-        h = rect.bottom - rect.top
-        log.debug(f"게임 창 영역: x={x}, y={y}, w={w}, h={h}")
-        return (x, y, w, h)
+    # 클라이언트 영역 크기
+    client_rect = wintypes.RECT()
+    if not GetClientRect(hwnd, ctypes.byref(client_rect)):
+        log.error("GetClientRect 실패")
+        return None
 
-    log.error("GetWindowRect 실패")
-    return None
+    # 클라이언트 좌상단의 스크린 절대 좌표
+    pt = wintypes.POINT(0, 0)
+    ClientToScreen(hwnd, ctypes.byref(pt))
+
+    x = pt.x
+    y = pt.y
+    w = client_rect.right - client_rect.left
+    h = client_rect.bottom - client_rect.top
+    log.debug(f"게임 클라이언트 영역: x={x}, y={y}, w={w}, h={h}")
+    return (x, y, w, h)
+
+
+def get_window_region(hwnd):
+    """
+    윈도우 핸들로부터 (x, y, w, h) 영역을 반환.
+    클라이언트 영역(게임 렌더링 영역)만 반환하여 좌표 정확도 보장.
+
+    Returns:
+        (x, y, width, height) 또는 None
+    """
+    return get_client_region(hwnd)
 
 
 def get_game_region(title_keyword):
     """
-    게임 창 제목으로 검색 → 영역 좌표 반환 (편의 함수).
+    게임 창 제목으로 검색 → 클라이언트 영역 좌표 반환 (편의 함수).
 
     Returns:
         (x, y, width, height) 또는 None

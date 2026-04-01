@@ -66,7 +66,7 @@ class MacroWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("온라인삼국지2 매크로")
+        self.setWindowTitle("매크로 컨트롤러")
         self.setMinimumSize(900, 700)
 
         # 매크로 엔진

@@ -40,14 +40,20 @@ def find_game_window(title_keyword):
     global _last_hwnd
     result = []
 
+    # 매크로 UI 창 제외 키워드 (자기 자신을 게임 창으로 오인 방지)
+    exclude_keywords = ["매크로", "컨트롤러", "macro"]
+
     def callback(hwnd, lparam):
         if IsWindowVisible(hwnd):
             length = GetWindowTextLengthW(hwnd)
             if length > 0:
                 buf = ctypes.create_unicode_buffer(length + 1)
                 GetWindowTextW(hwnd, buf, length + 1)
-                if title_keyword in buf.value:
-                    result.append(hwnd)
+                title = buf.value
+                if title_keyword in title:
+                    # 매크로 UI 창은 제외
+                    if not any(ex in title for ex in exclude_keywords):
+                        result.append(hwnd)
         return True
 
     EnumWindows(WNDENUMPROC(callback), 0)

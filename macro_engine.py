@@ -3,7 +3,8 @@ import random
 import math
 import cv2
 import numpy as np
-from monster_tracker import MonsterTracker, TRACK_OK, TRACK_KILLED, TRACK_MISS_PENDING, capture_screen
+from monster_tracker import MonsterTracker, TRACK_OK, TRACK_KILLED, TRACK_MISS_PENDING
+from screen_capture import capture_screen
 from clicker import click, press_key
 from window_manager import activate_window
 from config import (

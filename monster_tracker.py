@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-import mss
 import os
 import glob
 import time
@@ -14,11 +13,8 @@ from config import (
     PRECLICK_REFINE_ENABLED, PRECLICK_ROI_PAD_RATIO, TRACKING_ROI_PAD_RATIO,
     REFINE_MAX_DISTANCE, DETECT_SCALES, ROI_DETECT_SCALES,
 )
+from screen_capture import capture_screen
 from logger import log
-
-# ══════════════════════════════════════════════
-# 화면 캡처 (mss 기반 — pyautogui 대비 3~6배 빠름)
-# ══════════════════════════════════════════════
 
 # ══════════════════════════════════════════════
 # 추적 종료 사유
@@ -30,33 +26,6 @@ TRACK_ABANDONED_TIMEOUT = "timeout"  # 타임아웃으로 포기
 TRACK_ABANDONED_HP = "hp_stuck"      # HP 미변화로 포기
 TRACK_NOT_FOUND = "not_found"        # 감지 실패
 
-import threading
-
-_thread_local = threading.local()
-
-
-def _get_sct():
-    """스레드별 mss 인스턴스 반환 (스레드 안전)."""
-    if not hasattr(_thread_local, "sct"):
-        _thread_local.sct = mss.mss()
-    return _thread_local.sct
-
-
-def capture_screen(region=None):
-    """화면을 캡처하여 OpenCV BGR 배열로 반환."""
-    try:
-        sct = _get_sct()
-        if region:
-            monitor = {"left": region[0], "top": region[1],
-                       "width": region[2], "height": region[3]}
-        else:
-            monitor = sct.monitors[0]  # 전체 화면
-        screenshot = sct.grab(monitor)
-        return cv2.cvtColor(np.array(screenshot), cv2.COLOR_BGRA2BGR)
-    except Exception as e:
-        log.error(f"화면 캡처 실패: {e}")
-        return None
-
 
 # ══════════════════════════════════════════════
 # 템플릿 캐시
@@ -66,7 +35,11 @@ _template_cache = {}  # {path: (color_template, gray_template)}
 
 
 def _load_templates(template_dir):
-    """템플릿 폴더에서 모든 이미지를 컬러+그레이스케일로 로딩 (캐시 활용)."""
+    """
+    템플릿 폴더에서 모든 이미지를 컬러+그레이스케일로 로딩 (캐시 활용).
+    left 계열 템플릿은 좌우 반전하여 right 버전을 자동 생성.
+    top/bottom은 상하 시점이 달라 반전하지 않음.
+    """
     if template_dir in _template_cache:
         return _template_cache[template_dir]
 
@@ -75,17 +48,38 @@ def _load_templates(template_dir):
         log.error(f"템플릿 폴더 없음: {template_dir}")
         return templates
 
+    loaded_names = set()
     for ext in ("*.png", "*.jpg", "*.jpeg", "*.bmp"):
         for fpath in glob.glob(os.path.join(template_dir, ext)):
+            basename = os.path.basename(fpath)
+
+            # right 계열은 left에서 자동 생성하므로 스킵
+            if "right" in basename.lower():
+                left_name = basename.lower().replace("right", "left")
+                left_path = os.path.join(template_dir, left_name)
+                if os.path.exists(left_path):
+                    log.debug(f"템플릿 스킵 (자동 반전 사용): {basename}")
+                    continue
+
             tmpl_color = cv2.imread(fpath)
             if tmpl_color is None:
                 continue
             tmpl_gray = cv2.cvtColor(tmpl_color, cv2.COLOR_BGR2GRAY)
             templates.append((fpath, tmpl_color, tmpl_gray))
-            log.debug(f"템플릿 로딩: {os.path.basename(fpath)} ({tmpl_color.shape})")
+            loaded_names.add(basename)
+            log.debug(f"템플릿 로딩: {basename} ({tmpl_color.shape})")
+
+            # left 계열 → right 자동 생성 (좌우 반전)
+            if "left" in basename.lower():
+                flipped_color = cv2.flip(tmpl_color, 1)
+                flipped_gray = cv2.flip(tmpl_gray, 1)
+                flip_name = basename.replace("left", "right")
+                flip_path = fpath.replace("left", "right")
+                templates.append((flip_path, flipped_color, flipped_gray))
+                log.debug(f"템플릿 자동 반전: {basename} → {flip_name}")
 
     _template_cache[template_dir] = templates
-    log.info(f"몬스터 템플릿 {len(templates)}개 로딩 완료")
+    log.info(f"몬스터 템플릿 {len(templates)}개 로딩 완료 (자동 반전 포함)")
     return templates
 
 

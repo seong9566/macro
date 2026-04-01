@@ -7,10 +7,12 @@ import time
 from config import (
     DETECT_CONFIDENCE, VERIFY_CONFIDENCE,
     TARGET_TIMEOUT, HP_CHECK_INTERVAL, HP_NO_CHANGE_MAX,
-    HP_BAR_OFFSET_Y, HP_BAR_HEIGHT, HP_BAR_COLOR_LOWER, HP_BAR_COLOR_UPPER,
+    HP_BAR_OFFSET_Y, HP_BAR_HEIGHT,
+    HP_BAR_COLOR_LOWER1, HP_BAR_COLOR_UPPER1,
+    HP_BAR_COLOR_LOWER2, HP_BAR_COLOR_UPPER2,
     UI_EXCLUDE_TOP, UI_EXCLUDE_BOTTOM,
     PRECLICK_REFINE_ENABLED, PRECLICK_ROI_PAD_RATIO, TRACKING_ROI_PAD_RATIO,
-    REFINE_MAX_DISTANCE, DETECT_SCALES,
+    REFINE_MAX_DISTANCE, DETECT_SCALES, ROI_DETECT_SCALES,
 )
 from logger import log
 
@@ -23,6 +25,7 @@ from logger import log
 # ══════════════════════════════════════════════
 TRACK_OK = "ok"                      # 추적 중 (정상)
 TRACK_KILLED = "killed"              # 대상 소실 → 사망 추정
+TRACK_MISS_PENDING = "miss_pending"  # 감지 실패 대기 중 (클릭 중단, 줍기 안 함)
 TRACK_ABANDONED_TIMEOUT = "timeout"  # 타임아웃으로 포기
 TRACK_ABANDONED_HP = "hp_stuck"      # HP 미변화로 포기
 TRACK_NOT_FOUND = "not_found"        # 감지 실패
@@ -130,7 +133,8 @@ def detect_wolves(frame, template_dir="images", confidence=0.55,
                 continue
 
             # 그레이스케일 매칭 — 채널 1개로 ~3배 빠름
-            resized = cv2.resize(tmpl_gray, (sw, sh))
+            interp = cv2.INTER_AREA if scale < 1.0 else cv2.INTER_LINEAR
+            resized = cv2.resize(tmpl_gray, (sw, sh), interpolation=interp)
             result = cv2.matchTemplate(frame_gray, resized, cv2.TM_CCOEFF_NORMED)
 
             # confidence 이상인 모든 위치 찾기
@@ -471,9 +475,11 @@ class MonsterTracker:
         if roi.size == 0:
             return -1.0
 
-        # HSV 변환 후 HP바 색상 범위 마스크
+        # HSV 변환 후 HP바 색상 범위 마스크 (빨간색 2구간 OR)
         hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
-        mask = cv2.inRange(hsv, np.array(HP_BAR_COLOR_LOWER), np.array(HP_BAR_COLOR_UPPER))
+        mask1 = cv2.inRange(hsv, np.array(HP_BAR_COLOR_LOWER1), np.array(HP_BAR_COLOR_UPPER1))
+        mask2 = cv2.inRange(hsv, np.array(HP_BAR_COLOR_LOWER2), np.array(HP_BAR_COLOR_UPPER2))
+        mask = cv2.bitwise_or(mask1, mask2)
         total_pixels = roi.shape[0] * roi.shape[1]
         if total_pixels == 0:
             return -1.0
@@ -594,29 +600,27 @@ class MonsterTracker:
         best_result = None
 
         for fpath, tmpl_color, tmpl_gray in templates:
-            # ROI보다 큰 템플릿은 축소하여 시도
-            if tmpl_gray.shape[0] > roi_gray.shape[0] or tmpl_gray.shape[1] > roi_gray.shape[1]:
-                scale = min(roi_gray.shape[0] / tmpl_gray.shape[0],
-                            roi_gray.shape[1] / tmpl_gray.shape[1]) * 0.9
-                if scale < 0.3:
+            th, tw = tmpl_gray.shape[:2]
+
+            for scale in ROI_DETECT_SCALES:
+                sh = max(1, int(th * scale))
+                sw = max(1, int(tw * scale))
+
+                # ROI보다 큰 템플릿은 스킵 (강제 축소와 멀티스케일 분리)
+                if sh > roi_gray.shape[0] or sw > roi_gray.shape[1]:
                     continue
-                tmpl_resized = cv2.resize(tmpl_gray,
-                                          (int(tmpl_gray.shape[1] * scale),
-                                           int(tmpl_gray.shape[0] * scale)))
-            else:
-                tmpl_resized = tmpl_gray
 
-            if tmpl_resized.shape[0] > roi_gray.shape[0] or tmpl_resized.shape[1] > roi_gray.shape[1]:
-                continue
+                # 다운스케일 INTER_AREA, 업스케일 INTER_LINEAR
+                interp = cv2.INTER_AREA if scale < 1.0 else cv2.INTER_LINEAR
+                tmpl_resized = cv2.resize(tmpl_gray, (sw, sh), interpolation=interp)
 
-            result = cv2.matchTemplate(roi_gray, tmpl_resized, cv2.TM_CCOEFF_NORMED)
-            _, max_val, _, max_loc = cv2.minMaxLoc(result)
+                result = cv2.matchTemplate(roi_gray, tmpl_resized, cv2.TM_CCOEFF_NORMED)
+                _, max_val, _, max_loc = cv2.minMaxLoc(result)
 
-            if max_val >= self.confidence and max_val > best_score:
-                best_score = max_val
-                tw, th = tmpl_resized.shape[1], tmpl_resized.shape[0]
-                # ROI 좌표 → 프레임 좌표로 변환
-                best_result = (roi_x1 + max_loc[0], roi_y1 + max_loc[1], tw, th)
+                if max_val >= self.confidence and max_val > best_score:
+                    best_score = max_val
+                    # ROI 좌표 → 프레임 좌표로 변환
+                    best_result = (roi_x1 + max_loc[0], roi_y1 + max_loc[1], sw, sh)
 
         if best_result:
             log.debug(f"ROI 재탐색 성공: ({best_result[0]},{best_result[1]}) score={best_score:.3f}")
@@ -715,23 +719,16 @@ class MonsterTracker:
                 self._detect_miss_count += 1
                 log.debug(f"감지 실패 ({self._detect_miss_count}/{self._detect_miss_max})")
                 if self._detect_miss_count >= self._detect_miss_max:
-                    # 연속 N회 감지 실패 → 사망 추정
+                    # 연속 N회 감지 실패 → 사망 확정
                     log.info(f"대상 소실 (연속 {self._detect_miss_count}회 미감지) → 사망 추정")
                     self.tracking = False
                     self._detect_miss_count = 0
                     self._reset_combat_state()
                     return None, TRACK_KILLED
                 else:
-                    # 아직 사망 확정 아님 → 마지막 알려진 위치로 계속 공격
-                    if self.last_bbox is not None:
-                        cx = self.last_bbox[0] + self.last_bbox[2] // 2
-                        cy = self.last_bbox[1] + self.last_bbox[3] // 2
-                        if self.region:
-                            cx += self.region[0]
-                            cy += self.region[1]
-                        log.debug(f"마지막 위치로 계속 공격: ({cx},{cy})")
-                        return (cx, cy), TRACK_OK
-                    return None, TRACK_NOT_FOUND
+                    # 아직 사망 확정 아님 → 클릭 중단하고 대기 (유령 클릭 방지)
+                    log.debug(f"감지 대기 중 ({self._detect_miss_count}/{self._detect_miss_max})")
+                    return None, TRACK_MISS_PENDING
             return None, TRACK_NOT_FOUND
 
         # 감지 성공 → 미스 카운터 초기화

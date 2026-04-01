@@ -3,7 +3,7 @@ import random
 import math
 import cv2
 import numpy as np
-from monster_tracker import MonsterTracker, TRACK_OK, TRACK_KILLED, capture_screen
+from monster_tracker import MonsterTracker, TRACK_OK, TRACK_KILLED, TRACK_MISS_PENDING, capture_screen
 from clicker import click, press_key
 from window_manager import activate_window
 from config import (
@@ -230,6 +230,10 @@ class MacroEngine:
                     # 가우시안 분포 딜레이 (균등분포보다 자연스러움)
                     delay = max(0.05, random.gauss(ATTACK_INTERVAL, 0.05))
                     time.sleep(delay)
+
+                elif reason == TRACK_MISS_PENDING:
+                    # 감지 대기 중 — 클릭 중단, 줍기 안 함, 짧게 대기 후 재탐색
+                    time.sleep(0.1)
 
                 elif reason == TRACK_KILLED:
                     self._miss_count = 0

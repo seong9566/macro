@@ -12,7 +12,8 @@ VERIFY_CONFIDENCE = 0.45     # 추적 중 검증 임계값 (감지보다 낮게)
 SEARCH_INTERVAL = 0.5        # 이미지 탐색 주기 (초)
 
 # 멀티스케일 탐색 범위 (적을수록 빠름)
-DETECT_SCALES = (0.9, 1.0, 1.1)  # 최소한의 스케일만 사용 (3개)
+DETECT_SCALES = (0.9, 1.0, 1.1)  # 전체 프레임 탐색용 (3개)
+ROI_DETECT_SCALES = (0.95, 1.0, 1.05)  # ROI 재탐색용 소폭 스케일 (3개)
 
 # ══════════════════════════════════════════════
 # UI 제외 영역 (게임 화면 내 비탐색 구간)
@@ -30,8 +31,11 @@ HP_CHECK_INTERVAL = 3.0      # HP바 변화 확인 주기 (초)
 HP_NO_CHANGE_MAX = 3         # HP 변화 없음 연속 N회 시 타겟 전환
 HP_BAR_OFFSET_Y = -20        # 몬스터 bbox 상단에서 HP바까지의 Y 오프셋 (음수=위)
 HP_BAR_HEIGHT = 8            # HP바 영역 높이 (px)
-HP_BAR_COLOR_LOWER = (0, 100, 100)   # HP바 HSV 하한 (빨강/초록 계열)
-HP_BAR_COLOR_UPPER = (80, 255, 255)  # HP바 HSV 상한
+# 몬스터 HP바 색상 (빨간색 2구간 — HSV에서 빨강은 양쪽 끝에 걸침)
+HP_BAR_COLOR_LOWER1 = (0, 100, 100)    # 빨간색 하위 범위 H=0~10
+HP_BAR_COLOR_UPPER1 = (10, 255, 255)
+HP_BAR_COLOR_LOWER2 = (170, 100, 100)  # 빨간색 상위 범위 H=170~180
+HP_BAR_COLOR_UPPER2 = (180, 255, 255)
 
 # ══════════════════════════════════════════════
 # 아이템 줍기 설정

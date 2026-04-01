@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1774868688502,
+  "lastScanned": 1775038149074,
   "projectRoot": "C:\\Users\\PC\\OneDrive\\바탕 화면\\workspace\\macro",
   "techStack": {
     "languages": [
@@ -45,7 +45,7 @@
       "path": "images",
       "purpose": null,
       "fileCount": 8,
-      "lastAccessed": 1774868688476,
+      "lastAccessed": 1775038149056,
       "keyFiles": [
         "monster_bottom.png",
         "monster_left.png",
@@ -57,17 +57,19 @@
     "logs": {
       "path": "logs",
       "purpose": null,
-      "fileCount": 1,
-      "lastAccessed": 1774868688477,
+      "fileCount": 3,
+      "lastAccessed": 1775038149056,
       "keyFiles": [
-        "macro_2026-03-21.log"
+        "macro_2026-03-21.log",
+        "macro_2026-03-30.log",
+        "macro_2026-04-01.log"
       ]
     },
     "venv": {
       "path": "venv",
       "purpose": null,
       "fileCount": 1,
-      "lastAccessed": 1774868688477,
+      "lastAccessed": 1775038149056,
       "keyFiles": [
         "pyvenv.cfg"
       ]
@@ -75,28 +77,28 @@
     "__pycache__": {
       "path": "__pycache__",
       "purpose": null,
-      "fileCount": 7,
-      "lastAccessed": 1774868688477,
+      "fileCount": 15,
+      "lastAccessed": 1775038149057,
       "keyFiles": [
+        "clicker.cpython-311.pyc",
         "clicker.cpython-312.pyc",
+        "config.cpython-311.pyc",
         "config.cpython-312.pyc",
-        "image_finder.cpython-312.pyc",
-        "logger.cpython-312.pyc",
-        "macro_engine.cpython-312.pyc"
+        "image_finder.cpython-311.pyc"
       ]
     },
     "venv\\Lib": {
       "path": "venv\\Lib",
       "purpose": "Library code",
       "fileCount": 0,
-      "lastAccessed": 1774868688479,
+      "lastAccessed": 1775038149058,
       "keyFiles": []
     },
     "venv\\Scripts": {
       "path": "venv\\Scripts",
       "purpose": "Build/utility scripts",
       "fileCount": 15,
-      "lastAccessed": 1774868688479,
+      "lastAccessed": 1775038149058,
       "keyFiles": [
         "activate",
         "activate.bat",
@@ -107,68 +109,98 @@
   "hotPaths": [
     {
       "path": "monster_tracker.py",
-      "accessCount": 28,
-      "lastAccessed": 1774882479917,
-      "type": "file"
-    },
-    {
-      "path": "clicker.py",
-      "accessCount": 8,
-      "lastAccessed": 1774882733289,
-      "type": "file"
-    },
-    {
-      "path": "config.py",
-      "accessCount": 7,
-      "lastAccessed": 1774882093815,
+      "accessCount": 96,
+      "lastAccessed": 1775052047019,
       "type": "file"
     },
     {
       "path": "macro_engine.py",
-      "accessCount": 6,
-      "lastAccessed": 1774880347466,
+      "accessCount": 28,
+      "lastAccessed": 1775053900135,
       "type": "file"
     },
     {
-      "path": "image_finder.py",
-      "accessCount": 6,
-      "lastAccessed": 1774880990601,
+      "path": "config.py",
+      "accessCount": 21,
+      "lastAccessed": 1775051865887,
+      "type": "file"
+    },
+    {
+      "path": "clicker.py",
+      "accessCount": 13,
+      "lastAccessed": 1775049149974,
       "type": "file"
     },
     {
       "path": "main.py",
-      "accessCount": 5,
-      "lastAccessed": 1774880463358,
+      "accessCount": 9,
+      "lastAccessed": 1775049206188,
       "type": "file"
     },
     {
-      "path": "requirements.txt",
-      "accessCount": 3,
-      "lastAccessed": 1774870222475,
-      "type": "file"
-    },
-    {
-      "path": "CLAUDE.md",
-      "accessCount": 2,
-      "lastAccessed": 1774868741429,
-      "type": "file"
-    },
-    {
-      "path": "",
-      "accessCount": 2,
-      "lastAccessed": 1774871749950,
-      "type": "directory"
-    },
-    {
-      "path": "logger.py",
-      "accessCount": 2,
-      "lastAccessed": 1774880352802,
+      "path": "image_finder.py",
+      "accessCount": 9,
+      "lastAccessed": 1775050902753,
       "type": "file"
     },
     {
       "path": "window_manager.py",
-      "accessCount": 1,
-      "lastAccessed": 1774868704773,
+      "accessCount": 8,
+      "lastAccessed": 1775054175252,
+      "type": "file"
+    },
+    {
+      "path": "requirements.txt",
+      "accessCount": 6,
+      "lastAccessed": 1775053119811,
+      "type": "file"
+    },
+    {
+      "path": "screen_capture.py",
+      "accessCount": 5,
+      "lastAccessed": 1775053698887,
+      "type": "file"
+    },
+    {
+      "path": "macro_ui.py",
+      "accessCount": 5,
+      "lastAccessed": 1775054164381,
+      "type": "file"
+    },
+    {
+      "path": "logger.py",
+      "accessCount": 4,
+      "lastAccessed": 1775049206468,
+      "type": "file"
+    },
+    {
+      "path": "",
+      "accessCount": 3,
+      "lastAccessed": 1775038844204,
+      "type": "directory"
+    },
+    {
+      "path": "logs\\macro_2026-04-01.log",
+      "accessCount": 3,
+      "lastAccessed": 1775048754503,
+      "type": "file"
+    },
+    {
+      "path": "CLAUDE.md",
+      "accessCount": 3,
+      "lastAccessed": 1775049139304,
+      "type": "file"
+    },
+    {
+      "path": "docs\\phase3-코드정리.md",
+      "accessCount": 3,
+      "lastAccessed": 1775051711893,
+      "type": "file"
+    },
+    {
+      "path": "docs\\phase1-핵심로직수정.md",
+      "accessCount": 2,
+      "lastAccessed": 1775050500529,
       "type": "file"
     },
     {
@@ -193,6 +225,18 @@
       "path": "debug_detection3.png",
       "accessCount": 1,
       "lastAccessed": 1774882509898,
+      "type": "file"
+    },
+    {
+      "path": "docs\\phase2-사이클속도최적화.md",
+      "accessCount": 1,
+      "lastAccessed": 1775049875533,
+      "type": "file"
+    },
+    {
+      "path": "docs\\handoff.md",
+      "accessCount": 1,
+      "lastAccessed": 1775054382511,
       "type": "file"
     }
   ],

@@ -1,7 +1,7 @@
 {
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"cd \\\"C:\\\\Users\\\\PC\\\\OneDrive\\\\바탕 화면\\\\workspace\\\\macro\\\" && \\\"C:\\\\Users\\\\PC\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python311\\\\python.exe\\\" -c \\\"\\nimport cv2, numpy as np\\nfrom monster_tracker i...",
-  "error": "Exit code 1\n[23:54:28] INFO     ���� â �߰�: HWND=199058\r\n[23:54:28] DEBUG    ���� â ����: x=0, y=3, w=1296, h=759\r\n[23:54:28] DEBUG    ���ø� �ε�: monster_bottom.png ((108, 135, 3))\r\n[23:54:28] DEBUG    ���ø� �ε�: monster_left.png ((88, 207, 3))\r\n[23:54:28] DEBUG    ���ø� �ε�: monster_left_bottom.png ((98, 161, 3))\r\n[23:54:28] DEBUG    ���ø� �ε�: monster_left_top.png ((99, 167, 3))\r\n[23:54:28] DEBUG    ���ø� �ε�: monster_right.png ((73, 153, 3))\r\n[23:54:28] DEBUG    ���ø� �ε�: monster_right_botto...",
-  "timestamp": "2026-03-30T14:54:31.737Z",
+  "tool_name": "Read",
+  "tool_input_preview": "{\"file_path\":\"C:\\\\Users\\\\PC\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-PC-OneDrive-------workspace-macro\\\\05c68df2-880a-4c9f-abfa-a9744f6892cb\\\\tasks\\\\bn60agyzy.output\"}",
+  "error": "File content (76273 tokens) exceeds maximum allowed tokens (10000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole file.",
+  "timestamp": "2026-04-01T13:30:33.781Z",
   "retry_count": 1
 }

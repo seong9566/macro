@@ -63,7 +63,6 @@ class UILogHandler(logging.Handler):
 
 class MacroWindow(QMainWindow):
     preview_signal = pyqtSignal(np.ndarray)  # 미리보기 프레임
-    stats_signal = pyqtSignal(dict)  # 통계 업데이트
 
     def __init__(self):
         super().__init__()
@@ -90,7 +89,6 @@ class MacroWindow(QMainWindow):
 
         # 시그널 연결
         self.preview_signal.connect(self._update_preview)
-        self.stats_signal.connect(self._update_stats_display)
 
     # ══════════════════════════════════════════
     # UI 빌드
@@ -624,13 +622,8 @@ class MacroWindow(QMainWindow):
 # ══════════════════════════════════════════════
 
 def main():
-    import ctypes
-    # DPI Awareness
-    try:
-        ctypes.windll.shcore.SetProcessDpiAwareness(2)
-    except Exception:
-        ctypes.windll.user32.SetProcessDPIAware()
-
+    # PyQt6가 자체적으로 DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2를 설정하므로
+    # ctypes DPI 호출을 하지 않음 (중복 시 "액세스 거부" 오류 발생)
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
 

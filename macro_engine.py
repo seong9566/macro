@@ -122,6 +122,7 @@ class MacroEngine:
         direction_names = ["→", "↗", "↑", "↖", "←", "↙", "↓", "↘"]
         dir_name = direction_names[direction] if direction < len(direction_names) else "?"
 
+        activate_window()
         click(target_x, target_y, method=self.click_method)
         log.info(f"랜덤 이동: {dir_name} ({target_x}, {target_y})")
         time.sleep(ROAM_MOVE_DELAY + random.uniform(0, 0.3))
@@ -238,6 +239,8 @@ class MacroEngine:
 
                 if pos and reason == TRACK_OK:
                     self._miss_count = 0  # 발견 시 미발견 카운터 초기화
+                    # 클릭 직전: 게임 창 포그라운드 확보 (UI가 위에 있으면 클릭이 UI에 감)
+                    activate_window()
                     # 클릭 직전 ROI 재감지로 위치 보정 (~10ms)
                     refined = self.tracker.refine_position(original_pos=pos)
                     target = refined if refined else pos

@@ -72,9 +72,16 @@ def activate_window(hwnd=None):
     Returns:
         True: 성공, False: 실패
     """
+    global _last_hwnd
     target = hwnd or _last_hwnd
     if target is None:
         log.warning("포그라운드 전환 실패: HWND 없음")
+        return False
+
+    # 핸들 유효성 검증 (게임 재시작 시 무효 핸들 감지)
+    if not user32.IsWindow(target):
+        _last_hwnd = None
+        log.warning("게임 창 핸들 무효 → 재탐색 필요")
         return False
 
     # 이미 포그라운드면 스킵

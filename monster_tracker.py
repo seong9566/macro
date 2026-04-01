@@ -4,7 +4,7 @@ import os
 import glob
 import time
 from config import (
-    DETECT_CONFIDENCE, VERIFY_CONFIDENCE,
+    DETECT_CONFIDENCE,
     TARGET_TIMEOUT, HP_CHECK_INTERVAL, HP_NO_CHANGE_MAX,
     HP_BAR_OFFSET_Y, HP_BAR_HEIGHT,
     HP_BAR_COLOR_LOWER1, HP_BAR_COLOR_UPPER1,
@@ -31,7 +31,14 @@ TRACK_NOT_FOUND = "not_found"        # 감지 실패
 # 템플릿 캐시
 # ══════════════════════════════════════════════
 
-_template_cache = {}  # {path: (color_template, gray_template)}
+_template_cache = {}  # {path: [(fpath, color, gray), ...]}
+
+
+def clear_template_cache():
+    """템플릿 캐시 초기화. 이미지 교체 후 호출."""
+    global _template_cache
+    _template_cache = {}
+    log.info("템플릿 캐시 초기화")
 
 
 def _load_templates(template_dir):
@@ -211,48 +218,22 @@ def _nms_with_scores(bboxes, scores, overlap_thresh=0.3):
     return picked
 
 
-# ══════════════════════════════════════════════
-# OpenCV Tracker
-# ══════════════════════════════════════════════
-
-def create_tracker():
-    """OpenCV 트래커 생성. CSRT가 가장 정확함."""
-    if hasattr(cv2, 'legacy') and hasattr(cv2.legacy, 'TrackerCSRT_create'):
-        return cv2.legacy.TrackerCSRT_create()
-    if hasattr(cv2, 'TrackerCSRT_create'):
-        return cv2.TrackerCSRT_create()
-    if hasattr(cv2, 'legacy') and hasattr(cv2.legacy, 'TrackerKCF_create'):
-        return cv2.legacy.TrackerKCF_create()
-    if hasattr(cv2, 'TrackerKCF_create'):
-        return cv2.TrackerKCF_create()
-    raise RuntimeError("OpenCV Tracker를 사용할 수 없습니다. opencv-contrib-python을 설치하세요.")
-
-
 class MonsterTracker:
     """
-    늑대 전용 감지 + 추적 클래스.
+    늑대 전용 감지 클래스.
 
     동작 흐름:
-        1. detect_wolves() → 늑대 템플릿 매칭으로만 감지
-        2. start_tracking() → CSRT 트래커로 추적 시작
-        3. update() → 프레임마다 위치 업데이트
-        4. 추적 실패 또는 주기적 검증 → 재감지
+        1. detect_wolves() → 늑대 템플릿 매칭으로 감지
+        2. find_and_track() → 매 프레임 재감지 + ROI 우선 탐색
+        3. 감지 실패 연속 N회 → 사망 판정
     """
 
     def __init__(self, region=None, template_dir="images", confidence=DETECT_CONFIDENCE):
         self.region = region
         self.template_dir = template_dir
         self.confidence = confidence
-        self.verify_confidence = VERIFY_CONFIDENCE
-        self.tracker = None
-        self.tracking = False
+        self.has_target = False              # 현재 타겟이 있는지 여부
         self.last_bbox = None
-        self.lost_count = 0
-        self.max_lost = 10
-        self.track_frame_count = 0
-        self.verify_interval = 25  # N프레임마다 템플릿 재검증
-        self.verify_fail_count = 0
-        self.verify_fail_max = 3  # 연속 검증 실패 N회 시 추적 해제
         # 전투 판정 상태
         self._target_start_time = 0.0       # 현재 대상 추적 시작 시각
         self._last_hp_check_time = 0.0      # 마지막 HP 체크 시각
@@ -261,6 +242,22 @@ class MonsterTracker:
         self._skip_positions = []           # 타임아웃된 대상 위치 (일시 제외)
         self._detect_miss_count = 0         # 연속 감지 실패 횟수 (사망 판정용)
         self._detect_miss_max = 3           # 연속 N회 실패 시 사망 판정
+
+    # ══════════════════════════════════════════════
+    # 좌표 변환 헬퍼 (내부: 프레임 로컬, 외부: 스크린 절대)
+    # ══════════════════════════════════════════════
+
+    def _local_to_screen(self, x, y):
+        """프레임 로컬 좌표 → 스크린 절대 좌표."""
+        if self.region:
+            return x + self.region[0], y + self.region[1]
+        return x, y
+
+    def _bbox_center_screen(self, bbox):
+        """bbox 중심을 스크린 절대 좌표로 반환."""
+        cx = bbox[0] + bbox[2] // 2
+        cy = bbox[1] + bbox[3] // 2
+        return self._local_to_screen(cx, cy)
 
     def detect(self, frame=None):
         """
@@ -314,135 +311,6 @@ class MonsterTracker:
         log.info(f"가장 가까운 늑대: ({w[0]},{w[1]}) score={w[4]:.3f} [{w[5]}]")
         return (w[0], w[1], w[2], w[3])
 
-    def _verify_tracking(self):
-        """추적 중인 대상이 여전히 늑대인지 템플릿 매칭으로 검증."""
-        if self.last_bbox is None:
-            return False
-
-        frame = capture_screen(region=self.region)
-        if frame is None:
-            return False
-
-        x, y, w, h = self.last_bbox
-        # 바운딩 박스 주변을 약간 확장하여 검증
-        pad = 10
-        x1 = max(0, x - pad)
-        y1 = max(0, y - pad)
-        x2 = min(frame.shape[1], x + w + pad)
-        y2 = min(frame.shape[0], y + h + pad)
-        roi = frame[y1:y2, x1:x2]
-
-        if roi.size == 0:
-            return False
-
-        # ROI 영역에서 그레이스케일 템플릿 매칭 시도
-        roi_gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
-        templates = _load_templates(self.template_dir)
-
-        for fpath, tmpl_color, tmpl_gray in templates:
-            # ROI보다 큰 템플릿은 스킵
-            if tmpl_gray.shape[0] > roi_gray.shape[0] or tmpl_gray.shape[1] > roi_gray.shape[1]:
-                # 축소해서 시도
-                scale = min(roi_gray.shape[0] / tmpl_gray.shape[0],
-                            roi_gray.shape[1] / tmpl_gray.shape[1]) * 0.9
-                if scale < 0.3:
-                    continue
-                sh = int(tmpl_gray.shape[0] * scale)
-                sw = int(tmpl_gray.shape[1] * scale)
-                tmpl_resized = cv2.resize(tmpl_gray, (sw, sh))
-            else:
-                tmpl_resized = tmpl_gray
-
-            if tmpl_resized.shape[0] > roi_gray.shape[0] or tmpl_resized.shape[1] > roi_gray.shape[1]:
-                continue
-
-            result = cv2.matchTemplate(roi_gray, tmpl_resized, cv2.TM_CCOEFF_NORMED)
-            _, max_val, _, _ = cv2.minMaxLoc(result)
-
-            if max_val >= self.verify_confidence:  # 별도 검증 임계값 사용
-                log.debug(f"추적 대상 검증 성공: score={max_val:.3f}")
-                return True
-
-        log.debug("추적 대상 검증 실패 (1회)")
-        return False
-
-    def start_tracking(self, bbox, frame=None):
-        """특정 바운딩 박스에 대한 추적 시작."""
-        if frame is None:
-            frame = capture_screen(region=self.region)
-        if frame is None:
-            return False
-
-        self.tracker = create_tracker()
-        self.tracker.init(frame, tuple(bbox))
-        self.tracking = True
-        self.last_bbox = bbox
-        self.lost_count = 0
-        self.track_frame_count = 0
-        cx = bbox[0] + bbox[2] // 2
-        cy = bbox[1] + bbox[3] // 2
-        log.info(f"늑대 추적 시작: bbox={bbox}, 중심=({cx}, {cy})")
-        return True
-
-    def update(self, frame=None):
-        """
-        추적 업데이트. 현재 몬스터의 스크린 절대 좌표 반환.
-
-        Args:
-            frame: BGR 이미지. None이면 새로 캡처.
-
-        Returns:
-            (center_x, center_y) 또는 None (추적 실패 시)
-        """
-        if not self.tracking or self.tracker is None:
-            return None
-
-        if frame is None:
-            frame = capture_screen(region=self.region)
-        if frame is None:
-            return None
-
-        success, bbox = self.tracker.update(frame)
-
-        if success:
-            self.lost_count = 0
-            self.track_frame_count += 1
-            x, y, w, h = [int(v) for v in bbox]
-            self.last_bbox = (x, y, w, h)
-
-            # 주기적으로 늑대인지 검증
-            if self.track_frame_count % self.verify_interval == 0:
-                if self._verify_tracking():
-                    self.verify_fail_count = 0
-                else:
-                    self.verify_fail_count += 1
-                    log.debug(f"검증 실패 누적: {self.verify_fail_count}/{self.verify_fail_max}")
-                    if self.verify_fail_count >= self.verify_fail_max:
-                        log.warning("추적 대상이 늑대가 아님 → 추적 해제")
-                        self.tracking = False
-                        self.tracker = None
-                        return None
-
-            cx = x + w // 2
-            cy = y + h // 2
-
-            # region 오프셋 보정
-            if self.region:
-                cx += self.region[0]
-                cy += self.region[1]
-
-            log.debug(f"추적 중: ({cx}, {cy})")
-            return (cx, cy)
-        else:
-            self.lost_count += 1
-            log.debug(f"추적 실패 ({self.lost_count}/{self.max_lost})")
-
-            if self.lost_count >= self.max_lost:
-                self.tracking = False
-                self.tracker = None
-                log.warning("추적 대상 소실 → 재감지 필요")
-
-            return None
 
     def _measure_hp_ratio(self, frame):
         """
@@ -533,8 +401,7 @@ class MonsterTracker:
             cy = self.last_bbox[1] + self.last_bbox[3] // 2
             self._skip_positions.append((cx, cy, time.time()))
             log.info(f"대상 포기: ({cx}, {cy}) → 스킵 목록 등록")
-        self.tracking = False
-        self.tracker = None
+        self.has_target = False
         self._reset_combat_state()
 
     def _reset_combat_state(self):
@@ -644,13 +511,7 @@ class MonsterTracker:
         if refined_bbox is None:
             return None
 
-        cx = refined_bbox[0] + refined_bbox[2] // 2
-        cy = refined_bbox[1] + refined_bbox[3] // 2
-
-        # region 오프셋 보정
-        if self.region:
-            cx += self.region[0]
-            cy += self.region[1]
+        cx, cy = self._bbox_center_screen(refined_bbox)
 
         # 거리 제한: 원본 좌표에서 너무 멀면 오탐으로 판단하여 무시
         if original_pos is not None:
@@ -680,7 +541,7 @@ class MonsterTracker:
             return None, TRACK_NOT_FOUND
 
         # 타겟 생존 판정 (공격 중인 경우)
-        if self.tracking:
+        if self.has_target:
             alive_reason = self._check_target_alive(frame)
             if alive_reason != TRACK_OK:
                 self._abandon_target()
@@ -688,7 +549,7 @@ class MonsterTracker:
 
         # 추적 중이면 ROI 우선 탐색 (빠름, ~5-15ms)
         bbox = None
-        if self.tracking and self.last_bbox is not None:
+        if self.has_target and self.last_bbox is not None:
             roi_bbox = self._detect_in_roi(frame, self.last_bbox,
                                            pad_ratio=TRACKING_ROI_PAD_RATIO)
             # 스킵 목록에 없는 경우에만 사용
@@ -699,23 +560,18 @@ class MonsterTracker:
         # 추적 중이면 마지막 추적 위치 기준으로 가장 가까운 몬스터 선택 (타겟 고정)
         if bbox is None:
             last_pos = None
-            if self.tracking and self.last_bbox is not None:
-                lx = self.last_bbox[0] + self.last_bbox[2] // 2
-                ly = self.last_bbox[1] + self.last_bbox[3] // 2
-                if self.region:
-                    lx += self.region[0]
-                    ly += self.region[1]
-                last_pos = (lx, ly)
+            if self.has_target and self.last_bbox is not None:
+                last_pos = self._bbox_center_screen(self.last_bbox)
             bbox = self._detect_nearest_available(frame=frame, player_pos=last_pos)
 
         if bbox is None:
-            if self.tracking:
+            if self.has_target:
                 self._detect_miss_count += 1
                 log.debug(f"감지 실패 ({self._detect_miss_count}/{self._detect_miss_max})")
                 if self._detect_miss_count >= self._detect_miss_max:
                     # 연속 N회 감지 실패 → 사망 확정
                     log.info(f"대상 소실 (연속 {self._detect_miss_count}회 미감지) → 사망 추정")
-                    self.tracking = False
+                    self.has_target = False
                     self._detect_miss_count = 0
                     self._reset_combat_state()
                     return None, TRACK_KILLED
@@ -727,16 +583,11 @@ class MonsterTracker:
 
         # 감지 성공 → 미스 카운터 초기화
         self._detect_miss_count = 0
-
-        cx = bbox[0] + bbox[2] // 2
-        cy = bbox[1] + bbox[3] // 2
-        if self.region:
-            cx += self.region[0]
-            cy += self.region[1]
+        cx, cy = self._bbox_center_screen(bbox)
 
         # 첫 감지 시 전투 타이머 시작
-        if not self.tracking:
-            self.tracking = True
+        if not self.has_target:
+            self.has_target = True
             self.last_bbox = bbox
             self._target_start_time = time.time()
             self._last_hp_check_time = time.time()
@@ -786,14 +637,10 @@ class MonsterTracker:
         return None
 
     def reset(self):
-        """추적 상태 초기화."""
-        self.tracker = None
-        self.tracking = False
+        """감지 상태 초기화."""
+        self.has_target = False
         self.last_bbox = None
-        self.lost_count = 0
-        self.track_frame_count = 0
-        self.verify_fail_count = 0
         self._detect_miss_count = 0
         self._reset_combat_state()
         self._skip_positions.clear()
-        log.debug("트래커 초기화")
+        log.debug("감지 상태 초기화")

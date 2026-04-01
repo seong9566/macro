@@ -6,12 +6,13 @@ import numpy as np
 from monster_tracker import MonsterTracker, TRACK_OK, TRACK_KILLED, TRACK_MISS_PENDING
 from screen_capture import capture_screen
 from clicker import click, press_key
-from window_manager import activate_window
+from window_manager import activate_window, get_game_region
 from config import (
     CLICK_METHOD, DEFAULT_DELAY, ATTACK_INTERVAL, DETECT_CONFIDENCE,
     LOOT_ENABLED, LOOT_KEY_SCANCODE, LOOT_PRESS_COUNT,
     LOOT_PRESS_INTERVAL, LOOT_DELAY_AFTER_KILL,
-    ACTIVATE_WINDOW_ON_START, REACTIVATE_INTERVAL,
+    ACTIVATE_WINDOW_ON_START, REACTIVATE_INTERVAL, REGION_REFRESH_INTERVAL,
+    GAME_WINDOW_TITLE,
     ROAM_ENABLED, ROAM_AFTER_MISS_COUNT, ROAM_CLICK_DISTANCE,
     ROAM_MOVE_DELAY, ROAM_DIRECTION_COUNT,
     POTION_ENABLED, POTION_KEY_SCANCODE, POTION_HP_THRESHOLD,
@@ -34,6 +35,7 @@ class MacroEngine:
             confidence=confidence,
         )
         self._last_activate_time = 0.0
+        self._last_region_refresh_time = 0.0
         # 랜덤 이동 상태
         self._miss_count = 0                # 연속 미발견 횟수
         self._last_roam_direction = -1      # 마지막 이동 방향 인덱스
@@ -47,6 +49,21 @@ class MacroEngine:
         if now - self._last_activate_time >= REACTIVATE_INTERVAL:
             activate_window()
             self._last_activate_time = now
+
+    def _refresh_region(self):
+        """주기적으로 게임 창 위치/크기 재확인. 창 이동/재시작 시 자동 복구."""
+        now = time.time()
+        if now - self._last_region_refresh_time < REGION_REFRESH_INTERVAL:
+            return
+        self._last_region_refresh_time = now
+
+        new_region = get_game_region(GAME_WINDOW_TITLE)
+        if new_region is None:
+            return
+        if new_region != self.region:
+            self.region = new_region
+            self.tracker.region = new_region
+            log.info(f"게임 창 영역 갱신: {new_region}")
 
     def _loot_items(self):
         """사망 판정 후 아이템 줍기 (Spacebar × N회)."""
@@ -210,8 +227,9 @@ class MacroEngine:
 
         while self.running:
             try:
-                # 주기적 포그라운드 확인
+                # 주기적 포그라운드 확인 + 창 영역 갱신
                 self._ensure_foreground()
+                self._refresh_region()
 
                 # 캐릭터 HP 확인 → 물약 자동 사용
                 self._check_and_use_potion()

@@ -15,11 +15,21 @@ from logger import log
 _dxcam_camera = None
 _use_dxcam = False
 
+_screen_width = 1920
+_screen_height = 1080
+
+try:
+    import ctypes
+    _screen_width = ctypes.windll.user32.GetSystemMetrics(0)   # SM_CXSCREEN
+    _screen_height = ctypes.windll.user32.GetSystemMetrics(1)  # SM_CYSCREEN
+except Exception:
+    pass
+
 try:
     import dxcam as _dxcam_mod
     _dxcam_camera = _dxcam_mod.create(output_color="BGR")
     _use_dxcam = True
-    log.info(f"dxcam 초기화 성공 (device: {_dxcam_mod.device_info()})")
+    log.info(f"dxcam 초기화 성공 (device: {_dxcam_mod.device_info()}, 화면: {_screen_width}x{_screen_height})")
 except Exception as e:
     log.warning(f"dxcam 초기화 실패 → mss 폴백 사용: {e}")
     _use_dxcam = False
@@ -69,14 +79,19 @@ def _capture_dxcam(region, grayscale):
     try:
         if region:
             x, y, w, h = region
-            # dxcam region 규약: (left, top, right, bottom)
-            dxcam_region = (x, y, x + w, y + h)
+            # 좌표 클램핑 (화면 범위 내로 제한)
+            left = max(0, x)
+            top = max(0, y)
+            right = min(left + w, _screen_width)
+            bottom = min(top + h, _screen_height)
+            if right <= left or bottom <= top:
+                return _capture_mss(region, grayscale)
+            dxcam_region = (left, top, right, bottom)
             frame = _dxcam_camera.grab(region=dxcam_region)
         else:
             frame = _dxcam_camera.grab()
 
         if frame is None:
-            # 새 프레임이 없을 수 있음 → mss 폴백
             return _capture_mss(region, grayscale)
 
         if grayscale:

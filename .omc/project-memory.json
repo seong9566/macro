@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1775038149074,
+  "lastScanned": 1776770485673,
   "projectRoot": "C:\\Users\\PC\\OneDrive\\바탕 화면\\workspace\\macro",
   "techStack": {
     "languages": [
@@ -33,7 +33,9 @@
   "structure": {
     "isMonorepo": false,
     "workspaces": [],
-    "mainDirectories": [],
+    "mainDirectories": [
+      "docs"
+    ],
     "gitBranches": {
       "defaultBranch": "main",
       "branchingStrategy": null
@@ -41,11 +43,23 @@
   },
   "customNotes": [],
   "directoryMap": {
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 4,
+      "lastAccessed": 1776770485657,
+      "keyFiles": [
+        "handoff.md",
+        "phase1-핵심로직수정.md",
+        "phase2-사이클속도최적화.md",
+        "phase3-코드정리.md"
+      ]
+    },
     "images": {
       "path": "images",
       "purpose": null,
       "fileCount": 8,
-      "lastAccessed": 1775038149056,
+      "lastAccessed": 1776770485657,
       "keyFiles": [
         "monster_bottom.png",
         "monster_left.png",
@@ -58,7 +72,7 @@
       "path": "logs",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1775038149056,
+      "lastAccessed": 1776770485658,
       "keyFiles": [
         "macro_2026-03-21.log",
         "macro_2026-03-30.log",
@@ -69,7 +83,7 @@
       "path": "venv",
       "purpose": null,
       "fileCount": 1,
-      "lastAccessed": 1775038149056,
+      "lastAccessed": 1776770485658,
       "keyFiles": [
         "pyvenv.cfg"
       ]
@@ -77,8 +91,8 @@
     "__pycache__": {
       "path": "__pycache__",
       "purpose": null,
-      "fileCount": 15,
-      "lastAccessed": 1775038149057,
+      "fileCount": 17,
+      "lastAccessed": 1776770485658,
       "keyFiles": [
         "clicker.cpython-311.pyc",
         "clicker.cpython-312.pyc",
@@ -91,14 +105,14 @@
       "path": "venv\\Lib",
       "purpose": "Library code",
       "fileCount": 0,
-      "lastAccessed": 1775038149058,
+      "lastAccessed": 1776770485659,
       "keyFiles": []
     },
     "venv\\Scripts": {
       "path": "venv\\Scripts",
       "purpose": "Build/utility scripts",
       "fileCount": 15,
-      "lastAccessed": 1775038149058,
+      "lastAccessed": 1776770485660,
       "keyFiles": [
         "activate",
         "activate.bat",

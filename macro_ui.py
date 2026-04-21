@@ -26,7 +26,7 @@ from PyQt6.QtWidgets import (
     QSystemTrayIcon, QMenu, QSplitter, QProgressBar,
 )
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal, QObject, QSize
-from PyQt6.QtGui import QImage, QPixmap, QColor, QIcon, QAction, QFont
+from PyQt6.QtGui import QImage, QPixmap, QColor, QIcon, QAction, QFont, QShortcut, QKeySequence
 
 import config
 from screen_capture import capture_screen
@@ -63,6 +63,8 @@ class UILogHandler(logging.Handler):
 
 class MacroWindow(QMainWindow):
     preview_signal = pyqtSignal(np.ndarray)  # 미리보기 프레임
+    _start_signal = pyqtSignal()  # 글로벌 핫키 → 메인 스레드
+    _stop_signal = pyqtSignal()   # 글로벌 핫키 → 메인 스레드
 
     def __init__(self):
         super().__init__()
@@ -89,6 +91,17 @@ class MacroWindow(QMainWindow):
 
         # 시그널 연결
         self.preview_signal.connect(self._update_preview)
+
+        # F5/F6 단축키 등록 (UI 포커스 시)
+        QShortcut(QKeySequence(Qt.Key.Key_F5), self).activated.connect(self._on_start)
+        QShortcut(QKeySequence(Qt.Key.Key_F6), self).activated.connect(self._on_stop)
+
+        # 글로벌 핫키 (게임 창 포커스 시에도 동작)
+        self._start_signal.connect(self._on_start)
+        self._stop_signal.connect(self._on_stop)
+        import keyboard
+        keyboard.add_hotkey("F5", lambda: self._start_signal.emit())
+        keyboard.add_hotkey("F6", lambda: self._stop_signal.emit())
 
     # ══════════════════════════════════════════
     # UI 빌드
@@ -419,6 +432,8 @@ class MacroWindow(QMainWindow):
 
     def _quit_app(self):
         self._on_stop()
+        import keyboard
+        keyboard.unhook_all()
         self.tray.hide()
         QApplication.quit()
 

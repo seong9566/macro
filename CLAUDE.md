@@ -9,6 +9,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## 빌드 및 실행
 
 ```bash
+powershell 관리자 권한 실행
+cd "C:\Users\PC\OneDrive\바탕 화면\workspace\macro"
+
 pip install -r requirements.txt
 python main.py          # F5=시작, F6=중지
 ```

@@ -15,6 +15,7 @@ from config import (
     DETECT_MISS_MAX,
     EDGE_DETECT_ENABLED, EDGE_DETECT_CONFIDENCE,
     EDGE_CANNY_LOW, EDGE_CANNY_HIGH, EDGE_ONLY_MAX_COUNT,
+    TRANSPARENT_VARIANTS_ENABLED, TRANSPARENT_ALPHA_LEVELS, TRANSPARENT_BG_COLOR,
 )
 from screen_capture import capture_screen
 from logger import log
@@ -39,9 +40,10 @@ _template_cache = {}  # {path: [(fpath, color, gray), ...]}
 
 def clear_template_cache():
     """템플릿 캐시 초기화. 이미지 교체 후 호출."""
-    global _template_cache, _edge_template_cache
+    global _template_cache, _edge_template_cache, _transparent_template_cache
     _template_cache = {}
     _edge_template_cache = {}
+    _transparent_template_cache = {}
     log.info("템플릿 캐시 초기화")
 
 
@@ -92,6 +94,38 @@ def _load_templates(template_dir):
     _template_cache[template_dir] = templates
     log.info(f"몬스터 템플릿 {len(templates)}개 로딩 완료 (자동 반전 포함)")
     return templates
+
+
+_transparent_template_cache = {}  # {path: [(name, color, gray), ...]}
+
+
+def _load_transparent_templates(template_dir):
+    """원본 템플릿의 반투명 변형을 생성/캐시 (ROI 전용)."""
+    if template_dir in _transparent_template_cache:
+        return _transparent_template_cache[template_dir]
+
+    if not TRANSPARENT_VARIANTS_ENABLED:
+        _transparent_template_cache[template_dir] = []
+        return []
+
+    templates = _load_templates(template_dir)
+    bg = np.array(TRANSPARENT_BG_COLOR, dtype=np.uint8)
+    variants = []
+
+    for fpath, tmpl_color, tmpl_gray in templates:
+        for alpha in TRANSPARENT_ALPHA_LEVELS:
+            blended_color = cv2.addWeighted(
+                tmpl_color, alpha,
+                np.full_like(tmpl_color, bg), 1.0 - alpha,
+                0
+            )
+            blended_gray = cv2.cvtColor(blended_color, cv2.COLOR_BGR2GRAY)
+            variant_name = f"{os.path.basename(fpath)}@a{alpha:.1f}"
+            variants.append((variant_name, blended_color, blended_gray))
+
+    _transparent_template_cache[template_dir] = variants
+    log.debug(f"반투명 변형 {len(variants)}개 생성 (alpha: {TRANSPARENT_ALPHA_LEVELS})")
+    return variants
 
 
 _edge_template_cache = {}  # {path: [(fpath, edge_img), ...]}
@@ -484,11 +518,19 @@ class MonsterTracker:
         roi_gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
 
         templates = _load_templates(self.template_dir)
+
+        # 추적 중이면 반투명 변형도 후보에 추가 (ROI 전용)
+        if tracking and TRANSPARENT_VARIANTS_ENABLED:
+            transparent = _load_transparent_templates(self.template_dir)
+            all_templates = list(templates) + list(transparent)
+        else:
+            all_templates = templates
+
         best_score = 0
         best_result = None
         min_confidence = TRACKING_CONFIDENCE if tracking else self.confidence
 
-        for fpath, tmpl_color, tmpl_gray in templates:
+        for fpath, tmpl_color, tmpl_gray in all_templates:
             th, tw = tmpl_gray.shape[:2]
 
             for scale in ROI_DETECT_SCALES:

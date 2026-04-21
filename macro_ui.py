@@ -170,6 +170,17 @@ class MacroWindow(QMainWindow):
         status_layout.addWidget(QLabel("캐릭터 HP:"), 3, 0)
         status_layout.addWidget(self.hp_bar, 3, 1)
 
+        self.mp_bar = QProgressBar()
+        self.mp_bar.setRange(0, 100)
+        self.mp_bar.setValue(100)
+        self.mp_bar.setFormat("MP: %v%")
+        self.mp_bar.setStyleSheet("""
+            QProgressBar { border: 1px solid #555; border-radius: 3px; text-align: center; }
+            QProgressBar::chunk { background: qlineargradient(x1:0,y1:0,x2:1,y2:0, stop:0 #0044cc, stop:1 #3366ff); }
+        """)
+        status_layout.addWidget(QLabel("캐릭터 MP:"), 4, 0)
+        status_layout.addWidget(self.mp_bar, 4, 1)
+
         left_layout.addWidget(status_group)
 
         # [2] 시작/중지/비상정지 버튼
@@ -318,6 +329,25 @@ class MacroWindow(QMainWindow):
             self.hp_inputs[idx] = slider
 
         layout.addWidget(hp_group)
+
+        # MP바 위치 설정
+        mp_group = QGroupBox("캐릭터 MP바 위치 (게임 화면 기준)")
+        mp_layout = QGridLayout(mp_group)
+
+        self.mp_inputs = {}
+        mp_defaults = config.PLAYER_MP_BAR_REGION
+        for (label, idx) in labels:
+            mp_layout.addWidget(QLabel(label), 0, idx * 2)
+            slider = QSlider(Qt.Orientation.Horizontal)
+            slider.setRange(0, 1920)
+            slider.setValue(mp_defaults[idx])
+            val_label = QLabel(str(mp_defaults[idx]))
+            slider.valueChanged.connect(lambda v, lbl=val_label, i=idx: self._update_mp_region(v, lbl, i))
+            mp_layout.addWidget(slider, 0, idx * 2 + 1)
+            mp_layout.addWidget(val_label, 1, idx * 2 + 1)
+            self.mp_inputs[idx] = slider
+
+        layout.addWidget(mp_group)
         layout.addStretch()
 
     def _update_hp_region(self, value, label, index):
@@ -325,6 +355,12 @@ class MacroWindow(QMainWindow):
         region = list(config.PLAYER_HP_BAR_REGION)
         region[index] = value
         config.PLAYER_HP_BAR_REGION = tuple(region)
+
+    def _update_mp_region(self, value, label, index):
+        label.setText(str(value))
+        region = list(config.PLAYER_MP_BAR_REGION)
+        region[index] = value
+        config.PLAYER_MP_BAR_REGION = tuple(region)
 
     def _build_template_tab(self, parent):
         """[6] 템플릿 관리."""
@@ -521,6 +557,17 @@ class MacroWindow(QMainWindow):
                 self.lbl_target.setText("탐색 중")
                 self.lbl_target.setStyleSheet("color: #888;")
 
+            # HP/MP 프로그레스바 동기화
+            hp = self.engine.player_hp_ratio
+            if hp >= 0:
+                self.hp_bar.setValue(int(hp * 100))
+                self.hp_bar.setFormat(f"HP: {int(hp * 100)}%")
+
+            mp = self.engine.player_mp_ratio
+            if mp >= 0:
+                self.mp_bar.setValue(int(mp * 100))
+                self.mp_bar.setFormat(f"MP: {int(mp * 100)}%")
+
     # ══════════════════════════════════════════
     # 시작/중지
     # ══════════════════════════════════════════
@@ -558,6 +605,11 @@ class MacroWindow(QMainWindow):
     def _on_stop(self):
         if self.engine:
             self.engine.stop()
+
+        self.hp_bar.setValue(0)
+        self.hp_bar.setFormat("HP: -")
+        self.mp_bar.setValue(0)
+        self.mp_bar.setFormat("MP: -")
 
         self.lbl_status.setText("중지")
         self.lbl_status.setStyleSheet("font-size: 18px; font-weight: bold; color: #888;")

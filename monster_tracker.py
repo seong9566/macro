@@ -519,19 +519,11 @@ class MonsterTracker:
         roi_gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
 
         templates = _load_templates(self.template_dir)
-
-        # 추적 중이면 반투명 변형도 후보에 추가 (ROI 전용)
-        if tracking and TRANSPARENT_VARIANTS_ENABLED:
-            transparent = _load_transparent_templates(self.template_dir)
-            all_templates = list(templates) + list(transparent)
-        else:
-            all_templates = templates
-
         best_score = 0
         best_result = None
         min_confidence = TRACKING_CONFIDENCE if tracking else self.confidence
 
-        for fpath, tmpl_color, tmpl_gray in all_templates:
+        for fpath, tmpl_color, tmpl_gray in templates:
             th, tw = tmpl_gray.shape[:2]
 
             for scale in ROI_DETECT_SCALES:
@@ -559,7 +551,30 @@ class MonsterTracker:
             log.debug(f"ROI 재탐색 성공 [그레이]: ({best_result[0]},{best_result[1]}) score={best_score:.3f}")
             return best_result
 
-        # === 에지 매칭 폴백 (그레이 실패 + 추적 중일 때만) ===
+        # === 반투명 변형 폴백 (원본 실패 + 추적 중일 때만) ===
+        if tracking and TRANSPARENT_VARIANTS_ENABLED:
+            transparent = _load_transparent_templates(self.template_dir)
+            for fpath, tmpl_color, tmpl_gray in transparent:
+                th, tw = tmpl_gray.shape[:2]
+                for scale in ROI_DETECT_SCALES:
+                    sh = max(1, int(th * scale))
+                    sw = max(1, int(tw * scale))
+                    if sh > roi_gray.shape[0] or sw > roi_gray.shape[1]:
+                        continue
+                    interp = cv2.INTER_AREA if scale < 1.0 else cv2.INTER_LINEAR
+                    tmpl_resized = cv2.resize(tmpl_gray, (sw, sh), interpolation=interp)
+                    result = cv2.matchTemplate(roi_gray, tmpl_resized, cv2.TM_CCOEFF_NORMED)
+                    _, max_val, _, max_loc = cv2.minMaxLoc(result)
+                    if max_val >= min_confidence and max_val > best_score:
+                        best_score = max_val
+                        best_result = (roi_x1 + max_loc[0], roi_y1 + max_loc[1], sw, sh)
+
+            if best_result:
+                self._last_detect_was_edge = False
+                log.debug(f"ROI 재탐색 성공 [반투명]: ({best_result[0]},{best_result[1]}) score={best_score:.3f}")
+                return best_result
+
+        # === 에지 매칭 폴백 (그레이+반투명 실패 + 추적 중일 때만) ===
         if not EDGE_DETECT_ENABLED or not tracking:
             return None
 

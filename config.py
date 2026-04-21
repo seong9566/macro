@@ -111,7 +111,7 @@ POTION_CHECK_INTERVAL = 1.0      # HP 확인 주기 (초)
 # 캐릭터 HP바 위치 (게임 창 클라이언트 영역 기준 상대 좌표)
 # 게임마다 다르므로 실제 HP바 위치에 맞게 조정 필요
 # (x, y, w, h) — 게임 화면 좌상단 기준
-PLAYER_HP_BAR_REGION = (85, 45, 195, 10)  # 좌상단 캐릭터 초상화 옆 HP바
+PLAYER_HP_BAR_REGION = (115, 20, 190, 13)  # 좌상단 캐릭터 초상화 옆 HP바
 PLAYER_HP_COLOR_LOWER = (0, 100, 100)    # HP바 HSV 하한 (빨간색 계열)
 PLAYER_HP_COLOR_UPPER = (10, 255, 255)   # HP바 HSV 상한
 # 빨간색은 HSV에서 H=0~10 또는 H=170~180 범위
@@ -121,7 +121,7 @@ PLAYER_HP_COLOR_UPPER2 = (180, 255, 255) # HP바 HSV 상한2
 # ══════════════════════════════════════════════
 # 캐릭터 MP바 위치 및 색상 설정
 # ══════════════════════════════════════════════
-PLAYER_MP_BAR_REGION = (85, 65, 195, 10)   # MP바 위치 (x, y, w, h) — HP바 아래
+PLAYER_MP_BAR_REGION = (115, 42, 190, 10)   # MP바 위치 (x, y, w, h) — HP바 아래
 PLAYER_MP_COLOR_LOWER = (100, 80, 80)     # MP바 HSV 하한 (파란색 계열)
 PLAYER_MP_COLOR_UPPER = (130, 255, 255)   # MP바 HSV 상한
 PLAYER_MP_COLOR_LOWER2 = (130, 80, 80)    # MP바 HSV 하한2 (보라색 그라데이션 대응)

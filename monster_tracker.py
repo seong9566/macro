@@ -16,6 +16,7 @@ from config import (
     EDGE_DETECT_ENABLED, EDGE_DETECT_CONFIDENCE,
     EDGE_CANNY_LOW, EDGE_CANNY_HIGH, EDGE_ONLY_MAX_COUNT,
     TRANSPARENT_VARIANTS_ENABLED, TRANSPARENT_ALPHA_LEVELS, TRANSPARENT_BG_COLORS,
+    BRIGHTNESS_REJECT_THRESHOLD,
 )
 from screen_capture import capture_screen
 from logger import log
@@ -212,6 +213,10 @@ def detect_wolves(frame, template_dir="images", confidence=0.55,
             continue  # 상단 UI 영역
         if cy > frame_h - UI_EXCLUDE_BOTTOM:
             continue  # 하단 UI 영역
+        # 밝기 필터 — 감지 영역이 지나치게 밝으면 배경 오탐으로 제거
+        roi = frame_gray[c[1]:c[1] + c[3], c[0]:c[0] + c[2]]
+        if roi.size > 0 and np.mean(roi) > BRIGHTNESS_REJECT_THRESHOLD:
+            continue
         filtered.append(c)
     candidates = filtered
 

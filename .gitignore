@@ -1,5 +1,5 @@
 # Python
-__pycache__/
+__pycache__/*
 *.py[cod]
 *.egg-info/
 dist/
@@ -22,6 +22,9 @@ Desktop.ini
 # 환경
 .env
 *.env
+
+# Claude Code
+.claude/settings.local.json
 
 # OMC 상태
 .omc/state/

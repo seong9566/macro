@@ -532,8 +532,60 @@ class MacroWindow(QMainWindow):
         qimg = QImage(rgb.data, new_w, new_h, new_w * 3, QImage.Format.Format_RGB888)
         self.preview_label.setPixmap(QPixmap.fromImage(qimg))
 
+    def _measure_hp_mp_from_screen(self):
+        """게임 화면에서 직접 HP/MP 비율을 측정 (엔진 상태 무관)."""
+        if self.region is None:
+            self.region = get_game_region(config.GAME_WINDOW_TITLE)
+        if self.region is None:
+            return
+
+        frame = capture_screen(region=self.region)
+        if frame is None:
+            return
+
+        # HP 측정 (빨간색 2구간)
+        bx, by, bw, bh = config.PLAYER_HP_BAR_REGION
+        if by + bh <= frame.shape[0] and bx + bw <= frame.shape[1]:
+            roi = frame[by:by + bh, bx:bx + bw]
+            if roi.size > 0:
+                hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
+                mask1 = cv2.inRange(hsv,
+                                    np.array(config.PLAYER_HP_COLOR_LOWER),
+                                    np.array(config.PLAYER_HP_COLOR_UPPER))
+                mask2 = cv2.inRange(hsv,
+                                    np.array(config.PLAYER_HP_COLOR_LOWER2),
+                                    np.array(config.PLAYER_HP_COLOR_UPPER2))
+                mask = cv2.bitwise_or(mask1, mask2)
+                total = roi.shape[0] * roi.shape[1]
+                if total > 0:
+                    hp = np.count_nonzero(mask) / total
+                    self.hp_bar.setValue(int(hp * 100))
+                    self.hp_bar.setFormat(f"HP: {int(hp * 100)}%")
+
+        # MP 측정 (파란색~보라색 2구간)
+        bx, by, bw, bh = config.PLAYER_MP_BAR_REGION
+        if by + bh <= frame.shape[0] and bx + bw <= frame.shape[1]:
+            roi = frame[by:by + bh, bx:bx + bw]
+            if roi.size > 0:
+                hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
+                mask1 = cv2.inRange(hsv,
+                                    np.array(config.PLAYER_MP_COLOR_LOWER),
+                                    np.array(config.PLAYER_MP_COLOR_UPPER))
+                mask2 = cv2.inRange(hsv,
+                                    np.array(config.PLAYER_MP_COLOR_LOWER2),
+                                    np.array(config.PLAYER_MP_COLOR_UPPER2))
+                mask = cv2.bitwise_or(mask1, mask2)
+                total = roi.shape[0] * roi.shape[1]
+                if total > 0:
+                    mp = np.count_nonzero(mask) / total
+                    self.mp_bar.setValue(int(mp * 100))
+                    self.mp_bar.setFormat(f"MP: {int(mp * 100)}%")
+
     def _update_stats(self):
-        """[8] 사냥 통계 갱신."""
+        """[8] 사냥 통계 갱신 + HP/MP 동기화."""
+        # HP/MP는 엔진 상태와 무관하게 항상 측정
+        self._measure_hp_mp_from_screen()
+
         if self.engine and self.engine.running:
             elapsed = time.time() - self._stats["start_time"]
             hours = elapsed / 3600
@@ -556,17 +608,6 @@ class MacroWindow(QMainWindow):
             else:
                 self.lbl_target.setText("탐색 중")
                 self.lbl_target.setStyleSheet("color: #888;")
-
-            # HP/MP 프로그레스바 동기화
-            hp = self.engine.player_hp_ratio
-            if hp >= 0:
-                self.hp_bar.setValue(int(hp * 100))
-                self.hp_bar.setFormat(f"HP: {int(hp * 100)}%")
-
-            mp = self.engine.player_mp_ratio
-            if mp >= 0:
-                self.mp_bar.setValue(int(mp * 100))
-                self.mp_bar.setFormat(f"MP: {int(mp * 100)}%")
 
     # ══════════════════════════════════════════
     # 시작/중지
@@ -605,11 +646,6 @@ class MacroWindow(QMainWindow):
     def _on_stop(self):
         if self.engine:
             self.engine.stop()
-
-        self.hp_bar.setValue(0)
-        self.hp_bar.setFormat("HP: -")
-        self.mp_bar.setValue(0)
-        self.mp_bar.setFormat("MP: -")
 
         self.lbl_status.setText("중지")
         self.lbl_status.setStyleSheet("font-size: 18px; font-weight: bold; color: #888;")

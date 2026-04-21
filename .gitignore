@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# 로그
+logs/
+
+# 디버그 이미지
+debug_*.png
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# 환경
+.env
+*.env
+
+# OMC 상태
+.omc/state/

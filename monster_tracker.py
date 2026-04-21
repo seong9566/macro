@@ -4,7 +4,7 @@ import os
 import glob
 import time
 from config import (
-    DETECT_CONFIDENCE,
+    DETECT_CONFIDENCE, TRACKING_CONFIDENCE,
     TARGET_TIMEOUT, HP_CHECK_INTERVAL, HP_NO_CHANGE_MAX,
     HP_BAR_OFFSET_Y, HP_BAR_HEIGHT,
     HP_BAR_COLOR_LOWER1, HP_BAR_COLOR_UPPER1,
@@ -427,7 +427,7 @@ class MonsterTracker:
                 return True
         return False
 
-    def _detect_in_roi(self, frame, last_bbox, pad_ratio=1.0):
+    def _detect_in_roi(self, frame, last_bbox, pad_ratio=1.0, tracking=False):
         """
         마지막 감지 위치 주변 ROI에서만 빠르게 재탐색.
         그레이스케일 매칭으로 전체 프레임 대비 ~3-8ms로 완료.
@@ -459,6 +459,7 @@ class MonsterTracker:
         templates = _load_templates(self.template_dir)
         best_score = 0
         best_result = None
+        min_confidence = TRACKING_CONFIDENCE if tracking else self.confidence
 
         for fpath, tmpl_color, tmpl_gray in templates:
             th, tw = tmpl_gray.shape[:2]
@@ -478,13 +479,13 @@ class MonsterTracker:
                 result = cv2.matchTemplate(roi_gray, tmpl_resized, cv2.TM_CCOEFF_NORMED)
                 _, max_val, _, max_loc = cv2.minMaxLoc(result)
 
-                if max_val >= self.confidence and max_val > best_score:
+                if max_val >= min_confidence and max_val > best_score:
                     best_score = max_val
                     # ROI 좌표 → 프레임 좌표로 변환
                     best_result = (roi_x1 + max_loc[0], roi_y1 + max_loc[1], sw, sh)
 
         if best_result:
-            log.debug(f"ROI 재탐색 성공: ({best_result[0]},{best_result[1]}) score={best_score:.3f}")
+            log.debug(f"ROI 재탐색 성공 [그레이]: ({best_result[0]},{best_result[1]}) score={best_score:.3f}")
 
         return best_result
 
@@ -507,7 +508,8 @@ class MonsterTracker:
             return None
 
         refined_bbox = self._detect_in_roi(frame, self.last_bbox,
-                                           pad_ratio=PRECLICK_ROI_PAD_RATIO)
+                                           pad_ratio=PRECLICK_ROI_PAD_RATIO,
+                                           tracking=True)
         if refined_bbox is None:
             return None
 
@@ -551,7 +553,8 @@ class MonsterTracker:
         bbox = None
         if self.has_target and self.last_bbox is not None:
             roi_bbox = self._detect_in_roi(frame, self.last_bbox,
-                                           pad_ratio=TRACKING_ROI_PAD_RATIO)
+                                           pad_ratio=TRACKING_ROI_PAD_RATIO,
+                                           tracking=True)
             # 스킵 목록에 없는 경우에만 사용
             if roi_bbox is not None and not self._is_skipped(roi_bbox):
                 bbox = roi_bbox

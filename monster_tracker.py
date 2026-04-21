@@ -552,9 +552,17 @@ class MonsterTracker:
                     best_result = (roi_x1 + max_loc[0], roi_y1 + max_loc[1], sw, sh)
 
         if best_result:
-            self._last_detect_was_edge = False
-            log.debug(f"ROI 재탐색 성공 [그레이]: ({best_result[0]},{best_result[1]}) score={best_score:.3f}")
-            return best_result
+            # 밝기 필터 — 감지 영역이 지나치게 밝으면 배경 오탐으로 제거
+            bx, by, bw, bh = best_result
+            check_roi = roi_gray[by - roi_y1:by - roi_y1 + bh, bx - roi_x1:bx - roi_x1 + bw]
+            if check_roi.size > 0 and np.mean(check_roi) > BRIGHTNESS_REJECT_THRESHOLD:
+                log.debug(f"ROI 밝기 필터 제거 [그레이]: mean={np.mean(check_roi):.0f} > {BRIGHTNESS_REJECT_THRESHOLD}")
+                best_result = None
+                best_score = 0
+            else:
+                self._last_detect_was_edge = False
+                log.debug(f"ROI 재탐색 성공 [그레이]: ({best_result[0]},{best_result[1]}) score={best_score:.3f}")
+                return best_result
 
         # === 반투명 변형 폴백 (원본 실패 + 추적 중일 때만) ===
         if tracking and TRANSPARENT_VARIANTS_ENABLED:
@@ -575,9 +583,16 @@ class MonsterTracker:
                         best_result = (roi_x1 + max_loc[0], roi_y1 + max_loc[1], sw, sh)
 
             if best_result:
-                self._last_detect_was_edge = False
-                log.debug(f"ROI 재탐색 성공 [반투명]: ({best_result[0]},{best_result[1]}) score={best_score:.3f}")
-                return best_result
+                bx, by, bw, bh = best_result
+                check_roi = roi_gray[by - roi_y1:by - roi_y1 + bh, bx - roi_x1:bx - roi_x1 + bw]
+                if check_roi.size > 0 and np.mean(check_roi) > BRIGHTNESS_REJECT_THRESHOLD:
+                    log.debug(f"ROI 밝기 필터 제거 [반투명]: mean={np.mean(check_roi):.0f} > {BRIGHTNESS_REJECT_THRESHOLD}")
+                    best_result = None
+                    best_score = 0
+                else:
+                    self._last_detect_was_edge = False
+                    log.debug(f"ROI 재탐색 성공 [반투명]: ({best_result[0]},{best_result[1]}) score={best_score:.3f}")
+                    return best_result
 
         # === 에지 매칭 폴백 (그레이+반투명 실패 + 추적 중일 때만) ===
         if not EDGE_DETECT_ENABLED or not tracking:
@@ -604,6 +619,11 @@ class MonsterTracker:
                     best_edge_result = (roi_x1 + max_loc[0], roi_y1 + max_loc[1], sw, sh)
 
         if best_edge_result:
+            bx, by, bw, bh = best_edge_result
+            check_roi = roi_gray[by - roi_y1:by - roi_y1 + bh, bx - roi_x1:bx - roi_x1 + bw]
+            if check_roi.size > 0 and np.mean(check_roi) > BRIGHTNESS_REJECT_THRESHOLD:
+                log.debug(f"ROI 밝기 필터 제거 [에지]: mean={np.mean(check_roi):.0f} > {BRIGHTNESS_REJECT_THRESHOLD}")
+                return None
             self._last_detect_was_edge = True
             log.debug(f"ROI 재탐색 성공 [에지]: ({best_edge_result[0]},{best_edge_result[1]}) score={best_edge_score:.3f}")
             return best_edge_result

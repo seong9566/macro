@@ -13,6 +13,8 @@ from config import (
     PRECLICK_REFINE_ENABLED, PRECLICK_ROI_PAD_RATIO, TRACKING_ROI_PAD_RATIO,
     REFINE_MAX_DISTANCE, DETECT_SCALES, ROI_DETECT_SCALES,
     DETECT_MISS_MAX,
+    EDGE_DETECT_ENABLED, EDGE_DETECT_CONFIDENCE,
+    EDGE_CANNY_LOW, EDGE_CANNY_HIGH, EDGE_ONLY_MAX_COUNT,
 )
 from screen_capture import capture_screen
 from logger import log
@@ -37,8 +39,9 @@ _template_cache = {}  # {path: [(fpath, color, gray), ...]}
 
 def clear_template_cache():
     """템플릿 캐시 초기화. 이미지 교체 후 호출."""
-    global _template_cache
+    global _template_cache, _edge_template_cache
     _template_cache = {}
+    _edge_template_cache = {}
     log.info("템플릿 캐시 초기화")
 
 
@@ -89,6 +92,25 @@ def _load_templates(template_dir):
     _template_cache[template_dir] = templates
     log.info(f"몬스터 템플릿 {len(templates)}개 로딩 완료 (자동 반전 포함)")
     return templates
+
+
+_edge_template_cache = {}  # {path: [(fpath, edge_img), ...]}
+
+
+def _load_edge_templates(template_dir):
+    """원본 템플릿의 Canny 에지 버전을 로딩/캐시."""
+    if template_dir in _edge_template_cache:
+        return _edge_template_cache[template_dir]
+
+    templates = _load_templates(template_dir)
+    edge_templates = []
+    for fpath, tmpl_color, tmpl_gray in templates:
+        edge = cv2.Canny(tmpl_gray, EDGE_CANNY_LOW, EDGE_CANNY_HIGH)
+        edge_templates.append((fpath, edge))
+
+    _edge_template_cache[template_dir] = edge_templates
+    log.debug(f"에지 템플릿 {len(edge_templates)}개 생성")
+    return edge_templates
 
 
 # ══════════════════════════════════════════════
@@ -243,6 +265,8 @@ class MonsterTracker:
         self._skip_positions = []           # 타임아웃된 대상 위치 (일시 제외)
         self._detect_miss_count = 0         # 연속 감지 실패 횟수 (사망 판정용)
         self._detect_miss_max = DETECT_MISS_MAX
+        self._last_detect_was_edge = False   # 마지막 감지가 에지 전용이었는지
+        self._edge_only_count = 0            # 에지 전용 연속 감지 횟수
 
     # ══════════════════════════════════════════════
     # 좌표 변환 헬퍼 (내부: 프레임 로컬, 외부: 스크린 절대)
@@ -411,6 +435,8 @@ class MonsterTracker:
         self._last_hp_check_time = 0.0
         self._last_hp_ratio = -1.0
         self._hp_no_change_count = 0
+        self._edge_only_count = 0
+        self._last_detect_was_edge = False
 
     def _is_skipped(self, bbox):
         """해당 위치가 최근 스킵된 대상인지 확인 (30초간 유지)."""
@@ -486,9 +512,40 @@ class MonsterTracker:
                     best_result = (roi_x1 + max_loc[0], roi_y1 + max_loc[1], sw, sh)
 
         if best_result:
+            self._last_detect_was_edge = False
             log.debug(f"ROI 재탐색 성공 [그레이]: ({best_result[0]},{best_result[1]}) score={best_score:.3f}")
+            return best_result
 
-        return best_result
+        # === 에지 매칭 폴백 (그레이 실패 + 추적 중일 때만) ===
+        if not EDGE_DETECT_ENABLED or not tracking:
+            return None
+
+        roi_edge = cv2.Canny(roi_gray, EDGE_CANNY_LOW, EDGE_CANNY_HIGH)
+        edge_templates = _load_edge_templates(self.template_dir)
+        best_edge_score = 0
+        best_edge_result = None
+
+        for fpath, tmpl_edge in edge_templates:
+            th, tw = tmpl_edge.shape[:2]
+            for scale in ROI_DETECT_SCALES:
+                sh = max(1, int(th * scale))
+                sw = max(1, int(tw * scale))
+                if sh > roi_edge.shape[0] or sw > roi_edge.shape[1]:
+                    continue
+                interp = cv2.INTER_AREA if scale < 1.0 else cv2.INTER_LINEAR
+                tmpl_resized = cv2.resize(tmpl_edge, (sw, sh), interpolation=interp)
+                result = cv2.matchTemplate(roi_edge, tmpl_resized, cv2.TM_CCOEFF_NORMED)
+                _, max_val, _, max_loc = cv2.minMaxLoc(result)
+                if max_val >= EDGE_DETECT_CONFIDENCE and max_val > best_edge_score:
+                    best_edge_score = max_val
+                    best_edge_result = (roi_x1 + max_loc[0], roi_y1 + max_loc[1], sw, sh)
+
+        if best_edge_result:
+            self._last_detect_was_edge = True
+            log.debug(f"ROI 재탐색 성공 [에지]: ({best_edge_result[0]},{best_edge_result[1]}) score={best_edge_score:.3f}")
+            return best_edge_result
+
+        return None
 
     def refine_position(self, original_pos=None):
         """
@@ -559,6 +616,16 @@ class MonsterTracker:
             # 스킵 목록에 없는 경우에만 사용
             if roi_bbox is not None and not self._is_skipped(roi_bbox):
                 bbox = roi_bbox
+
+        # 에지 전용 연속 감지 안전장치
+        if bbox is not None and self._last_detect_was_edge:
+            self._edge_only_count += 1
+            if self._edge_only_count >= EDGE_ONLY_MAX_COUNT:
+                log.warning(f"에지 전용 연속 {self._edge_only_count}회 → 신뢰도 낮음, 추적 해제")
+                self._abandon_target()
+                return None, TRACK_NOT_FOUND
+        elif bbox is not None:
+            self._edge_only_count = 0
 
         # ROI 실패 시 전체 프레임 탐색
         # 추적 중이면 마지막 추적 위치 기준으로 가장 가까운 몬스터 선택 (타겟 고정)

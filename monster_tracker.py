@@ -15,7 +15,7 @@ from config import (
     DETECT_MISS_MAX,
     EDGE_DETECT_ENABLED, EDGE_DETECT_CONFIDENCE,
     EDGE_CANNY_LOW, EDGE_CANNY_HIGH, EDGE_ONLY_MAX_COUNT,
-    TRANSPARENT_VARIANTS_ENABLED, TRANSPARENT_ALPHA_LEVELS, TRANSPARENT_BG_COLOR,
+    TRANSPARENT_VARIANTS_ENABLED, TRANSPARENT_ALPHA_LEVELS, TRANSPARENT_BG_COLORS,
 )
 from screen_capture import capture_screen
 from logger import log
@@ -100,7 +100,7 @@ _transparent_template_cache = {}  # {path: [(name, color, gray), ...]}
 
 
 def _load_transparent_templates(template_dir):
-    """원본 템플릿의 반투명 변형을 생성/캐시 (ROI 전용)."""
+    """원본 템플릿의 반투명 변형을 생성/캐시 (ROI 전용). 다중 배경색 × 다중 alpha."""
     if template_dir in _transparent_template_cache:
         return _transparent_template_cache[template_dir]
 
@@ -109,22 +109,23 @@ def _load_transparent_templates(template_dir):
         return []
 
     templates = _load_templates(template_dir)
-    bg = np.array(TRANSPARENT_BG_COLOR, dtype=np.uint8)
     variants = []
 
-    for fpath, tmpl_color, tmpl_gray in templates:
-        for alpha in TRANSPARENT_ALPHA_LEVELS:
-            blended_color = cv2.addWeighted(
-                tmpl_color, alpha,
-                np.full_like(tmpl_color, bg), 1.0 - alpha,
-                0
-            )
-            blended_gray = cv2.cvtColor(blended_color, cv2.COLOR_BGR2GRAY)
-            variant_name = f"{os.path.basename(fpath)}@a{alpha:.1f}"
-            variants.append((variant_name, blended_color, blended_gray))
+    for bg_color in TRANSPARENT_BG_COLORS:
+        bg = np.array(bg_color, dtype=np.uint8)
+        for fpath, tmpl_color, tmpl_gray in templates:
+            for alpha in TRANSPARENT_ALPHA_LEVELS:
+                blended_color = cv2.addWeighted(
+                    tmpl_color, alpha,
+                    np.full_like(tmpl_color, bg), 1.0 - alpha,
+                    0
+                )
+                blended_gray = cv2.cvtColor(blended_color, cv2.COLOR_BGR2GRAY)
+                variant_name = f"{os.path.basename(fpath)}@a{alpha:.1f}bg{bg_color[1]}"
+                variants.append((variant_name, blended_color, blended_gray))
 
     _transparent_template_cache[template_dir] = variants
-    log.debug(f"반투명 변형 {len(variants)}개 생성 (alpha: {TRANSPARENT_ALPHA_LEVELS})")
+    log.debug(f"반투명 변형 {len(variants)}개 생성 (alpha: {TRANSPARENT_ALPHA_LEVELS}, 배경: {len(TRANSPARENT_BG_COLORS)}종)")
     return variants
 
 

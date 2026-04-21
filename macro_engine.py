@@ -19,6 +19,8 @@ from config import (
     POTION_COOLDOWN, POTION_CHECK_INTERVAL,
     PLAYER_HP_BAR_REGION, PLAYER_HP_COLOR_LOWER, PLAYER_HP_COLOR_UPPER,
     PLAYER_HP_COLOR_LOWER2, PLAYER_HP_COLOR_UPPER2,
+    PLAYER_MP_BAR_REGION, PLAYER_MP_COLOR_LOWER, PLAYER_MP_COLOR_UPPER,
+    PLAYER_MP_COLOR_LOWER2, PLAYER_MP_COLOR_UPPER2,
 )
 from logger import log
 
@@ -42,6 +44,9 @@ class MacroEngine:
         # 자동 물약 상태
         self._last_potion_time = 0.0        # 마지막 물약 사용 시각
         self._last_hp_check_time = 0.0      # 마지막 HP 확인 시각
+        # HP/MP 비율 (UI 동기화용 — 0.0~1.0, -1.0=측정 불가)
+        self.player_hp_ratio = -1.0
+        self.player_mp_ratio = -1.0
 
     def _ensure_foreground(self):
         """게임 창이 포그라운드인지 주기적으로 확인 및 전환."""
@@ -131,15 +136,19 @@ class MacroEngine:
     # 자동 물약 (캐릭터 HP 감시)
     # ══════════════════════════════════════════════
 
-    def _measure_player_hp(self):
+    def _measure_player_hp(self, frame=None):
         """
         캐릭터 HP바의 HP 비율(0.0~1.0)을 측정.
         게임 화면 좌상단의 HP바 영역에서 빨간색 픽셀 비율로 추정.
 
+        Args:
+            frame: 캡처된 프레임 (None이면 내부에서 캡처)
+
         Returns:
             float (0.0~1.0) 또는 -1.0 (측정 불가)
         """
-        frame = capture_screen(region=self.region)
+        if frame is None:
+            frame = capture_screen(region=self.region)
         if frame is None:
             return -1.0
 
@@ -170,6 +179,48 @@ class MacroEngine:
         ratio = np.count_nonzero(mask) / total_pixels
         return ratio
 
+    def _measure_player_mp(self, frame=None):
+        """
+        캐릭터 MP바의 MP 비율(0.0~1.0)을 측정.
+        게임 화면의 MP바 영역에서 파란색 픽셀 비율로 추정.
+
+        Args:
+            frame: 캡처된 프레임 (None이면 내부에서 캡처)
+
+        Returns:
+            float (0.0~1.0) 또는 -1.0 (측정 불가)
+        """
+        if frame is None:
+            frame = capture_screen(region=self.region)
+        if frame is None:
+            return -1.0
+
+        bx, by, bw, bh = PLAYER_MP_BAR_REGION
+        if by + bh > frame.shape[0] or bx + bw > frame.shape[1]:
+            return -1.0
+
+        roi = frame[by:by + bh, bx:bx + bw]
+        if roi.size == 0:
+            return -1.0
+
+        hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
+
+        # 파란색~보라색 2구간 매칭 (그라데이션 대응)
+        mask1 = cv2.inRange(hsv,
+                            np.array(PLAYER_MP_COLOR_LOWER),
+                            np.array(PLAYER_MP_COLOR_UPPER))
+        mask2 = cv2.inRange(hsv,
+                            np.array(PLAYER_MP_COLOR_LOWER2),
+                            np.array(PLAYER_MP_COLOR_UPPER2))
+        mask = cv2.bitwise_or(mask1, mask2)
+
+        total_pixels = roi.shape[0] * roi.shape[1]
+        if total_pixels == 0:
+            return -1.0
+
+        ratio = np.count_nonzero(mask) / total_pixels
+        return ratio
+
     def _check_and_use_potion(self):
         """
         캐릭터 HP를 확인하고 낮으면 물약 사용.
@@ -189,12 +240,21 @@ class MacroEngine:
         if now - self._last_potion_time < POTION_COOLDOWN:
             return
 
-        hp_ratio = self._measure_player_hp()
+        frame = capture_screen(region=self.region)
+
+        hp_ratio = self._measure_player_hp(frame)
+        self.player_hp_ratio = hp_ratio
+
+        mp_ratio = self._measure_player_mp(frame)
+        self.player_mp_ratio = mp_ratio
+
         if hp_ratio < 0:
             log.debug("캐릭터 HP 측정 불가")
             return
 
-        log.debug(f"캐릭터 HP: {hp_ratio:.1%}")
+        hp_str = f"{hp_ratio:.1%}"
+        mp_str = f"{mp_ratio:.1%}" if mp_ratio >= 0 else "측정불가"
+        log.debug(f"캐릭터 HP: {hp_str}, MP: {mp_str}")
 
         if hp_ratio <= POTION_HP_THRESHOLD:
             press_key(POTION_KEY_SCANCODE)
@@ -285,4 +345,6 @@ class MacroEngine:
         self.running = False
         self.tracker.reset()
         self._miss_count = 0
+        self.player_hp_ratio = -1.0
+        self.player_mp_ratio = -1.0
         log.info("매크로 중지 요청")

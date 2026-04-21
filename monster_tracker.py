@@ -12,6 +12,7 @@ from config import (
     UI_EXCLUDE_TOP, UI_EXCLUDE_BOTTOM,
     PRECLICK_REFINE_ENABLED, PRECLICK_ROI_PAD_RATIO, TRACKING_ROI_PAD_RATIO,
     REFINE_MAX_DISTANCE, DETECT_SCALES, ROI_DETECT_SCALES,
+    DETECT_MISS_MAX,
 )
 from screen_capture import capture_screen
 from logger import log
@@ -241,7 +242,7 @@ class MonsterTracker:
         self._hp_no_change_count = 0        # HP 변화 없음 연속 횟수
         self._skip_positions = []           # 타임아웃된 대상 위치 (일시 제외)
         self._detect_miss_count = 0         # 연속 감지 실패 횟수 (사망 판정용)
-        self._detect_miss_max = 3           # 연속 N회 실패 시 사망 판정
+        self._detect_miss_max = DETECT_MISS_MAX
 
     # ══════════════════════════════════════════════
     # 좌표 변환 헬퍼 (내부: 프레임 로컬, 외부: 스크린 절대)

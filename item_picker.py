@@ -166,3 +166,52 @@ class ItemPicker:
             return False
         active = int(np.count_nonzero(diff_mask))
         return active / total >= threshold_ratio
+
+    def _find_item_blob(self, diff_mask: np.ndarray,
+                        bbox_center_in_roi: Tuple[int, int],
+                        bbox_diagonal: float,
+                        min_area: int, max_area: int,
+                        max_distance_ratio: float) -> Optional[Tuple[int, int]]:
+        """
+        차분 마스크에서 크기/위치 필터를 통과하는 블롭 중 가장 큰 것을 선택.
+
+        Args:
+            diff_mask: uint8 마스크
+            bbox_center_in_roi: ROI-local bbox 중심 (cx, cy)
+            bbox_diagonal: bbox 대각선 길이 (px)
+            min_area / max_area: 허용 블롭 면적 범위
+            max_distance_ratio: bbox 중심에서 블롭까지 허용 거리 (× bbox_diagonal)
+
+        Returns:
+            ROI-local 블롭 중심 (cx, cy) 또는 None
+        """
+        contours, _ = cv2.findContours(diff_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        if not contours:
+            return None
+
+        max_dist = bbox_diagonal * max_distance_ratio
+        bcx, bcy = bbox_center_in_roi
+
+        best_area = 0
+        best_center = None
+
+        for cnt in contours:
+            area = cv2.contourArea(cnt)
+            if area < min_area or area > max_area:
+                continue
+
+            M = cv2.moments(cnt)
+            if M["m00"] == 0:
+                continue
+            cx = int(M["m10"] / M["m00"])
+            cy = int(M["m01"] / M["m00"])
+
+            dist = ((cx - bcx) ** 2 + (cy - bcy) ** 2) ** 0.5
+            if dist > max_dist:
+                continue
+
+            if area > best_area:
+                best_area = area
+                best_center = (cx, cy)
+
+        return best_center

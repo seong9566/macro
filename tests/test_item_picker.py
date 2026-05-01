@@ -173,3 +173,79 @@ class TestIsOutlierDiff:
         picker = ItemPicker()
 
         assert picker._is_outlier_diff(mask, threshold_ratio=0.4) is True
+
+
+# ══════════════════════════════════════════════
+# ItemPicker._find_item_blob
+# ══════════════════════════════════════════════
+
+class TestFindItemBlob:
+    def test_finds_single_valid_blob(self):
+        mask = np.zeros((100, 100), dtype=np.uint8)
+        mask[40:55, 40:55] = 255  # 15×15 = 225 px²
+        picker = ItemPicker()
+
+        result = picker._find_item_blob(
+            mask,
+            bbox_center_in_roi=(50, 50),
+            bbox_diagonal=20.0,
+            min_area=30, max_area=2500,
+            max_distance_ratio=1.5,
+        )
+
+        assert result is not None
+        cx, cy = result
+        assert 40 <= cx <= 55
+        assert 40 <= cy <= 55
+
+    def test_rejects_too_small_blob(self):
+        mask = np.zeros((100, 100), dtype=np.uint8)
+        mask[50:53, 50:53] = 255  # 9 px² < min 30
+        picker = ItemPicker()
+
+        result = picker._find_item_blob(
+            mask, (50, 50), 20.0, 30, 2500, 1.5
+        )
+
+        assert result is None
+
+    def test_rejects_too_large_blob(self):
+        mask = np.zeros((100, 100), dtype=np.uint8)
+        mask[10:90, 10:90] = 255  # 6400 px² > max 2500
+        picker = ItemPicker()
+
+        result = picker._find_item_blob(
+            mask, (50, 50), 20.0, 30, 2500, 1.5
+        )
+
+        assert result is None
+
+    def test_rejects_blob_too_far_from_bbox_center(self):
+        # bbox 중심 (100, 100), 대각선 20, max_distance = 30
+        mask = np.zeros((200, 200), dtype=np.uint8)
+        mask[10:25, 10:25] = 255  # 중심 ~17, distance ~117 > 30
+        picker = ItemPicker()
+
+        result = picker._find_item_blob(
+            mask, (100, 100), 20.0, 30, 2500, 1.5
+        )
+
+        assert result is None
+
+    def test_picks_largest_blob_when_multiple_valid(self):
+        mask = np.zeros((100, 100), dtype=np.uint8)
+        # 작은 블롭 (10×10 = 100 px²) — 중심 (20, 20)
+        mask[15:25, 15:25] = 255
+        # 큰 블롭 (20×20 = 400 px²) — 중심 (60, 60)
+        mask[50:70, 50:70] = 255
+
+        picker = ItemPicker()
+        result = picker._find_item_blob(
+            mask, (50, 50), 100.0, 30, 2500, 1.5
+        )
+
+        assert result is not None
+        cx, cy = result
+        # 큰 블롭(중심 60, 60)이 선택되어야 함
+        assert 50 <= cx <= 70
+        assert 50 <= cy <= 70

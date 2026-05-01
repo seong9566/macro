@@ -64,3 +64,42 @@ class TestBuildSnapshot:
 
         # snapshot의 roi는 변경 전 값(0) 유지
         assert snap.roi[0, 0, 0] == original_value
+
+
+# ══════════════════════════════════════════════
+# ItemPicker._compute_diff_mask
+# ══════════════════════════════════════════════
+
+class TestComputeDiffMask:
+    def test_no_change_returns_empty_mask(self):
+        baseline = np.full((50, 50, 3), 100, dtype=np.uint8)
+        after = baseline.copy()
+        picker = ItemPicker()
+
+        mask = picker._compute_diff_mask(baseline, after, threshold=30)
+
+        assert mask.shape == (50, 50)
+        assert mask.dtype == np.uint8
+        assert np.count_nonzero(mask) == 0
+
+    def test_detects_above_threshold_change(self):
+        baseline = np.full((60, 60, 3), 100, dtype=np.uint8)
+        after = baseline.copy()
+        # 충분히 큰 영역(20×20)을 변경 — 모폴로지로 깎이는 양 감안
+        after[20:40, 20:40] = 200
+
+        picker = ItemPicker()
+        mask = picker._compute_diff_mask(baseline, after, threshold=30)
+
+        # 모폴로지 정리 후에도 충분한 픽셀이 남아야 함
+        assert np.count_nonzero(mask) > 100
+
+    def test_ignores_below_threshold_noise(self):
+        baseline = np.full((50, 50, 3), 100, dtype=np.uint8)
+        after = baseline.copy()
+        after[10:20, 10:20] = 110  # diff = 10 < threshold 30
+
+        picker = ItemPicker()
+        mask = picker._compute_diff_mask(baseline, after, threshold=30)
+
+        assert np.count_nonzero(mask) == 0

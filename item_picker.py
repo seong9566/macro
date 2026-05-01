@@ -91,3 +91,35 @@ class ItemPicker:
 
     def __init__(self):
         self._debug_save_count = 0
+
+    def _compute_diff_mask(self, baseline_roi: np.ndarray,
+                           after_roi: np.ndarray,
+                           threshold: int) -> np.ndarray:
+        """
+        절대 차분 → 그레이스케일 → 임계값 → 모폴로지(open/close).
+
+        Args:
+            baseline_roi: 사망 직전 ROI (BGR)
+            after_roi: 사망 직후 ROI (BGR)
+            threshold: 그레이값 차이 임계값 (0~255)
+
+        Returns:
+            uint8 마스크 (255=차분 있음, 0=없음)
+        """
+        # 모양이 다르면 작은 쪽에 맞춤 (창 위치 변화 등 엣지)
+        if baseline_roi.shape != after_roi.shape:
+            h = min(baseline_roi.shape[0], after_roi.shape[0])
+            w = min(baseline_roi.shape[1], after_roi.shape[1])
+            baseline_roi = baseline_roi[:h, :w]
+            after_roi = after_roi[:h, :w]
+
+        diff = cv2.absdiff(baseline_roi, after_roi)
+        gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
+        _, mask = cv2.threshold(gray, threshold, 255, cv2.THRESH_BINARY)
+
+        # 모폴로지 정리 — 노이즈 제거(open) + 끊긴 영역 합치기(close)
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+
+        return mask

@@ -60,6 +60,76 @@ class UILogHandler(logging.Handler):
 
 
 # ══════════════════════════════════════════════
+# 키 캡처 위젯 (스킬 탭에서 사용)
+# ══════════════════════════════════════════════
+
+from PyQt6.QtWidgets import QLineEdit
+
+
+_MODIFIER_KEYS = frozenset({
+    Qt.Key.Key_Shift, Qt.Key.Key_Control, Qt.Key.Key_Alt, Qt.Key.Key_Meta,
+    Qt.Key.Key_AltGr, Qt.Key.Key_CapsLock, Qt.Key.Key_NumLock,
+    Qt.Key.Key_ScrollLock,
+})
+
+
+class KeyCaptureLineEdit(QLineEdit):
+    """
+    QLineEdit를 상속한 키 캡처 위젯.
+    위젯 클릭 → 안내 텍스트 → 사용자가 키 누르면 nativeScanCode 캡처.
+    """
+    keyChanged = pyqtSignal(int)
+
+    def __init__(self, initial_scancode: int = 0, parent=None):
+        super().__init__(parent)
+        self.setReadOnly(True)
+        self._scan = initial_scancode
+        self._capturing = False
+        self._update_label()
+
+    def _update_label(self):
+        if self._scan == 0:
+            self.setText("(클릭 후 키 누르기)")
+        else:
+            self.setText(f"scan=0x{self._scan:02X}")
+
+    def mousePressEvent(self, event):
+        self.setText("(키 누르세요...)")
+        self._capturing = True
+        self.setFocus(Qt.FocusReason.MouseFocusReason)
+        super().mousePressEvent(event)
+
+    def focusOutEvent(self, event):
+        if self._capturing:
+            self._capturing = False
+            self._update_label()
+        super().focusOutEvent(event)
+
+    def keyPressEvent(self, event):
+        if not self._capturing:
+            super().keyPressEvent(event)
+            return
+        key = event.key()
+        if key in _MODIFIER_KEYS:
+            return
+        scan = event.nativeScanCode()
+        if scan == 0:
+            return
+        self._scan = scan
+        self._capturing = False
+        self._update_label()
+        self.keyChanged.emit(scan)
+        self.clearFocus()
+
+    def scancode(self) -> int:
+        return self._scan
+
+    def set_scancode(self, scan: int):
+        self._scan = scan
+        self._update_label()
+
+
+# ══════════════════════════════════════════════
 # 메인 윈도우
 # ══════════════════════════════════════════════
 
@@ -964,10 +1034,100 @@ class MacroWindow(QMainWindow):
         return w
 
     def _build_skill_tab(self) -> QWidget:
+        from PyQt6.QtWidgets import (
+            QTableWidget, QTableWidgetItem, QHeaderView, QCheckBox,
+            QInputDialog,
+        )
         w = QWidget()
         l = QVBoxLayout(w)
-        l.addWidget(QLabel("(P1.11에서 구현 — 스킬 등록)"))
+
+        l.addWidget(QLabel("등록된 스킬 (자동 사용 간격마다 키 발동):"))
+        self.skill_table = QTableWidget(0, 4)
+        self.skill_table.setHorizontalHeaderLabels(
+            ["이름", "키", "자동 사용 간격(초)", "활성"]
+        )
+        self.skill_table.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.Stretch
+        )
+        l.addWidget(self.skill_table)
+
+        btn_row = QHBoxLayout()
+        btn_add = QPushButton("스킬 추가")
+        btn_add.clicked.connect(self._on_skill_add)
+        btn_del = QPushButton("선택 삭제")
+        btn_del.clicked.connect(self._on_skill_delete)
+        btn_row.addWidget(btn_add)
+        btn_row.addWidget(btn_del)
+        l.addLayout(btn_row)
+
+        self._refresh_skill_table()
         return w
+
+    def _refresh_skill_table(self):
+        from PyQt6.QtWidgets import QTableWidgetItem, QCheckBox
+        self.skill_table.setRowCount(0)
+        for s in self.profile_manager.current.skills:
+            row = self.skill_table.rowCount()
+            self.skill_table.insertRow(row)
+            self.skill_table.setItem(row, 0, QTableWidgetItem(s.name))
+            self.skill_table.setItem(row, 1, QTableWidgetItem(f"0x{s.key_scancode:02X}"))
+            self.skill_table.setItem(row, 2, QTableWidgetItem(f"{s.auto_use_interval:.1f}"))
+            chk = QCheckBox()
+            chk.setChecked(s.enabled)
+            chk.stateChanged.connect(
+                lambda state, idx=row: self._on_skill_enabled_changed(idx, state)
+            )
+            self.skill_table.setCellWidget(row, 3, chk)
+
+    def _on_skill_add(self):
+        from PyQt6.QtWidgets import QInputDialog
+        name, ok = QInputDialog.getText(self, "스킬 추가", "이름:")
+        if not ok or not name.strip():
+            return
+        interval, ok = QInputDialog.getDouble(
+            self, "자동 사용 간격", "초 (0이면 수동):",
+            value=30.0, min=0.0, max=600.0, decimals=1
+        )
+        if not ok:
+            return
+        scan, ok = QInputDialog.getInt(
+            self, "키 스캔코드", "정수 입력 (예: 33 = 0x21):",
+            value=33, min=1, max=255
+        )
+        if not ok:
+            return
+        from hunt_profile import SkillEntry
+        new = SkillEntry(
+            name=name.strip(),
+            key_scancode=scan,
+            auto_use_interval=interval,
+            enabled=True,
+        )
+        self.profile_manager.set_skills(
+            self.profile_manager.current.skills + (new,)
+        )
+        self._refresh_skill_table()
+        self._append_log("INFO", f"스킬 추가: {name} (key=0x{scan:02X})")
+
+    def _on_skill_delete(self):
+        row = self.skill_table.currentRow()
+        if row < 0:
+            return
+        skills = list(self.profile_manager.current.skills)
+        removed = skills.pop(row)
+        self.profile_manager.set_skills(tuple(skills))
+        self._refresh_skill_table()
+        self._append_log("INFO", f"스킬 삭제: {removed.name}")
+
+    def _on_skill_enabled_changed(self, row: int, state):
+        import dataclasses
+        skills = list(self.profile_manager.current.skills)
+        if row >= len(skills):
+            return
+        skills[row] = dataclasses.replace(
+            skills[row], enabled=(state == Qt.CheckState.Checked.value)
+        )
+        self.profile_manager.set_skills(tuple(skills))
 
     def _build_potion_tab(self) -> QWidget:
         w = QWidget()

@@ -101,6 +101,25 @@ def _load_templates(template_dir):
     return templates
 
 
+def _load_all_active_templates(profile_provider, fallback_dir="images"):
+    """profile.monsters의 모든 template_dir에서 템플릿 합쳐 반환. 폴백: fallback_dir."""
+    if profile_provider is None:
+        return _load_templates(fallback_dir)
+    profile = profile_provider.current
+    if not profile.monsters:
+        return _load_templates(fallback_dir)
+    aggregated = []
+    seen_paths = set()
+    for m in profile.monsters:
+        templates = _load_templates(m.template_dir)
+        for t in templates:
+            # (fpath, color, gray) 튜플의 fpath로 중복 제거
+            if t[0] not in seen_paths:
+                aggregated.append(t)
+                seen_paths.add(t[0])
+    return aggregated
+
+
 _transparent_template_cache = {}  # {path: [(name, color, gray), ...]}
 
 
@@ -244,6 +263,66 @@ def detect_wolves(frame, template_dir="images", confidence=0.55,
         for r in results:
             log.debug(f"  → ({r[0]},{r[1]}) {r[2]}x{r[3]} score={r[4]:.3f} [{r[5]}]")
 
+    return results
+
+
+def detect_monsters(frame, templates, confidence=0.55, scales=None):
+    """
+    여러 폴더에서 합쳐진 템플릿으로 감지.
+    detect_wolves와 동일 로직이지만 templates를 직접 받음 (외부에서 _load_all_active_templates로 준비).
+    """
+    if scales is None:
+        scales = DETECT_SCALES
+    if not templates:
+        return []
+
+    frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    candidates = []
+
+    for fpath, tmpl_color, tmpl_gray in templates:
+        tmpl_name = os.path.basename(fpath)
+        th, tw = tmpl_gray.shape[:2]
+        for scale in scales:
+            sh = int(th * scale)
+            sw = int(tw * scale)
+            if sh < 10 or sw < 10:
+                continue
+            if sh > frame_gray.shape[0] or sw > frame_gray.shape[1]:
+                continue
+            interp = cv2.INTER_AREA if scale < 1.0 else cv2.INTER_LINEAR
+            resized = cv2.resize(tmpl_gray, (sw, sh), interpolation=interp)
+            result = cv2.matchTemplate(frame_gray, resized, cv2.TM_CCOEFF_NORMED)
+            locations = np.where(result >= confidence)
+            for pt_y, pt_x in zip(*locations):
+                score = result[pt_y, pt_x]
+                candidates.append((int(pt_x), int(pt_y), sw, sh, float(score), tmpl_name))
+
+    frame_h = frame.shape[0]
+    filtered = []
+    for c in candidates:
+        cy = c[1] + c[3] // 2
+        if cy < UI_EXCLUDE_TOP:
+            continue
+        if cy > frame_h - UI_EXCLUDE_BOTTOM:
+            continue
+        roi = frame_gray[c[1]:c[1] + c[3], c[0]:c[0] + c[2]]
+        if roi.size > 0 and np.mean(roi) > BRIGHTNESS_REJECT_THRESHOLD:
+            continue
+        filtered.append(c)
+    candidates = filtered
+
+    if not candidates:
+        return []
+    bboxes = [(c[0], c[1], c[2], c[3]) for c in candidates]
+    scores = [c[4] for c in candidates]
+    names = [c[5] for c in candidates]
+    picked = _nms_with_scores(bboxes, scores, overlap_thresh=0.3)
+    results = []
+    for i in picked:
+        x, y, w, h = bboxes[i]
+        results.append((x, y, w, h, scores[i], names[i]))
+    if results:
+        log.debug(f"몬스터 감지: {len(results)}마리 (template pool {len(templates)}개)")
     return results
 
 
@@ -401,7 +480,9 @@ class MonsterTracker:
         if frame is None:
             return []
 
-        return detect_wolves(frame, self.template_dir, self._current_confidence())
+        # profile에 등록된 모든 monster의 템플릿을 합쳐 사용
+        templates = _load_all_active_templates(self.profile_provider, self.template_dir)
+        return detect_monsters(frame, templates, self._current_confidence())
 
     def detect_nearest(self, frame=None, player_pos=None):
         """
@@ -588,7 +669,7 @@ class MonsterTracker:
         # 그레이스케일 ROI (속도 3배 향상)
         roi_gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
 
-        templates = _load_templates(self.template_dir)
+        templates = _load_all_active_templates(self.profile_provider, self.template_dir)
         best_score = 0
         best_result = None
         # 헬퍼로 일관성 있게 — tracking이면 tracking_confidence, 아니면 detect_confidence

@@ -15,9 +15,6 @@ from skill_manager import SkillManager
 from window_manager import activate_window, get_game_region
 from config import (
     CLICK_METHOD, DEFAULT_DELAY, ATTACK_INTERVAL, DETECT_CONFIDENCE,
-    LOOT_ENABLED, LOOT_KEY_SCANCODE, LOOT_PRESS_COUNT,
-    LOOT_PRESS_INTERVAL, LOOT_DELAY_AFTER_KILL,
-    LOOT_VISUAL_ENABLED, LOOT_AFTER_CLICK_DELAY,
     ACTIVATE_WINDOW_ON_START, REACTIVATE_INTERVAL, REGION_REFRESH_INTERVAL,
     GAME_WINDOW_TITLE,
     ROAM_ENABLED, ROAM_AFTER_MISS_COUNT, ROAM_CLICK_DISTANCE,
@@ -86,38 +83,32 @@ class MacroEngine:
             self.tracker.region = new_region
             log.info(f"게임 창 영역 갱신: {new_region}")
 
-    def _loot_items(self):
-        """
-        사망 판정 후 아이템 줍기.
-            1. 시각 기반 픽업: 스냅샷 차분으로 드롭 위치 검출 → 클릭
-            2. Spacebar 보험 픽업: 시각 성공 시 1회, 실패 시 LOOT_PRESS_COUNT회
-        """
-        if not LOOT_ENABLED:
+    def _loot_items(self, profile):
+        """사망 판정 후 아이템 줍기. profile은 호출자가 1회 캡처한 스냅샷."""
+        loot = profile.loot
+        if not loot.enabled:
             return
 
-        time.sleep(LOOT_DELAY_AFTER_KILL + random.uniform(0, 0.05))
+        time.sleep(loot.delay_after_kill + random.uniform(0, 0.05))
 
-        # 1. 시각 기반 픽업 시도 (스냅샷 atomic 읽기 — 한 번만 참조 확보)
         picked = False
         snapshot = self.tracker.combat_snapshot
-        if LOOT_VISUAL_ENABLED and snapshot is not None and self.region is not None:
+        if loot.visual_enabled and snapshot is not None and self.region is not None:
             picked = self.item_picker.try_pickup(
                 snapshot=snapshot,
                 current_region=self.region,
-                click_method=self.click_method,
+                click_method=profile.combat.click_method,
             )
             if picked:
                 log.info("아이템 픽업: 시각 클릭 성공")
-                time.sleep(LOOT_AFTER_CLICK_DELAY)
+                time.sleep(loot.after_click_delay)
 
-        # 2. Spacebar 보험 — 시각 성공 시 1회 (다중 아이템 보조), 실패 시 LOOT_PRESS_COUNT회
-        space_count = 1 if picked else LOOT_PRESS_COUNT
+        space_count = 1 if picked else loot.press_count
         for i in range(space_count):
-            press_key(LOOT_KEY_SCANCODE)
+            press_key(loot.key_scancode)
             if i < space_count - 1:
-                time.sleep(LOOT_PRESS_INTERVAL + random.uniform(0, 0.04))
+                time.sleep(loot.press_interval + random.uniform(0, 0.04))
         if not picked:
-            # 시각 픽업 못한 경우: 기존 로그 신호 보존 (사용자가 grep으로 줍기 횟수 추적)
             log.info(f"아이템 줍기 (Spacebar 보험 ×{space_count})")
         else:
             log.debug(f"Spacebar 보조 픽업 ×{space_count}")
@@ -361,13 +352,13 @@ class MacroEngine:
                     self._miss_count = 0
                     # 대상 사망 → 아이템 줍기
                     log.info("대상 사망 추정 → 아이템 줍기")
-                    self._loot_items()
+                    self._loot_items(self.profile_manager.current)
 
                 elif reason == TRACK_ABANDONED_HP:
                     # HP 변화 없음 지속 = 사실상 사망 (ROI false-positive로 TRACK_KILLED 못 잡은 케이스 다수)
                     # 픽업 시도하되 미스 카운터는 그대로 둬서 다음 사이클에서 자연스럽게 재탐색/이동
                     log.info("대상 HP 정체 → 사실상 사망 추정, 아이템 줍기 시도")
-                    self._loot_items()
+                    self._loot_items(self.profile_manager.current)
 
                 else:
                     # 미발견 또는 포기

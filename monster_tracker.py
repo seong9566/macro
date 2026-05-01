@@ -341,6 +341,14 @@ class MonsterTracker:
     # ══════════════════════════════════════════════
     # 프로필 동적 조회 헬퍼 (profile_provider 주입 시 사용)
     # ══════════════════════════════════════════════
+    #
+    # NOTE: 각 헬퍼는 사이클당 여러 번 호출될 수 있으며 매번 profile_provider.current를
+    # 독립적으로 읽음. CPython GIL로 각 읽기는 atomic이지만, 헬퍼들 사이에서 UI 스레드가
+    # 프로필을 교체하면 한 사이클 안에서 다른 필드가 다른 프로필 값을 사용할 수 있음.
+    # 영향: 1 프레임 동안 confidence는 새 프로필, hp_offset은 옛 프로필 등 — 다음 프레임에서
+    # 자연스럽게 자기 보정됨. 이는 "사이클당 1회 스냅샷" 스펙과 약간 다른 트레이드오프이지만,
+    # MonsterTracker가 frame 단위가 아닌 메서드 단위로 호출되는 구조상 허용 가능 범위로 판단.
+    # 더 엄격한 일관성이 필요하면 find_and_track 시그니처에 profile 인자 추가 (Phase 2 검토).
 
     def _current_confidence(self) -> float:
         """프로필이 있으면 monsters[0].detect_confidence, 없으면 정적값."""
@@ -349,6 +357,14 @@ class MonsterTracker:
             if profile.monsters:
                 return profile.monsters[0].detect_confidence
         return self.confidence
+
+    def _current_tracking_confidence(self) -> float:
+        """프로필이 있으면 monsters[0].tracking_confidence, 없으면 config 폴백."""
+        if self.profile_provider is not None:
+            profile = self.profile_provider.current
+            if profile.monsters:
+                return profile.monsters[0].tracking_confidence
+        return TRACKING_CONFIDENCE
 
     def _current_hp_bar_offset_y(self) -> int:
         """프로필이 있으면 monsters[0].hp_bar_offset_y, 없으면 config 폴백."""
@@ -575,14 +591,9 @@ class MonsterTracker:
         templates = _load_templates(self.template_dir)
         best_score = 0
         best_result = None
-        if tracking and self.profile_provider is not None:
-            profile = self.profile_provider.current
-            if profile.monsters:
-                min_confidence = profile.monsters[0].tracking_confidence
-            else:
-                min_confidence = TRACKING_CONFIDENCE  # 폴백
-        else:
-            min_confidence = TRACKING_CONFIDENCE if tracking else self._current_confidence()
+        # 헬퍼로 일관성 있게 — tracking이면 tracking_confidence, 아니면 detect_confidence
+        min_confidence = (self._current_tracking_confidence() if tracking
+                          else self._current_confidence())
 
         for fpath, tmpl_color, tmpl_gray in templates:
             th, tw = tmpl_gray.shape[:2]

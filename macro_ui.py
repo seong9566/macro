@@ -33,6 +33,8 @@ from screen_capture import capture_screen
 from monster_tracker import MonsterTracker, detect_wolves, _load_templates, clear_template_cache
 from macro_engine import MacroEngine
 from window_manager import get_game_region, activate_window
+from hunt_profile import migrate_from_legacy_config, load_profile, save_profile
+from profile_manager import ProfileManager
 
 
 # ══════════════════════════════════════════════
@@ -71,6 +73,9 @@ class MacroWindow(QMainWindow):
         self.setWindowTitle("매크로 컨트롤러")
         self.setMinimumSize(900, 700)
 
+        # 프로필 매니저 초기화 (default.json 자동 마이그레이션 + 손상 백업)
+        self.profile_manager = self._init_profile_manager()
+
         # 매크로 엔진
         self.engine = None
         self.engine_thread = None
@@ -104,6 +109,55 @@ class MacroWindow(QMainWindow):
         keyboard.add_hotkey("F6", lambda: self._stop_signal.emit())
 
     # ══════════════════════════════════════════
+    # 프로필 매니저 초기화 (Codex Critical 2: 손상 JSON 백업)
+    # ══════════════════════════════════════════
+
+    def _init_profile_manager(self):
+        """
+        profiles/default.json 로드. 없으면 legacy config 마이그레이션.
+        손상된 JSON 발견 시 .broken_<timestamp> 백업 + 경고 다이얼로그 (Codex Critical 2).
+        """
+        from PyQt6.QtWidgets import QMessageBox
+        os.makedirs("profiles", exist_ok=True)
+        default_path = "profiles/default.json"
+
+        if os.path.exists(default_path):
+            try:
+                profile = load_profile(default_path)
+                return ProfileManager(profile)
+            except Exception as e:
+                # 손상된 default.json — 사용자 데이터 보존을 위해 .broken으로 백업
+                import datetime
+                ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                broken_path = f"{default_path}.broken_{ts}"
+                try:
+                    os.rename(default_path, broken_path)
+                    backup_msg = f"{broken_path}로 백업했습니다."
+                except Exception as rename_err:
+                    backup_msg = f"백업 실패: {rename_err}"
+
+                # _append_log이 호출 가능한 시점인지 확인 — 초기화 중이면 print
+                try:
+                    self._append_log("ERROR", f"default.json 손상: {e}. {backup_msg}")
+                except Exception:
+                    print(f"[ERROR] default.json 손상: {e}. {backup_msg}")
+
+                QMessageBox.warning(
+                    self, "프로필 손상",
+                    f"profiles/default.json을 읽을 수 없습니다.\n\n"
+                    f"오류: {e}\n\n"
+                    f"파일을 {os.path.basename(broken_path)}로 백업하고 "
+                    f"기본 프로필을 새로 생성합니다.",
+                )
+                profile = migrate_from_legacy_config()
+                save_profile(profile, default_path)
+                return ProfileManager(profile)
+        else:
+            profile = migrate_from_legacy_config()
+            save_profile(profile, default_path)
+            return ProfileManager(profile)
+
+    # ══════════════════════════════════════════
     # UI 빌드
     # ══════════════════════════════════════════
 
@@ -130,6 +184,12 @@ class MacroWindow(QMainWindow):
         template_tab = QWidget()
         tabs.addTab(template_tab, "템플릿 관리")
         self._build_template_tab(template_tab)
+
+        # ── 좌측 도크: 프로필 설정 6 탭 (P1.9~P1.14에서 본문 채워짐) ──
+        from PyQt6.QtWidgets import QDockWidget
+        self._settings_dock = QDockWidget("프로필 설정", self)
+        self._settings_dock.setWidget(self._build_settings_tabs())
+        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self._settings_dock)
 
     def _build_monitor_tab(self, parent):
         layout = QVBoxLayout(parent)
@@ -623,9 +683,8 @@ class MacroWindow(QMainWindow):
             return
 
         self.engine = MacroEngine(
-            click_method=config.CLICK_METHOD,
+            profile_manager=self.profile_manager,
             region=self.region,
-            confidence=config.DETECT_CONFIDENCE,
         )
 
         # 통계용 콜백 연결
@@ -718,6 +777,57 @@ class MacroWindow(QMainWindow):
         self._refresh_template_list()
         self.template_preview.setText("삭제됨")
         self._append_log("INFO", f"템플릿 삭제: {name}")
+
+    # ══════════════════════════════════════════
+    # 프로필 설정 탭 (P1.8: 골격 / P1.9~P1.14: 본문)
+    # ══════════════════════════════════════════
+
+    def _build_settings_tabs(self) -> QTabWidget:
+        """6 탭 설정 패널 (P1.9~P1.14에서 본문 채워짐)."""
+        tabs = QTabWidget()
+        tabs.addTab(self._build_monster_tab(), "몬스터")
+        tabs.addTab(self._build_combat_tab(), "전투")
+        tabs.addTab(self._build_skill_tab(), "스킬")
+        tabs.addTab(self._build_potion_tab(), "물약")
+        tabs.addTab(self._build_hotkey_tab(), "단축키")
+        tabs.addTab(self._build_profile_tab(), "프로필")
+        return tabs
+
+    def _build_monster_tab(self) -> QWidget:
+        w = QWidget()
+        l = QVBoxLayout(w)
+        l.addWidget(QLabel("(P1.9에서 구현 — 몬스터 등록/관리)"))
+        return w
+
+    def _build_combat_tab(self) -> QWidget:
+        w = QWidget()
+        l = QVBoxLayout(w)
+        l.addWidget(QLabel("(P1.10에서 구현 — 전투 파라미터 슬라이더)"))
+        return w
+
+    def _build_skill_tab(self) -> QWidget:
+        w = QWidget()
+        l = QVBoxLayout(w)
+        l.addWidget(QLabel("(P1.11에서 구현 — 스킬 등록)"))
+        return w
+
+    def _build_potion_tab(self) -> QWidget:
+        w = QWidget()
+        l = QVBoxLayout(w)
+        l.addWidget(QLabel("(P1.12에서 구현 — HP/MP 임계값 + 키)"))
+        return w
+
+    def _build_hotkey_tab(self) -> QWidget:
+        w = QWidget()
+        l = QVBoxLayout(w)
+        l.addWidget(QLabel("(P1.13에서 구현 — 시작/중지 핫키)"))
+        return w
+
+    def _build_profile_tab(self) -> QWidget:
+        w = QWidget()
+        l = QVBoxLayout(w)
+        l.addWidget(QLabel("(P1.14에서 구현 — 프로필 저장/불러오기)"))
+        return w
 
 
 # ══════════════════════════════════════════════

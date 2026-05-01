@@ -115,10 +115,11 @@ class MacroEngine:
     # 랜덤 이동 (몬스터 미발견 시)
     # ══════════════════════════════════════════════
 
-    def _roam_random(self):
+    def _roam_random(self, profile):
         """
         몬스터를 찾지 못했을 때 랜덤 방향으로 이동.
         8방향 중 이전 방향을 제외하고 랜덤 선택하여 한쪽으로만 이동하는 문제 방지.
+        profile은 호출자가 캡처한 사이클 스냅샷 — click_method 일관성 보장.
         """
         if not ROAM_ENABLED:
             return
@@ -157,7 +158,7 @@ class MacroEngine:
         dir_name = direction_names[direction] if direction < len(direction_names) else "?"
 
         activate_window()
-        click(target_x, target_y, method=self.click_method)
+        click(target_x, target_y, method=profile.combat.click_method)
         log.info(f"랜덤 이동: {dir_name} ({target_x}, {target_y})")
         time.sleep(ROAM_MOVE_DELAY + random.uniform(0, 0.3))
 
@@ -354,7 +355,7 @@ class MacroEngine:
                     self._miss_count += 1
                     if self._miss_count >= ROAM_AFTER_MISS_COUNT:
                         log.info(f"연속 {self._miss_count}회 미발견 → 랜덤 이동")
-                        self._roam_random()
+                        self._roam_random(profile)
                         self._miss_count = 0
                     else:
                         log.info(f"대상 없음 (사유: {reason}), 재탐색 대기...")

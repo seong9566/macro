@@ -794,10 +794,119 @@ class MacroWindow(QMainWindow):
         return tabs
 
     def _build_monster_tab(self) -> QWidget:
+        """몬스터 탭 — 등록된 몬스터 리스트 + 추가/삭제/편집."""
+        from PyQt6.QtWidgets import QGroupBox, QGridLayout
         w = QWidget()
-        l = QVBoxLayout(w)
-        l.addWidget(QLabel("(P1.9에서 구현 — 몬스터 등록/관리)"))
+        l = QHBoxLayout(w)
+
+        # 좌측: 몬스터 리스트
+        left = QVBoxLayout()
+        left.addWidget(QLabel("등록된 몬스터:"))
+        self.monster_list = QListWidget()
+        self.monster_list.itemSelectionChanged.connect(self._on_monster_selected)
+        left.addWidget(self.monster_list)
+
+        btn_row = QHBoxLayout()
+        btn_add = QPushButton("몬스터 추가")
+        btn_add.clicked.connect(self._on_monster_add)
+        btn_del = QPushButton("선택 삭제")
+        btn_del.clicked.connect(self._on_monster_delete)
+        btn_row.addWidget(btn_add)
+        btn_row.addWidget(btn_del)
+        left.addLayout(btn_row)
+
+        # 우측: 선택된 몬스터 상세 편집
+        right = QGroupBox("상세 설정")
+        rgrid = QGridLayout(right)
+        self.mon_name = QLabel("(선택 없음)")
+        self.mon_dir = QLabel("-")
+        self.mon_conf = QSlider(Qt.Orientation.Horizontal)
+        self.mon_conf.setRange(30, 95)
+        self.mon_conf.setSingleStep(5)
+        self.mon_conf_label = QLabel("0.55")
+        self.mon_conf.valueChanged.connect(
+            lambda v: self.mon_conf_label.setText(f"{v/100:.2f}")
+        )
+        self.mon_conf.sliderReleased.connect(self._on_monster_confidence_changed)
+
+        rgrid.addWidget(QLabel("이름:"), 0, 0)
+        rgrid.addWidget(self.mon_name, 0, 1)
+        rgrid.addWidget(QLabel("폴더:"), 1, 0)
+        rgrid.addWidget(self.mon_dir, 1, 1)
+        rgrid.addWidget(QLabel("감지 임계값:"), 2, 0)
+        rgrid.addWidget(self.mon_conf, 2, 1)
+        rgrid.addWidget(self.mon_conf_label, 2, 2)
+
+        l.addLayout(left, 1)
+        l.addWidget(right, 2)
+
+        self._refresh_monster_list()
         return w
+
+    def _refresh_monster_list(self):
+        """profile_manager.current.monsters로 리스트 갱신."""
+        self.monster_list.clear()
+        for m in self.profile_manager.current.monsters:
+            self.monster_list.addItem(f"{m.name}  ({m.template_dir})")
+
+    def _selected_monster_index(self) -> int:
+        return self.monster_list.currentRow()
+
+    def _on_monster_selected(self):
+        idx = self._selected_monster_index()
+        if idx < 0:
+            return
+        m = self.profile_manager.current.monsters[idx]
+        self.mon_name.setText(m.name)
+        self.mon_dir.setText(m.template_dir)
+        self.mon_conf.setValue(int(m.detect_confidence * 100))
+        self.mon_conf_label.setText(f"{m.detect_confidence:.2f}")
+
+    def _on_monster_add(self):
+        from PyQt6.QtWidgets import QInputDialog
+        name, ok = QInputDialog.getText(self, "몬스터 추가", "이름:")
+        if not ok or not name.strip():
+            return
+        folder = QFileDialog.getExistingDirectory(self, "템플릿 폴더 선택", "images")
+        if not folder:
+            return
+        try:
+            rel = os.path.relpath(folder).replace("\\", "/")
+        except Exception:
+            rel = folder
+        from hunt_profile import MonsterEntry
+        new = MonsterEntry(
+            name=name.strip(),
+            template_dir=rel,
+            detect_confidence=0.55,
+            tracking_confidence=0.40,
+            hp_bar_offset_y=-20,
+        )
+        self.profile_manager.set_monsters(
+            self.profile_manager.current.monsters + (new,)
+        )
+        self._refresh_monster_list()
+        self._append_log("INFO", f"몬스터 추가: {name}")
+
+    def _on_monster_delete(self):
+        idx = self._selected_monster_index()
+        if idx < 0:
+            return
+        monsters = list(self.profile_manager.current.monsters)
+        removed = monsters.pop(idx)
+        self.profile_manager.set_monsters(tuple(monsters))
+        self._refresh_monster_list()
+        self._append_log("INFO", f"몬스터 삭제: {removed.name}")
+
+    def _on_monster_confidence_changed(self):
+        idx = self._selected_monster_index()
+        if idx < 0:
+            return
+        new_conf = self.mon_conf.value() / 100
+        import dataclasses
+        monsters = list(self.profile_manager.current.monsters)
+        monsters[idx] = dataclasses.replace(monsters[idx], detect_confidence=new_conf)
+        self.profile_manager.set_monsters(tuple(monsters))
 
     def _build_combat_tab(self) -> QWidget:
         w = QWidget()

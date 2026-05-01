@@ -1130,9 +1130,76 @@ class MacroWindow(QMainWindow):
         self.profile_manager.set_skills(tuple(skills))
 
     def _build_potion_tab(self) -> QWidget:
+        from PyQt6.QtWidgets import QCheckBox, QDoubleSpinBox, QFormLayout, QGroupBox
         w = QWidget()
         l = QVBoxLayout(w)
-        l.addWidget(QLabel("(P1.12에서 구현 — HP/MP 임계값 + 키)"))
+        potion = self.profile_manager.current.potion
+
+        # HP 섹션
+        hp_grp = QGroupBox("HP 자동 물약")
+        hp_form = QFormLayout(hp_grp)
+
+        self.potion_hp_enabled = QCheckBox("활성화")
+        self.potion_hp_enabled.setChecked(potion.hp_enabled)
+        self.potion_hp_enabled.stateChanged.connect(
+            lambda s: self.profile_manager.update_potion(
+                hp_enabled=(s == Qt.CheckState.Checked.value)
+            )
+        )
+        hp_form.addRow(self.potion_hp_enabled)
+
+        self.potion_hp_threshold = QSlider(Qt.Orientation.Horizontal)
+        self.potion_hp_threshold.setRange(10, 95)
+        self.potion_hp_threshold.setValue(int(potion.hp_threshold * 100))
+        self.potion_hp_threshold_label = QLabel(f"{int(potion.hp_threshold*100)}%")
+        self.potion_hp_threshold.valueChanged.connect(
+            lambda v: self.potion_hp_threshold_label.setText(f"{v}%")
+        )
+        self.potion_hp_threshold.sliderReleased.connect(
+            lambda: self.profile_manager.update_potion(
+                hp_threshold=self.potion_hp_threshold.value() / 100
+            )
+        )
+        hp_row = QHBoxLayout()
+        hp_row.addWidget(self.potion_hp_threshold)
+        hp_row.addWidget(self.potion_hp_threshold_label)
+        hp_form.addRow("HP 임계값 (이하면 사용):", hp_row)
+
+        from PyQt6.QtWidgets import QSpinBox
+        self.potion_hp_key = QSpinBox()
+        self.potion_hp_key.setRange(1, 255)
+        self.potion_hp_key.setValue(potion.hp_key_scancode)
+        self.potion_hp_key.setPrefix("0x")
+        self.potion_hp_key.setDisplayIntegerBase(16)
+        self.potion_hp_key.valueChanged.connect(
+            lambda v: self.profile_manager.update_potion(hp_key_scancode=v)
+        )
+        hp_form.addRow("키 스캔코드:", self.potion_hp_key)
+
+        l.addWidget(hp_grp)
+
+        # MP 섹션 — 자리만, 비활성
+        mp_grp = QGroupBox("MP 자동 물약 (Phase 3에서 활성화)")
+        mp_grp.setEnabled(False)
+        mp_form = QFormLayout(mp_grp)
+        mp_form.addRow(QLabel("(미구현 — UI만 표시)"))
+        l.addWidget(mp_grp)
+
+        # 쿨다운
+        self.potion_cooldown = QDoubleSpinBox()
+        self.potion_cooldown.setRange(1.0, 30.0)
+        self.potion_cooldown.setSingleStep(0.5)
+        self.potion_cooldown.setValue(potion.cooldown)
+        self.potion_cooldown.valueChanged.connect(
+            lambda v: self.profile_manager.update_potion(cooldown=v)
+        )
+        cd_row = QHBoxLayout()
+        cd_row.addWidget(QLabel("쿨다운 (초):"))
+        cd_row.addWidget(self.potion_cooldown)
+        cd_row.addStretch()
+        l.addLayout(cd_row)
+
+        l.addStretch()
         return w
 
     def _build_hotkey_tab(self) -> QWidget:

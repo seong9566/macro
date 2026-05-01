@@ -14,6 +14,8 @@ cd "C:\Users\PC\OneDrive\바탕 화면\workspace\macro"
 
 pip install -r requirements.txt
 python main.py          # F5=시작, F6=중지
+
+python macro_ui.py      # UI 실행
 ```
 
 테스트 프레임워크는 아직 없음. 수동 실행으로 검증.

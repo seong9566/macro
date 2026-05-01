@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "name": "default",
+  "monsters": [
+    {
+      "name": "wolf",
+      "template_dir": "images",
+      "detect_confidence": 0.55,
+      "tracking_confidence": 0.4,
+      "hp_bar_offset_y": -20
+    }
+  ],
+  "combat": {
+    "attack_interval": 0.15,
+    "detect_miss_max": 4,
+    "target_timeout": 15.0,
+    "click_method": "sendinput"
+  },
+  "potion": {
+    "hp_enabled": true,
+    "hp_threshold": 0.5,
+    "hp_key_scancode": 2,
+    "mp_enabled": false,
+    "mp_threshold": 0.3,
+    "mp_key_scancode": 3,
+    "cooldown": 3.0
+  },
+  "skills": [],
+  "hotkeys": {
+    "start": "F5",
+    "stop": "F6"
+  },
+  "loot": {
+    "enabled": true,
+    "visual_enabled": true,
+    "delay_after_kill": 0.2,
+    "snapshot_max_age": 8.0,
+    "diff_threshold": 30,
+    "min_blob_area": 30,
+    "max_blob_area": 2500,
+    "max_distance_ratio": 1.5,
+    "max_total_diff_ratio": 0.6,
+    "after_click_delay": 0.3,
+    "press_count": 2,
+    "press_interval": 0.1,
+    "key_scancode": 57,
+    "corpse_mask_ratio": 1.0,
+    "roi_expand_ratio": 1.0
+  }
+}

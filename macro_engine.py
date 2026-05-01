@@ -19,8 +19,6 @@ from config import (
     GAME_WINDOW_TITLE,
     ROAM_ENABLED, ROAM_AFTER_MISS_COUNT, ROAM_CLICK_DISTANCE,
     ROAM_MOVE_DELAY, ROAM_DIRECTION_COUNT,
-    POTION_ENABLED, POTION_KEY_SCANCODE, POTION_HP_THRESHOLD,
-    POTION_COOLDOWN, POTION_CHECK_INTERVAL,
     PLAYER_HP_BAR_REGION, PLAYER_HP_COLOR_LOWER, PLAYER_HP_COLOR_UPPER,
     PLAYER_HP_COLOR_LOWER2, PLAYER_HP_COLOR_UPPER2,
     PLAYER_MP_BAR_REGION, PLAYER_MP_COLOR_LOWER, PLAYER_MP_COLOR_UPPER,
@@ -252,27 +250,22 @@ class MacroEngine:
         ratio = np.count_nonzero(mask) / total_pixels
         return ratio
 
-    def _check_and_use_potion(self):
-        """
-        캐릭터 HP를 확인하고 낮으면 물약 사용.
-        쿨다운 시간 내에는 재사용하지 않음.
-        """
-        if not POTION_ENABLED:
+    def _check_and_use_potion(self, profile):
+        """캐릭터 HP 확인 → 임계값 이하면 물약 사용. profile은 호출자가 캡처한 스냅샷."""
+        potion = profile.potion
+        if not potion.hp_enabled:
             return
 
+        from config import POTION_CHECK_INTERVAL  # 코드 상수 (UI에서 안 만짐)
         now = time.time()
-
-        # 확인 주기 체크
         if now - self._last_hp_check_time < POTION_CHECK_INTERVAL:
             return
         self._last_hp_check_time = now
 
-        # 쿨다운 체크
-        if now - self._last_potion_time < POTION_COOLDOWN:
+        if now - self._last_potion_time < potion.cooldown:
             return
 
         frame = capture_screen(region=self.region)
-
         hp_ratio = self._measure_player_hp(frame)
         self.player_hp_ratio = hp_ratio
 
@@ -287,10 +280,10 @@ class MacroEngine:
         mp_str = f"{mp_ratio:.1%}" if mp_ratio >= 0 else "측정불가"
         log.debug(f"캐릭터 HP: {hp_str}, MP: {mp_str}")
 
-        if hp_ratio <= POTION_HP_THRESHOLD:
-            press_key(POTION_KEY_SCANCODE)
+        if hp_ratio <= potion.hp_threshold:
+            press_key(potion.hp_key_scancode)
             self._last_potion_time = now
-            log.info(f"물약 사용! (HP: {hp_ratio:.1%}, 임계값: {POTION_HP_THRESHOLD:.0%})")
+            log.info(f"물약 사용! (HP: {hp_ratio:.1%}, 임계값: {potion.hp_threshold:.0%})")
 
     # ══════════════════════════════════════════════
     # 메인 사냥 루프
@@ -324,7 +317,7 @@ class MacroEngine:
                 self._refresh_region()
 
                 # 캐릭터 HP 확인 → 물약 자동 사용
-                self._check_and_use_potion()
+                self._check_and_use_potion(self.profile_manager.current)
 
                 pos, reason = self.tracker.find_and_track()
 

@@ -1241,10 +1241,177 @@ class MacroWindow(QMainWindow):
             self._append_log("ERROR", f"핫키 재등록 실패: {e}")
 
     def _build_profile_tab(self) -> QWidget:
+        """프로필 탭 — 저장/불러오기/가져오기/내보내기/공장초기화."""
+        from PyQt6.QtWidgets import QFormLayout
         w = QWidget()
         l = QVBoxLayout(w)
-        l.addWidget(QLabel("(P1.14에서 구현 — 프로필 저장/불러오기)"))
+
+        # 현재 프로필 표시
+        self.profile_name_label = QLabel(f"현재: {self.profile_manager.current.name}")
+        l.addWidget(self.profile_name_label)
+
+        # 프로필 목록 드롭다운
+        row1 = QHBoxLayout()
+        row1.addWidget(QLabel("프로필 전환:"))
+        self.profile_combo = QComboBox()
+        self._refresh_profile_list()
+        self.profile_combo.activated.connect(self._on_profile_combo_select)
+        row1.addWidget(self.profile_combo)
+        l.addLayout(row1)
+
+        # 저장 / 다른 이름으로 저장
+        row2 = QHBoxLayout()
+        btn_save = QPushButton("현재 프로필 저장")
+        btn_save.clicked.connect(self._on_profile_save)
+        btn_save_as = QPushButton("다른 이름으로 저장")
+        btn_save_as.clicked.connect(self._on_profile_save_as)
+        row2.addWidget(btn_save)
+        row2.addWidget(btn_save_as)
+        l.addLayout(row2)
+
+        # 가져오기 / 내보내기
+        row3 = QHBoxLayout()
+        btn_import = QPushButton("가져오기 (JSON)")
+        btn_import.clicked.connect(self._on_profile_import)
+        btn_export = QPushButton("내보내기 (JSON)")
+        btn_export.clicked.connect(self._on_profile_export)
+        row3.addWidget(btn_import)
+        row3.addWidget(btn_export)
+        l.addLayout(row3)
+
+        # 공장 초기화
+        btn_reset = QPushButton("공장 초기화 (default 재생성)")
+        btn_reset.clicked.connect(self._on_profile_reset)
+        l.addWidget(btn_reset)
+
+        l.addStretch()
         return w
+
+    def _refresh_profile_list(self):
+        import glob
+        self.profile_combo.clear()
+        files = glob.glob("profiles/*.json")
+        for f in files:
+            self.profile_combo.addItem(os.path.splitext(os.path.basename(f))[0])
+
+    def _on_profile_combo_select(self):
+        name = self.profile_combo.currentText()
+        path = f"profiles/{name}.json"
+        if not os.path.exists(path):
+            return
+        try:
+            new_profile = load_profile(path)
+            self.profile_manager.replace(new_profile)
+            self.profile_name_label.setText(f"현재: {name}")
+            self._reload_all_tabs()
+            # 핫키도 재등록 (프로필이 다른 핫키 가질 수 있음)
+            try:
+                self.hotkey_registrar.rebind(
+                    new_profile.hotkeys.start, new_profile.hotkeys.stop
+                )
+            except Exception:
+                pass
+            self._append_log("INFO", f"프로필 전환: {name}")
+        except Exception as e:
+            self._append_log("ERROR", f"프로필 로딩 실패: {e}")
+
+    def _on_profile_save(self):
+        name = self.profile_manager.current.name
+        path = f"profiles/{name}.json"
+        save_profile(self.profile_manager.current, path)
+        self._append_log("INFO", f"프로필 저장: {path}")
+
+    def _on_profile_save_as(self):
+        from PyQt6.QtWidgets import QInputDialog
+        name, ok = QInputDialog.getText(self, "다른 이름으로 저장", "프로필 이름:")
+        if not ok or not name.strip():
+            return
+        import dataclasses
+        renamed = dataclasses.replace(self.profile_manager.current, name=name.strip())
+        self.profile_manager.replace(renamed)
+        save_profile(renamed, f"profiles/{name.strip()}.json")
+        self._refresh_profile_list()
+        self.profile_name_label.setText(f"현재: {name.strip()}")
+        self._append_log("INFO", f"프로필 저장: {name.strip()}")
+
+    def _on_profile_import(self):
+        path, _ = QFileDialog.getOpenFileName(self, "JSON 가져오기", "", "JSON (*.json)")
+        if not path:
+            return
+        try:
+            imported = load_profile(path)
+            target = f"profiles/{imported.name}.json"
+            save_profile(imported, target)
+            self.profile_manager.replace(imported)
+            self._refresh_profile_list()
+            self.profile_name_label.setText(f"현재: {imported.name}")
+            self._reload_all_tabs()
+            self._append_log("INFO", f"프로필 가져옴: {imported.name}")
+        except Exception as e:
+            self._append_log("ERROR", f"가져오기 실패: {e}")
+
+    def _on_profile_export(self):
+        path, _ = QFileDialog.getSaveFileName(
+            self, "JSON 내보내기",
+            f"{self.profile_manager.current.name}.json",
+            "JSON (*.json)"
+        )
+        if not path:
+            return
+        save_profile(self.profile_manager.current, path)
+        self._append_log("INFO", f"프로필 내보냄: {path}")
+
+    def _on_profile_reset(self):
+        from hunt_profile import migrate_from_legacy_config
+        default = migrate_from_legacy_config()
+        save_profile(default, "profiles/default.json")
+        self.profile_manager.replace(default)
+        self._refresh_profile_list()
+        self.profile_name_label.setText("현재: default")
+        self._reload_all_tabs()
+        self._append_log("INFO", "default 프로필 재생성")
+
+    def _reload_all_tabs(self):
+        """
+        프로필 변경 후 모든 탭 위젯의 표시값 갱신.
+        Codex Minor 7 반영: QSignalBlocker로 setValue 시 발생하는 valueChanged
+        시그널을 차단해 불필요한 profile.update_*() 재호출 방지.
+        """
+        from PyQt6.QtCore import QSignalBlocker
+
+        # 몬스터 탭 (테이블 재구성이라 시그널 차단 불필요)
+        self._refresh_monster_list()
+
+        # 전투 탭
+        c = self.profile_manager.current.combat
+        with QSignalBlocker(self.combat_attack_interval):
+            self.combat_attack_interval.setValue(c.attack_interval)
+        with QSignalBlocker(self.combat_miss_max):
+            self.combat_miss_max.setValue(c.detect_miss_max)
+        with QSignalBlocker(self.combat_timeout):
+            self.combat_timeout.setValue(c.target_timeout)
+
+        # 스킬 탭 (테이블 재구성)
+        self._refresh_skill_table()
+
+        # 물약 탭
+        p = self.profile_manager.current.potion
+        with QSignalBlocker(self.potion_hp_enabled):
+            self.potion_hp_enabled.setChecked(p.hp_enabled)
+        with QSignalBlocker(self.potion_hp_threshold):
+            self.potion_hp_threshold.setValue(int(p.hp_threshold * 100))
+        self.potion_hp_threshold_label.setText(f"{int(p.hp_threshold*100)}%")
+        with QSignalBlocker(self.potion_hp_key):
+            self.potion_hp_key.setValue(p.hp_key_scancode)
+        with QSignalBlocker(self.potion_cooldown):
+            self.potion_cooldown.setValue(p.cooldown)
+
+        # 단축키 탭
+        h = self.profile_manager.current.hotkeys
+        with QSignalBlocker(self.hotkey_start):
+            self.hotkey_start.setText(h.start)
+        with QSignalBlocker(self.hotkey_stop):
+            self.hotkey_stop.setText(h.stop)
 
 
 # ══════════════════════════════════════════════

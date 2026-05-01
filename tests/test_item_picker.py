@@ -1,5 +1,6 @@
 """ItemPicker 순수 함수 단위 테스트."""
 import dataclasses
+import time
 import numpy as np
 import pytest
 
@@ -249,3 +250,94 @@ class TestFindItemBlob:
         # 큰 블롭(중심 60, 60)이 선택되어야 함
         assert 50 <= cx <= 70
         assert 50 <= cy <= 70
+
+
+# ══════════════════════════════════════════════
+# ItemPicker.try_pickup — 통합 (mock 기반)
+# ══════════════════════════════════════════════
+
+class TestTryPickup:
+    def _make_snapshot(self, age_seconds=0.0, region=(0, 0, 200, 200)):
+        """테스트용 스냅샷 — 베이스라인 ROI는 회색."""
+        roi = np.full((80, 80, 3), 100, dtype=np.uint8)
+        return CombatSnapshot(
+            roi=roi,
+            roi_origin=(20, 20),
+            bbox=(40, 40, 40, 40),  # frame-local
+            region=region,
+            timestamp=time.time() - age_seconds,
+        )
+
+    def test_skips_when_snapshot_too_old(self, monkeypatch):
+        snap = self._make_snapshot(age_seconds=5.0)
+        click_calls = []
+        monkeypatch.setattr("item_picker.click",
+                            lambda x, y, method: click_calls.append((x, y)))
+        monkeypatch.setattr("item_picker.capture_screen",
+                            lambda region: np.zeros((200, 200, 3), dtype=np.uint8))
+
+        picker = ItemPicker()
+        picked = picker.try_pickup(snap, current_region=(0, 0, 200, 200), click_method="sendinput")
+
+        assert picked is False
+        assert click_calls == []
+
+    def test_skips_when_region_changed(self, monkeypatch):
+        snap = self._make_snapshot(region=(0, 0, 200, 200))
+        click_calls = []
+        monkeypatch.setattr("item_picker.click",
+                            lambda x, y, method: click_calls.append((x, y)))
+        monkeypatch.setattr("item_picker.capture_screen",
+                            lambda region: np.zeros((200, 200, 3), dtype=np.uint8))
+
+        picker = ItemPicker()
+        picked = picker.try_pickup(snap, current_region=(50, 50, 200, 200), click_method="sendinput")
+
+        assert picked is False
+        assert click_calls == []
+
+    def test_clicks_when_item_appears_in_roi(self, monkeypatch):
+        snap = self._make_snapshot()
+
+        # after 프레임 — 베이스라인과 같지만 ROI 한쪽에 "아이템"이 추가됨
+        # ROI는 frame[20:100, 20:100]이고 베이스라인 ROI는 회색 (100)
+        # after 프레임: ROI 위치에 같은 회색 + 아이템 추가
+        after_frame = np.full((200, 200, 3), 100, dtype=np.uint8)
+        # 아이템: ROI 좌상단 부근(frame-local 30, 30 ~ 45, 45 = ROI-local 10~25)
+        # bbox(frame-local 40~80)에서 떨어진 위치라 마스킹에 안 걸림
+        after_frame[30:45, 30:45] = 220
+
+        click_calls = []
+        monkeypatch.setattr("item_picker.click",
+                            lambda x, y, method: click_calls.append((x, y)))
+        monkeypatch.setattr("item_picker.capture_screen",
+                            lambda region: after_frame)
+
+        picker = ItemPicker()
+        picked = picker.try_pickup(snap, current_region=(0, 0, 200, 200), click_method="sendinput")
+
+        assert picked is True
+        assert len(click_calls) == 1
+        # 클릭 좌표는 screen 좌표 = region 오프셋 + frame-local
+        # region=(0,0,...)이므로 frame-local과 동일
+        # 아이템 중심 frame-local ~ (37, 37)
+        cx, cy = click_calls[0]
+        assert 30 <= cx <= 45
+        assert 30 <= cy <= 45
+
+    def test_returns_false_when_no_item_in_diff(self, monkeypatch):
+        snap = self._make_snapshot()
+        # after = baseline (변화 없음)
+        after_frame = np.full((200, 200, 3), 100, dtype=np.uint8)
+
+        click_calls = []
+        monkeypatch.setattr("item_picker.click",
+                            lambda x, y, method: click_calls.append((x, y)))
+        monkeypatch.setattr("item_picker.capture_screen",
+                            lambda region: after_frame)
+
+        picker = ItemPicker()
+        picked = picker.try_pickup(snap, current_region=(0, 0, 200, 200), click_method="sendinput")
+
+        assert picked is False
+        assert click_calls == []

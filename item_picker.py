@@ -215,3 +215,129 @@ class ItemPicker:
                 best_center = (cx, cy)
 
         return best_center
+
+    def _capture_after_roi(self, snapshot: CombatSnapshot) -> Optional[np.ndarray]:
+        """
+        현재 화면을 캡처해 snapshot.roi_origin/shape에 맞춰 ROI 잘라서 반환.
+
+        Returns:
+            ROI BGR 또는 None (캡처 실패 또는 shape 불일치)
+        """
+        frame = capture_screen(region=snapshot.region)
+        if frame is None:
+            return None
+
+        rx, ry = snapshot.roi_origin
+        rh, rw = snapshot.roi.shape[:2]
+
+        if ry + rh > frame.shape[0] or rx + rw > frame.shape[1]:
+            log.debug("after 프레임이 snapshot ROI보다 작음 → 픽업 스킵")
+            return None
+
+        return frame[ry:ry + rh, rx:rx + rw]
+
+    def try_pickup(self,
+                   snapshot: CombatSnapshot,
+                   current_region: Tuple[int, int, int, int],
+                   click_method: str) -> bool:
+        """
+        스냅샷 베이스라인 vs 현재 화면 차분으로 아이템 위치를 찾아 클릭.
+
+        Args:
+            snapshot: 사망 직전 베이스라인 스냅샷
+            current_region: 현재 게임 창 region (snapshot.region과 비교)
+            click_method: clicker.click()용 method 문자열
+
+        Returns:
+            True if 아이템 좌표를 클릭했음, False if 스킵 (안전장치/없음)
+        """
+        # ── 검증 게이트 ──
+        age = time.time() - snapshot.timestamp
+        if age > LOOT_SNAPSHOT_MAX_AGE:
+            log.debug(f"시각 픽업 스킵: 스냅샷 노화 ({age:.2f}s > {LOOT_SNAPSHOT_MAX_AGE}s)")
+            return False
+
+        if snapshot.region != current_region:
+            log.debug(f"시각 픽업 스킵: region 변경 ({snapshot.region} → {current_region})")
+            return False
+
+        # ── after ROI 캡처 ──
+        after_roi = self._capture_after_roi(snapshot)
+        if after_roi is None:
+            log.debug("시각 픽업 스킵: after ROI 캡처 실패")
+            return False
+
+        # ── 차분 → 마스크 ──
+        diff_mask = self._compute_diff_mask(snapshot.roi, after_roi, LOOT_DIFF_THRESHOLD)
+
+        # ── 이상치 차단 ──
+        if self._is_outlier_diff(diff_mask, LOOT_MAX_TOTAL_DIFF_RATIO):
+            log.info("시각 픽업 스킵: 차분 비율 과다 (카메라/캐릭터 이동 의심)")
+            self._save_debug_image_if_enabled(snapshot, after_roi, diff_mask, click_pos=None,
+                                              suffix="outlier")
+            return False
+
+        # ── 시체 영역 마스킹 ──
+        bx, by, bw, bh = snapshot.bbox
+        rx, ry = snapshot.roi_origin
+        bbox_in_roi = (bx - rx, by - ry, bw, bh)
+        diff_mask = self._mask_corpse_area(diff_mask, bbox_in_roi, LOOT_CORPSE_MASK_RATIO)
+
+        # ── 블롭 검출 (kwargs로 호출 — 6-param positional은 가독성 떨어짐) ──
+        bbox_diagonal = (bw ** 2 + bh ** 2) ** 0.5
+        bbox_center_in_roi = (bbox_in_roi[0] + bw // 2, bbox_in_roi[1] + bh // 2)
+
+        click_in_roi = self._find_item_blob(
+            diff_mask=diff_mask,
+            bbox_center_in_roi=bbox_center_in_roi,
+            bbox_diagonal=bbox_diagonal,
+            min_area=LOOT_MIN_BLOB_AREA,
+            max_area=LOOT_MAX_BLOB_AREA,
+            max_distance_ratio=LOOT_MAX_DISTANCE_RATIO,
+        )
+
+        if click_in_roi is None:
+            log.debug("시각 픽업: 유효 블롭 없음 (드롭 없거나 위치 필터 통과 실패)")
+            self._save_debug_image_if_enabled(snapshot, after_roi, diff_mask, click_pos=None,
+                                              suffix="no_blob")
+            return False
+
+        # ── 클릭 좌표 계산 (ROI-local → frame-local → screen) ──
+        cx_roi, cy_roi = click_in_roi
+        cx_frame = rx + cx_roi
+        cy_frame = ry + cy_roi
+        cx_screen = current_region[0] + cx_frame
+        cy_screen = current_region[1] + cy_frame
+
+        click(cx_screen, cy_screen, method=click_method)
+        log.info(f"시각 픽업 클릭: ({cx_screen}, {cy_screen})")
+
+        self._save_debug_image_if_enabled(snapshot, after_roi, diff_mask,
+                                          click_pos=(cx_roi, cy_roi),
+                                          suffix="ok")
+        return True
+
+    def _save_debug_image_if_enabled(self, snapshot, after_roi, diff_mask,
+                                      click_pos, suffix: str):
+        """디버그 옵션이 켜졌고 샘플링 통과 시 PNG 저장."""
+        if not LOOT_DEBUG_SAVE:
+            return
+        if random.random() > LOOT_DEBUG_SAMPLE_RATIO:
+            return
+
+        try:
+            os.makedirs(LOOT_DEBUG_DIR, exist_ok=True)
+            ts = time.strftime("%Y%m%d_%H%M%S")
+            cv2.imwrite(os.path.join(LOOT_DEBUG_DIR, f"{ts}_{suffix}_01_baseline.png"),
+                        snapshot.roi)
+            cv2.imwrite(os.path.join(LOOT_DEBUG_DIR, f"{ts}_{suffix}_02_after.png"),
+                        after_roi)
+            cv2.imwrite(os.path.join(LOOT_DEBUG_DIR, f"{ts}_{suffix}_03_diff.png"),
+                        diff_mask)
+            decision = cv2.cvtColor(diff_mask, cv2.COLOR_GRAY2BGR)
+            if click_pos is not None:
+                cv2.circle(decision, click_pos, 8, (0, 0, 255), 2)
+            cv2.imwrite(os.path.join(LOOT_DEBUG_DIR, f"{ts}_{suffix}_04_decision.png"),
+                        decision)
+        except Exception as e:
+            log.warning(f"디버그 이미지 저장 실패: {e}")

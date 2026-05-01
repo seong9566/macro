@@ -3,6 +3,9 @@ import numpy as np
 import os
 import glob
 import time
+from typing import Optional, Tuple
+
+from item_picker import CombatSnapshot, build_snapshot
 from config import (
     DETECT_CONFIDENCE, TRACKING_CONFIDENCE,
     TARGET_TIMEOUT, HP_CHECK_INTERVAL, HP_NO_CHANGE_MAX,
@@ -17,6 +20,7 @@ from config import (
     EDGE_CANNY_LOW, EDGE_CANNY_HIGH, EDGE_ONLY_MAX_COUNT,
     TRANSPARENT_VARIANTS_ENABLED, TRANSPARENT_ALPHA_LEVELS, TRANSPARENT_BG_COLORS,
     BRIGHTNESS_REJECT_THRESHOLD,
+    LOOT_ROI_EXPAND_RATIO,
 )
 from screen_capture import capture_screen
 from logger import log
@@ -307,10 +311,23 @@ class MonsterTracker:
         self._detect_miss_max = DETECT_MISS_MAX
         self._last_detect_was_edge = False   # 마지막 감지가 에지 전용이었는지
         self._edge_only_count = 0            # 에지 전용 연속 감지 횟수
+        # 시각 기반 픽업용 스냅샷 (frozen dataclass — atomic 통째 교체)
+        self.combat_snapshot: Optional[CombatSnapshot] = None
 
     # ══════════════════════════════════════════════
     # 좌표 변환 헬퍼 (내부: 프레임 로컬, 외부: 스크린 절대)
     # ══════════════════════════════════════════════
+
+    def _update_combat_snapshot(self, frame: np.ndarray, bbox: Tuple[int, int, int, int]):
+        """
+        frame과 bbox가 같은 캡처에서 나왔다는 것을 호출자가 보장한 상태에서만 호출.
+        스냅샷을 통째 교체 (frozen dataclass라 부분 갱신 불가).
+        """
+        if self.region is None:
+            return
+        snap = build_snapshot(frame, bbox, self.region, LOOT_ROI_EXPAND_RATIO)
+        if snap is not None:
+            self.combat_snapshot = snap
 
     def _local_to_screen(self, x, y):
         """프레임 로컬 좌표 → 스크린 절대 좌표."""
@@ -468,6 +485,7 @@ class MonsterTracker:
             log.info(f"대상 포기: ({cx}, {cy}) → 스킵 목록 등록")
         self.has_target = False
         self._reset_combat_state()
+        self.combat_snapshot = None
 
     def _reset_combat_state(self):
         """전투 판정 상태 초기화."""
@@ -663,8 +681,9 @@ class MonsterTracker:
                 log.debug(f"보정 거리 초과 ({dist:.0f}px > {REFINE_MAX_DISTANCE}px) → 원본 좌표 유지")
                 return None
 
-        # last_bbox 갱신
+        # last_bbox 갱신 + 같은 캡처/bbox로 스냅샷 동기화
         self.last_bbox = refined_bbox
+        self._update_combat_snapshot(frame, refined_bbox)
         log.debug(f"클릭 전 위치 보정: ({cx}, {cy})")
         return (cx, cy)
 
@@ -751,6 +770,9 @@ class MonsterTracker:
         else:
             self.last_bbox = bbox
 
+        # 같은 캡처(frame)에서 나온 bbox로 스냅샷 갱신 — 시각 픽업 베이스라인
+        self._update_combat_snapshot(frame, bbox)
+
         return (cx, cy), TRACK_OK
 
     def _detect_nearest_available(self, frame=None, player_pos=None):
@@ -797,4 +819,5 @@ class MonsterTracker:
         self._detect_miss_count = 0
         self._reset_combat_state()
         self._skip_positions.clear()
+        self.combat_snapshot = None
         log.debug("감지 상태 초기화")

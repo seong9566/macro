@@ -128,3 +128,66 @@ def load_profile(path: str) -> HuntProfile:
         hotkeys=HotkeyConfig(**data["hotkeys"]),
         loot=LootConfig(**data["loot"]),
     )
+
+
+# ══════════════════════════════════════════════
+# Legacy config.py → HuntProfile 마이그레이션
+# ══════════════════════════════════════════════
+
+def migrate_from_legacy_config() -> HuntProfile:
+    """
+    config.py의 현재 상수 값들을 읽어 default HuntProfile 생성.
+    첫 실행 시 default.json이 없으면 이 함수 결과를 저장한다.
+    """
+    import config
+
+    wolf = MonsterEntry(
+        name="wolf",
+        template_dir="images",
+        detect_confidence=config.DETECT_CONFIDENCE,
+        tracking_confidence=config.TRACKING_CONFIDENCE,
+        hp_bar_offset_y=config.HP_BAR_OFFSET_Y,
+    )
+
+    return HuntProfile(
+        schema_version=1,
+        name="default",
+        monsters=(wolf,),
+        combat=CombatConfig(
+            attack_interval=config.ATTACK_INTERVAL,
+            detect_miss_max=config.DETECT_MISS_MAX,
+            target_timeout=config.TARGET_TIMEOUT,
+            click_method=config.CLICK_METHOD,
+        ),
+        potion=PotionConfig(
+            hp_enabled=config.POTION_ENABLED,
+            hp_threshold=config.POTION_HP_THRESHOLD,
+            hp_key_scancode=config.POTION_KEY_SCANCODE,
+            mp_enabled=False,
+            mp_threshold=0.3,
+            mp_key_scancode=3,
+            cooldown=config.POTION_COOLDOWN,
+        ),
+        skills=(),
+        hotkeys=HotkeyConfig(
+            start=config.START_KEY,
+            stop=config.STOP_KEY,
+        ),
+        loot=LootConfig(
+            enabled=config.LOOT_ENABLED,
+            visual_enabled=config.LOOT_VISUAL_ENABLED,
+            delay_after_kill=config.LOOT_DELAY_AFTER_KILL,
+            snapshot_max_age=config.LOOT_SNAPSHOT_MAX_AGE,
+            diff_threshold=config.LOOT_DIFF_THRESHOLD,
+            min_blob_area=config.LOOT_MIN_BLOB_AREA,
+            max_blob_area=config.LOOT_MAX_BLOB_AREA,
+            max_distance_ratio=config.LOOT_MAX_DISTANCE_RATIO,
+            max_total_diff_ratio=config.LOOT_MAX_TOTAL_DIFF_RATIO,
+            after_click_delay=config.LOOT_AFTER_CLICK_DELAY,
+            press_count=config.LOOT_PRESS_COUNT,
+            press_interval=config.LOOT_PRESS_INTERVAL,
+            key_scancode=config.LOOT_KEY_SCANCODE,
+            corpse_mask_ratio=config.LOOT_CORPSE_MASK_RATIO,
+            roi_expand_ratio=config.LOOT_ROI_EXPAND_RATIO,
+        ),
+    )

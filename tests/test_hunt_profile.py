@@ -198,3 +198,63 @@ class TestCorruptedJsonHandling:
         path.write_text('{"schema_version": 1, "name": "x"', encoding="utf-8")  # 닫힘 없음
         with pytest.raises(Exception):
             load_profile(str(path))
+
+
+# ══════════════════════════════════════════════
+# Legacy config 마이그레이션
+# ══════════════════════════════════════════════
+
+from hunt_profile import migrate_from_legacy_config
+
+
+class TestLegacyMigration:
+    def test_migrate_produces_valid_profile(self):
+        profile = migrate_from_legacy_config()
+        assert profile.schema_version == 1
+        assert profile.name == "default"
+
+    def test_migrate_combat_matches_legacy_constants(self):
+        import config
+        profile = migrate_from_legacy_config()
+        assert profile.combat.attack_interval == config.ATTACK_INTERVAL
+        assert profile.combat.detect_miss_max == config.DETECT_MISS_MAX
+        assert profile.combat.target_timeout == config.TARGET_TIMEOUT
+        assert profile.combat.click_method == config.CLICK_METHOD
+
+    def test_migrate_potion_matches_legacy(self):
+        import config
+        profile = migrate_from_legacy_config()
+        assert profile.potion.hp_enabled == config.POTION_ENABLED
+        assert profile.potion.hp_threshold == config.POTION_HP_THRESHOLD
+        assert profile.potion.hp_key_scancode == config.POTION_KEY_SCANCODE
+        assert profile.potion.cooldown == config.POTION_COOLDOWN
+
+    def test_migrate_loot_matches_legacy(self):
+        import config
+        profile = migrate_from_legacy_config()
+        assert profile.loot.enabled == config.LOOT_ENABLED
+        assert profile.loot.visual_enabled == config.LOOT_VISUAL_ENABLED
+        assert profile.loot.snapshot_max_age == config.LOOT_SNAPSHOT_MAX_AGE
+        assert profile.loot.diff_threshold == config.LOOT_DIFF_THRESHOLD
+        assert profile.loot.key_scancode == config.LOOT_KEY_SCANCODE
+
+    def test_migrate_creates_default_wolf_monster(self):
+        import config
+        profile = migrate_from_legacy_config()
+        # 기존 매크로는 늑대 전용 → 마이그레이션 시 wolf 1종 자동 생성
+        assert len(profile.monsters) >= 1
+        wolf = profile.monsters[0]
+        assert wolf.name == "wolf"
+        assert wolf.detect_confidence == config.DETECT_CONFIDENCE
+        assert wolf.tracking_confidence == config.TRACKING_CONFIDENCE
+
+    def test_migrate_skills_starts_empty(self):
+        # 기존 매크로엔 스킬 등록이 없음 → 빈 튜플
+        profile = migrate_from_legacy_config()
+        assert profile.skills == ()
+
+    def test_migrate_hotkeys_matches_legacy(self):
+        import config
+        profile = migrate_from_legacy_config()
+        assert profile.hotkeys.start == config.START_KEY
+        assert profile.hotkeys.stop == config.STOP_KEY

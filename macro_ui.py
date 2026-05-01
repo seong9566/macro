@@ -909,9 +909,58 @@ class MacroWindow(QMainWindow):
         self.profile_manager.set_monsters(tuple(monsters))
 
     def _build_combat_tab(self) -> QWidget:
+        from PyQt6.QtWidgets import (
+            QDoubleSpinBox, QSpinBox, QFormLayout, QRadioButton, QButtonGroup, QGroupBox,
+        )
         w = QWidget()
-        l = QVBoxLayout(w)
-        l.addWidget(QLabel("(P1.10에서 구현 — 전투 파라미터 슬라이더)"))
+        form = QFormLayout(w)
+        combat = self.profile_manager.current.combat
+
+        # attack_interval
+        self.combat_attack_interval = QDoubleSpinBox()
+        self.combat_attack_interval.setRange(0.05, 1.0)
+        self.combat_attack_interval.setSingleStep(0.05)
+        self.combat_attack_interval.setValue(combat.attack_interval)
+        self.combat_attack_interval.valueChanged.connect(
+            lambda v: self.profile_manager.update_combat(attack_interval=v)
+        )
+        form.addRow("공격 간격 (초):", self.combat_attack_interval)
+
+        # detect_miss_max
+        self.combat_miss_max = QSpinBox()
+        self.combat_miss_max.setRange(1, 10)
+        self.combat_miss_max.setValue(combat.detect_miss_max)
+        self.combat_miss_max.valueChanged.connect(
+            lambda v: self.profile_manager.update_combat(detect_miss_max=v)
+        )
+        form.addRow("연속 미감지 사망 판정 (회):", self.combat_miss_max)
+
+        # target_timeout
+        self.combat_timeout = QDoubleSpinBox()
+        self.combat_timeout.setRange(5.0, 60.0)
+        self.combat_timeout.setSingleStep(1.0)
+        self.combat_timeout.setValue(combat.target_timeout)
+        self.combat_timeout.valueChanged.connect(
+            lambda v: self.profile_manager.update_combat(target_timeout=v)
+        )
+        form.addRow("대상 타임아웃 (초):", self.combat_timeout)
+
+        # click_method
+        click_group = QGroupBox("클릭 방식")
+        click_layout = QVBoxLayout(click_group)
+        self.click_method_group = QButtonGroup(self)
+        for method in ("sendinput", "directinput", "mousekeys"):
+            rb = QRadioButton(method)
+            if method == combat.click_method:
+                rb.setChecked(True)
+            rb.toggled.connect(
+                lambda checked, m=method: checked and
+                self.profile_manager.update_combat(click_method=m)
+            )
+            self.click_method_group.addButton(rb)
+            click_layout.addWidget(rb)
+        form.addRow(click_group)
+
         return w
 
     def _build_skill_tab(self) -> QWidget:

@@ -182,13 +182,13 @@ class TestBuildSnapshot:
         # bbox가 프레임 좌상단에 가까워 ROI 일부가 프레임 밖
         frame = np.zeros((100, 100, 3), dtype=np.uint8)
         bbox = (10, 10, 20, 20)
-        # 이상적 ROI: (-10, -10) ~ (40, 40) → 클램핑 → (0, 0) ~ (40, 40)
+        # 이상적 ROI: (-10, -10) ~ (50, 50) → 프레임 경계로 클램핑 → (0, 0) ~ (50, 50)
 
         snap = build_snapshot(frame, bbox, (0, 0, 100, 100), expand_ratio=1.0)
 
         assert snap is not None
         assert snap.roi_origin == (0, 0)
-        assert snap.roi.shape == (40, 40, 3)
+        assert snap.roi.shape == (50, 50, 3)
 
     def test_returns_none_when_bbox_entirely_outside_frame(self):
         frame = np.zeros((50, 50, 3), dtype=np.uint8)

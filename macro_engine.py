@@ -103,7 +103,11 @@ class MacroEngine:
             press_key(LOOT_KEY_SCANCODE)
             if i < space_count - 1:
                 time.sleep(LOOT_PRESS_INTERVAL + random.uniform(0, 0.04))
-        log.debug(f"Spacebar 보험 픽업 ×{space_count} (visual_picked={picked})")
+        if not picked:
+            # 시각 픽업 못한 경우: 기존 로그 신호 보존 (사용자가 grep으로 줍기 횟수 추적)
+            log.info(f"아이템 줍기 (Spacebar 보험 ×{space_count})")
+        else:
+            log.debug(f"Spacebar 보조 픽업 ×{space_count}")
 
     # ══════════════════════════════════════════════
     # 랜덤 이동 (몬스터 미발견 시)

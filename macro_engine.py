@@ -10,6 +10,8 @@ from monster_tracker import (
 from screen_capture import capture_screen
 from clicker import click, press_key
 from item_picker import ItemPicker
+from profile_manager import ProfileManager
+from skill_manager import SkillManager
 from window_manager import activate_window, get_game_region
 from config import (
     CLICK_METHOD, DEFAULT_DELAY, ATTACK_INTERVAL, DETECT_CONFIDENCE,
@@ -31,17 +33,25 @@ from logger import log
 
 
 class MacroEngine:
-    def __init__(self, click_method=CLICK_METHOD, region=None,
-                 template_dir="images", confidence=DETECT_CONFIDENCE):
-        self.click_method = click_method
+    def __init__(self, profile_manager: ProfileManager, region=None,
+                 template_dir="images"):
+        self.profile_manager = profile_manager
         self.region = region
         self.running = False
+
+        profile = profile_manager.current
+        self.click_method = profile.combat.click_method  # 호환용 캐시
+
         self.tracker = MonsterTracker(
             region=region,
             template_dir=template_dir,
-            confidence=confidence,
+            confidence=profile.monsters[0].detect_confidence if profile.monsters else 0.55,
         )
         self.item_picker = ItemPicker()
+        self.skill_manager = SkillManager(
+            profile_manager=profile_manager,
+            press_key=press_key,
+        )
         self._last_activate_time = 0.0
         self._last_region_refresh_time = 0.0
         # 랜덤 이동 상태

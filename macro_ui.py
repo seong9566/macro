@@ -24,6 +24,7 @@ from PyQt6.QtWidgets import (
     QLabel, QPushButton, QTextEdit, QSlider, QComboBox, QGroupBox,
     QGridLayout, QTabWidget, QListWidget, QListWidgetItem, QFileDialog,
     QSystemTrayIcon, QMenu, QSplitter, QProgressBar,
+    QDialog, QDialogButtonBox,
 )
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal, QObject, QSize
 from PyQt6.QtGui import QImage, QPixmap, QColor, QIcon, QAction, QFont, QShortcut, QKeySequence
@@ -88,10 +89,11 @@ class KeyCaptureLineEdit(QLineEdit):
         self._update_label()
 
     def _update_label(self):
+        from key_display import scancode_to_name
         if self._scan == 0:
             self.setText("(클릭 후 키 누르기)")
         else:
-            self.setText(f"scan=0x{self._scan:02X}")
+            self.setText(scancode_to_name(self._scan))
 
     def mousePressEvent(self, event):
         self.setText("(키 누르세요...)")
@@ -127,6 +129,46 @@ class KeyCaptureLineEdit(QLineEdit):
     def set_scancode(self, scan: int):
         self._scan = scan
         self._update_label()
+
+
+# ══════════════════════════════════════════════
+# 스킬 추가 다이얼로그
+# ══════════════════════════════════════════════
+
+class SkillAddDialog(QDialog):
+    """스킬 추가 다이얼로그 — 이름 + KeyCaptureLineEdit + 간격."""
+    def __init__(self, parent=None):
+        from PyQt6.QtWidgets import QFormLayout, QDoubleSpinBox
+        super().__init__(parent)
+        self.setWindowTitle("스킬 추가")
+        layout = QFormLayout(self)
+
+        self.name_edit = QLineEdit()
+        layout.addRow("이름:", self.name_edit)
+
+        self.key_capture = KeyCaptureLineEdit()
+        layout.addRow("키:", self.key_capture)
+
+        self.interval_spin = QDoubleSpinBox()
+        self.interval_spin.setRange(0.0, 600.0)
+        self.interval_spin.setValue(30.0)
+        self.interval_spin.setSingleStep(1.0)
+        self.interval_spin.setSuffix(" 초")
+        layout.addRow("자동 사용 간격 (0=수동):", self.interval_spin)
+
+        btns = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+        )
+        btns.accepted.connect(self.accept)
+        btns.rejected.connect(self.reject)
+        layout.addRow(btns)
+
+    def get_data(self):
+        return (
+            self.name_edit.text().strip(),
+            self.key_capture.scancode(),
+            self.interval_spin.value(),
+        )
 
 
 # ══════════════════════════════════════════════
@@ -243,30 +285,91 @@ class MacroWindow(QMainWindow):
         self.setCentralWidget(central)
         main_layout = QVBoxLayout(central)
 
-        # 상단: 탭 (모니터링 / 설정 / 템플릿)
+        # 메인 탭 (모니터링 + 5 설정 탭 + 템플릿 관리)
         tabs = QTabWidget()
         main_layout.addWidget(tabs)
 
-        # 탭 1: 모니터링
+        # 탭 1: 모니터링 (기존)
         monitor_tab = QWidget()
         tabs.addTab(monitor_tab, "모니터링")
         self._build_monitor_tab(monitor_tab)
 
-        # 탭 2: 설정
-        settings_tab = QWidget()
-        tabs.addTab(settings_tab, "설정")
-        self._build_settings_tab(settings_tab)
+        # 탭 2-6: 새 프로필 설정 탭들 (몬스터, 전투, 스킬, 물약, 단축키)
+        # 프로필 탭은 의도적으로 제외 — 메뉴 바로 이전
+        tabs.addTab(self._build_monster_tab(), "몬스터")
+        tabs.addTab(self._build_combat_tab(), "전투")
+        tabs.addTab(self._build_skill_tab(), "스킬")
+        tabs.addTab(self._build_potion_tab(), "물약")
+        tabs.addTab(self._build_hotkey_tab(), "단축키")
 
-        # 탭 3: 템플릿 관리
+        # 탭 7: 템플릿 관리 (legacy 보존)
         template_tab = QWidget()
         tabs.addTab(template_tab, "템플릿 관리")
         self._build_template_tab(template_tab)
 
-        # ── 좌측 도크: 프로필 설정 6 탭 (P1.9~P1.14에서 본문 채워짐) ──
-        from PyQt6.QtWidgets import QDockWidget
-        self._settings_dock = QDockWidget("프로필 설정", self)
-        self._settings_dock.setWidget(self._build_settings_tabs())
-        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self._settings_dock)
+        # 메뉴바: 프로필 관리 (좌측 도크 + 프로필 탭 대체)
+        self._build_menu_bar()
+
+    def _build_menu_bar(self):
+        """메뉴바 — 프로필 관리 기능."""
+        menubar = self.menuBar()
+        profile_menu = menubar.addMenu("프로필(&P)")
+
+        act_save = profile_menu.addAction("현재 프로필 저장")
+        act_save.triggered.connect(self._on_profile_save)
+
+        act_save_as = profile_menu.addAction("다른 이름으로 저장...")
+        act_save_as.triggered.connect(self._on_profile_save_as)
+
+        profile_menu.addSeparator()
+
+        act_import = profile_menu.addAction("가져오기 (JSON)...")
+        act_import.triggered.connect(self._on_profile_import)
+
+        act_export = profile_menu.addAction("내보내기 (JSON)...")
+        act_export.triggered.connect(self._on_profile_export)
+
+        profile_menu.addSeparator()
+
+        act_reset = profile_menu.addAction("공장 초기화")
+        act_reset.triggered.connect(self._on_profile_reset)
+
+        # 프로필 전환 서브메뉴 (현재 등록된 프로필 목록)
+        switch_menu = profile_menu.addMenu("프로필 전환")
+        self._profile_switch_menu = switch_menu  # 동적 갱신용
+        self._refresh_profile_switch_menu()
+
+    def _refresh_profile_switch_menu(self):
+        """프로필 전환 서브메뉴 동적 갱신."""
+        import glob
+        self._profile_switch_menu.clear()
+        files = glob.glob("profiles/*.json")
+        if not files:
+            self._profile_switch_menu.addAction("(프로필 없음)").setEnabled(False)
+            return
+        for f in files:
+            name = os.path.splitext(os.path.basename(f))[0]
+            act = self._profile_switch_menu.addAction(name)
+            act.triggered.connect(lambda checked=False, n=name: self._switch_profile(n))
+
+    def _switch_profile(self, name: str):
+        """메뉴에서 프로필 전환."""
+        path = f"profiles/{name}.json"
+        if not os.path.exists(path):
+            return
+        try:
+            new_profile = load_profile(path)
+            self.profile_manager.replace(new_profile)
+            self._reload_all_tabs()
+            try:
+                self.hotkey_registrar.rebind(
+                    new_profile.hotkeys.start, new_profile.hotkeys.stop
+                )
+            except Exception:
+                pass
+            self._append_log("INFO", f"프로필 전환: {name}")
+        except Exception as e:
+            self._append_log("ERROR", f"프로필 로딩 실패: {e}")
 
     def _build_monitor_tab(self, parent):
         layout = QVBoxLayout(parent)
@@ -856,19 +959,9 @@ class MacroWindow(QMainWindow):
         self._append_log("INFO", f"템플릿 삭제: {name}")
 
     # ══════════════════════════════════════════
-    # 프로필 설정 탭 (P1.8: 골격 / P1.9~P1.14: 본문)
+    # 프로필 설정 탭 (P1.9~P1.14)
+    # — _build_settings_tabs/_build_profile_tab 제거됨 (메뉴바로 이전)
     # ══════════════════════════════════════════
-
-    def _build_settings_tabs(self) -> QTabWidget:
-        """6 탭 설정 패널 (P1.9~P1.14에서 본문 채워짐)."""
-        tabs = QTabWidget()
-        tabs.addTab(self._build_monster_tab(), "몬스터")
-        tabs.addTab(self._build_combat_tab(), "전투")
-        tabs.addTab(self._build_skill_tab(), "스킬")
-        tabs.addTab(self._build_potion_tab(), "물약")
-        tabs.addTab(self._build_hotkey_tab(), "단축키")
-        tabs.addTab(self._build_profile_tab(), "프로필")
-        return tabs
 
     def _build_monster_tab(self) -> QWidget:
         """몬스터 탭 — 등록된 몬스터 리스트 + 추가/삭제/편집."""
@@ -940,21 +1033,51 @@ class MacroWindow(QMainWindow):
         self.mon_conf_label.setText(f"{m.detect_confidence:.2f}")
 
     def _on_monster_add(self):
-        from PyQt6.QtWidgets import QInputDialog
-        name, ok = QInputDialog.getText(self, "몬스터 추가", "이름:")
+        from PyQt6.QtWidgets import QInputDialog, QMessageBox
+        import shutil
+
+        # 1. 이름 입력
+        name, ok = QInputDialog.getText(self, "몬스터 추가", "몬스터 이름:")
         if not ok or not name.strip():
             return
-        folder = QFileDialog.getExistingDirectory(self, "템플릿 폴더 선택", "images")
-        if not folder:
+        name = name.strip()
+
+        # 2. PNG 파일 멀티 선택
+        files, _ = QFileDialog.getOpenFileNames(
+            self,
+            f"'{name}' 템플릿 이미지 선택 (여러 개 가능)",
+            "",
+            "이미지 (*.png *.jpg *.jpeg *.bmp)"
+        )
+        if not files:
             return
+
+        # 3. images/<name>/ 폴더 생성 + 파일 복사
+        target_dir = os.path.join("images", name)
         try:
-            rel = os.path.relpath(folder).replace("\\", "/")
-        except Exception:
-            rel = folder
+            os.makedirs(target_dir, exist_ok=True)
+        except Exception as e:
+            QMessageBox.critical(self, "폴더 생성 실패", str(e))
+            return
+
+        copied = 0
+        for src in files:
+            try:
+                dst = os.path.join(target_dir, os.path.basename(src))
+                shutil.copy2(src, dst)
+                copied += 1
+            except Exception as e:
+                self._append_log("ERROR", f"복사 실패 {src}: {e}")
+
+        if copied == 0:
+            QMessageBox.warning(self, "복사 실패", "이미지를 복사하지 못했습니다.")
+            return
+
+        # 4. 프로필에 MonsterEntry 추가
         from hunt_profile import MonsterEntry
         new = MonsterEntry(
-            name=name.strip(),
-            template_dir=rel,
+            name=name,
+            template_dir=target_dir.replace("\\", "/"),
             detect_confidence=0.55,
             tracking_confidence=0.40,
             hp_bar_offset_y=-20,
@@ -962,8 +1085,16 @@ class MacroWindow(QMainWindow):
         self.profile_manager.set_monsters(
             self.profile_manager.current.monsters + (new,)
         )
+
+        # 5. 템플릿 캐시 무효화 (새 이미지 로딩 강제)
+        try:
+            from monster_tracker import clear_template_cache
+            clear_template_cache()
+        except Exception:
+            pass
+
         self._refresh_monster_list()
-        self._append_log("INFO", f"몬스터 추가: {name}")
+        self._append_log("INFO", f"몬스터 추가: {name} ({copied}개 이미지)")
 
     def _on_monster_delete(self):
         idx = self._selected_monster_index()
@@ -1072,12 +1203,13 @@ class MacroWindow(QMainWindow):
 
     def _refresh_skill_table(self):
         from PyQt6.QtWidgets import QTableWidgetItem, QCheckBox
+        from key_display import scancode_to_name
         self.skill_table.setRowCount(0)
         for s in self.profile_manager.current.skills:
             row = self.skill_table.rowCount()
             self.skill_table.insertRow(row)
             self.skill_table.setItem(row, 0, QTableWidgetItem(s.name))
-            self.skill_table.setItem(row, 1, QTableWidgetItem(f"0x{s.key_scancode:02X}"))
+            self.skill_table.setItem(row, 1, QTableWidgetItem(scancode_to_name(s.key_scancode)))
             self.skill_table.setItem(row, 2, QTableWidgetItem(f"{s.auto_use_interval:.1f}"))
             chk = QCheckBox()
             chk.setChecked(s.enabled)
@@ -1087,25 +1219,16 @@ class MacroWindow(QMainWindow):
             self.skill_table.setCellWidget(row, 3, chk)
 
     def _on_skill_add(self):
-        from PyQt6.QtWidgets import QInputDialog
-        name, ok = QInputDialog.getText(self, "스킬 추가", "이름:")
-        if not ok or not name.strip():
+        dlg = SkillAddDialog(self)
+        if dlg.exec() != QDialog.DialogCode.Accepted:
             return
-        interval, ok = QInputDialog.getDouble(
-            self, "자동 사용 간격", "초 (0이면 수동):",
-            value=30.0, min=0.0, max=600.0, decimals=1
-        )
-        if not ok:
-            return
-        scan, ok = QInputDialog.getInt(
-            self, "키 스캔코드", "정수 입력 (예: 33 = 0x21):",
-            value=33, min=1, max=255
-        )
-        if not ok:
+        name, scan, interval = dlg.get_data()
+        if not name or scan == 0:
+            self._append_log("WARN", "스킬 추가 취소: 이름 또는 키 미입력")
             return
         from hunt_profile import SkillEntry
         new = SkillEntry(
-            name=name.strip(),
+            name=name,
             key_scancode=scan,
             auto_use_interval=interval,
             enabled=True,
@@ -1114,7 +1237,8 @@ class MacroWindow(QMainWindow):
             self.profile_manager.current.skills + (new,)
         )
         self._refresh_skill_table()
-        self._append_log("INFO", f"스킬 추가: {name} (key=0x{scan:02X})")
+        from key_display import scancode_to_name
+        self._append_log("INFO", f"스킬 추가: {name} (키={scancode_to_name(scan)})")
 
     def _on_skill_delete(self):
         row = self.skill_table.currentRow()
@@ -1172,16 +1296,11 @@ class MacroWindow(QMainWindow):
         hp_row.addWidget(self.potion_hp_threshold_label)
         hp_form.addRow("HP 임계값 (이하면 사용):", hp_row)
 
-        from PyQt6.QtWidgets import QSpinBox
-        self.potion_hp_key = QSpinBox()
-        self.potion_hp_key.setRange(1, 255)
-        self.potion_hp_key.setValue(potion.hp_key_scancode)
-        self.potion_hp_key.setPrefix("0x")
-        self.potion_hp_key.setDisplayIntegerBase(16)
-        self.potion_hp_key.valueChanged.connect(
-            lambda v: self.profile_manager.update_potion(hp_key_scancode=v)
+        self.potion_hp_key = KeyCaptureLineEdit(initial_scancode=potion.hp_key_scancode)
+        self.potion_hp_key.keyChanged.connect(
+            lambda scan: self.profile_manager.update_potion(hp_key_scancode=scan)
         )
-        hp_form.addRow("키 스캔코드:", self.potion_hp_key)
+        hp_form.addRow("키 (클릭 후 누르기):", self.potion_hp_key)
 
         l.addWidget(hp_grp)
 
@@ -1240,85 +1359,11 @@ class MacroWindow(QMainWindow):
         except Exception as e:
             self._append_log("ERROR", f"핫키 재등록 실패: {e}")
 
-    def _build_profile_tab(self) -> QWidget:
-        """프로필 탭 — 저장/불러오기/가져오기/내보내기/공장초기화."""
-        from PyQt6.QtWidgets import QFormLayout
-        w = QWidget()
-        l = QVBoxLayout(w)
-
-        # 현재 프로필 표시
-        self.profile_name_label = QLabel(f"현재: {self.profile_manager.current.name}")
-        l.addWidget(self.profile_name_label)
-
-        # 프로필 목록 드롭다운
-        row1 = QHBoxLayout()
-        row1.addWidget(QLabel("프로필 전환:"))
-        self.profile_combo = QComboBox()
-        self._refresh_profile_list()
-        self.profile_combo.activated.connect(self._on_profile_combo_select)
-        row1.addWidget(self.profile_combo)
-        l.addLayout(row1)
-
-        # 저장 / 다른 이름으로 저장
-        row2 = QHBoxLayout()
-        btn_save = QPushButton("현재 프로필 저장")
-        btn_save.clicked.connect(self._on_profile_save)
-        btn_save_as = QPushButton("다른 이름으로 저장")
-        btn_save_as.clicked.connect(self._on_profile_save_as)
-        row2.addWidget(btn_save)
-        row2.addWidget(btn_save_as)
-        l.addLayout(row2)
-
-        # 가져오기 / 내보내기
-        row3 = QHBoxLayout()
-        btn_import = QPushButton("가져오기 (JSON)")
-        btn_import.clicked.connect(self._on_profile_import)
-        btn_export = QPushButton("내보내기 (JSON)")
-        btn_export.clicked.connect(self._on_profile_export)
-        row3.addWidget(btn_import)
-        row3.addWidget(btn_export)
-        l.addLayout(row3)
-
-        # 공장 초기화
-        btn_reset = QPushButton("공장 초기화 (default 재생성)")
-        btn_reset.clicked.connect(self._on_profile_reset)
-        l.addWidget(btn_reset)
-
-        l.addStretch()
-        return w
-
-    def _refresh_profile_list(self):
-        import glob
-        self.profile_combo.clear()
-        files = glob.glob("profiles/*.json")
-        for f in files:
-            self.profile_combo.addItem(os.path.splitext(os.path.basename(f))[0])
-
-    def _on_profile_combo_select(self):
-        name = self.profile_combo.currentText()
-        path = f"profiles/{name}.json"
-        if not os.path.exists(path):
-            return
-        try:
-            new_profile = load_profile(path)
-            self.profile_manager.replace(new_profile)
-            self.profile_name_label.setText(f"현재: {name}")
-            self._reload_all_tabs()
-            # 핫키도 재등록 (프로필이 다른 핫키 가질 수 있음)
-            try:
-                self.hotkey_registrar.rebind(
-                    new_profile.hotkeys.start, new_profile.hotkeys.stop
-                )
-            except Exception:
-                pass
-            self._append_log("INFO", f"프로필 전환: {name}")
-        except Exception as e:
-            self._append_log("ERROR", f"프로필 로딩 실패: {e}")
-
     def _on_profile_save(self):
         name = self.profile_manager.current.name
         path = f"profiles/{name}.json"
         save_profile(self.profile_manager.current, path)
+        self._refresh_profile_switch_menu()
         self._append_log("INFO", f"프로필 저장: {path}")
 
     def _on_profile_save_as(self):
@@ -1330,8 +1375,7 @@ class MacroWindow(QMainWindow):
         renamed = dataclasses.replace(self.profile_manager.current, name=name.strip())
         self.profile_manager.replace(renamed)
         save_profile(renamed, f"profiles/{name.strip()}.json")
-        self._refresh_profile_list()
-        self.profile_name_label.setText(f"현재: {name.strip()}")
+        self._refresh_profile_switch_menu()
         self._append_log("INFO", f"프로필 저장: {name.strip()}")
 
     def _on_profile_import(self):
@@ -1343,8 +1387,7 @@ class MacroWindow(QMainWindow):
             target = f"profiles/{imported.name}.json"
             save_profile(imported, target)
             self.profile_manager.replace(imported)
-            self._refresh_profile_list()
-            self.profile_name_label.setText(f"현재: {imported.name}")
+            self._refresh_profile_switch_menu()
             self._reload_all_tabs()
             self._append_log("INFO", f"프로필 가져옴: {imported.name}")
         except Exception as e:
@@ -1366,8 +1409,7 @@ class MacroWindow(QMainWindow):
         default = migrate_from_legacy_config()
         save_profile(default, "profiles/default.json")
         self.profile_manager.replace(default)
-        self._refresh_profile_list()
-        self.profile_name_label.setText("현재: default")
+        self._refresh_profile_switch_menu()
         self._reload_all_tabs()
         self._append_log("INFO", "default 프로필 재생성")
 
@@ -1402,7 +1444,7 @@ class MacroWindow(QMainWindow):
             self.potion_hp_threshold.setValue(int(p.hp_threshold * 100))
         self.potion_hp_threshold_label.setText(f"{int(p.hp_threshold*100)}%")
         with QSignalBlocker(self.potion_hp_key):
-            self.potion_hp_key.setValue(p.hp_key_scancode)
+            self.potion_hp_key.set_scancode(p.hp_key_scancode)
         with QSignalBlocker(self.potion_cooldown):
             self.potion_cooldown.setValue(p.cooldown)
 

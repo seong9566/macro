@@ -6,11 +6,13 @@ import numpy as np
 from monster_tracker import MonsterTracker, TRACK_OK, TRACK_KILLED, TRACK_MISS_PENDING
 from screen_capture import capture_screen
 from clicker import click, press_key
+from item_picker import ItemPicker
 from window_manager import activate_window, get_game_region
 from config import (
     CLICK_METHOD, DEFAULT_DELAY, ATTACK_INTERVAL, DETECT_CONFIDENCE,
     LOOT_ENABLED, LOOT_KEY_SCANCODE, LOOT_PRESS_COUNT,
     LOOT_PRESS_INTERVAL, LOOT_DELAY_AFTER_KILL,
+    LOOT_VISUAL_ENABLED, LOOT_AFTER_CLICK_DELAY,
     ACTIVATE_WINDOW_ON_START, REACTIVATE_INTERVAL, REGION_REFRESH_INTERVAL,
     GAME_WINDOW_TITLE,
     ROAM_ENABLED, ROAM_AFTER_MISS_COUNT, ROAM_CLICK_DISTANCE,
@@ -36,6 +38,7 @@ class MacroEngine:
             template_dir=template_dir,
             confidence=confidence,
         )
+        self.item_picker = ItemPicker()
         self._last_activate_time = 0.0
         self._last_region_refresh_time = 0.0
         # 랜덤 이동 상태
@@ -71,16 +74,36 @@ class MacroEngine:
             log.info(f"게임 창 영역 갱신: {new_region}")
 
     def _loot_items(self):
-        """사망 판정 후 아이템 줍기 (Spacebar × N회)."""
+        """
+        사망 판정 후 아이템 줍기.
+            1. 시각 기반 픽업: 스냅샷 차분으로 드롭 위치 검출 → 클릭
+            2. Spacebar 보험 픽업: 시각 성공 시 1회, 실패 시 LOOT_PRESS_COUNT회
+        """
         if not LOOT_ENABLED:
             return
 
         time.sleep(LOOT_DELAY_AFTER_KILL + random.uniform(0, 0.05))
-        for i in range(LOOT_PRESS_COUNT):
+
+        # 1. 시각 기반 픽업 시도 (스냅샷 atomic 읽기 — 한 번만 참조 확보)
+        picked = False
+        snapshot = self.tracker.combat_snapshot
+        if LOOT_VISUAL_ENABLED and snapshot is not None and self.region is not None:
+            picked = self.item_picker.try_pickup(
+                snapshot=snapshot,
+                current_region=self.region,
+                click_method=self.click_method,
+            )
+            if picked:
+                log.info("아이템 픽업: 시각 클릭 성공")
+                time.sleep(LOOT_AFTER_CLICK_DELAY)
+
+        # 2. Spacebar 보험 — 시각 성공 시 1회 (다중 아이템 보조), 실패 시 LOOT_PRESS_COUNT회
+        space_count = 1 if picked else LOOT_PRESS_COUNT
+        for i in range(space_count):
             press_key(LOOT_KEY_SCANCODE)
-            if i < LOOT_PRESS_COUNT - 1:
+            if i < space_count - 1:
                 time.sleep(LOOT_PRESS_INTERVAL + random.uniform(0, 0.04))
-        log.info(f"아이템 줍기 완료 (Spacebar ×{LOOT_PRESS_COUNT})")
+        log.debug(f"Spacebar 보험 픽업 ×{space_count} (visual_picked={picked})")
 
     # ══════════════════════════════════════════════
     # 랜덤 이동 (몬스터 미발견 시)

@@ -59,6 +59,12 @@ HP_BAR_COLOR_UPPER1 = (10, 255, 255)
 HP_BAR_COLOR_LOWER2 = (170, 100, 100)  # 빨간색 상위 범위 H=170~180
 HP_BAR_COLOR_UPPER2 = (180, 255, 255)
 
+# ════════════════════════════════════════════════════════════════════
+# DEPRECATION (Phase 1 마이그레이션) — 아래 LOOT_* 값들은 profile_manager가
+# 사용. config.py 직접 수정은 첫 실행 시 default.json 생성에만 영향.
+# 이미 default.json이 있으면 이 값들은 무시되고 profiles/default.json이 사용됨.
+# UI 탭에서 변경하면 즉시 반영 + 저장 가능. Phase 2/3 후 완전 제거 예정.
+# ════════════════════════════════════════════════════════════════════
 # ══════════════════════════════════════════════
 # 아이템 줍기 설정
 # ══════════════════════════════════════════════
@@ -94,8 +100,10 @@ REFINE_MAX_DISTANCE = 40         # 보정 최대 허용 거리 (px). 초과 시 
 # ══════════════════════════════════════════════
 # 딜레이 설정
 # ══════════════════════════════════════════════
+# DEPRECATION (Phase 1): ATTACK_INTERVAL은 profile.combat.attack_interval로 이전됨.
+# DEFAULT_DELAY/MIN_CLICK_INTERVAL은 코드 상수로 유지 (사용자 튜닝 X).
 DEFAULT_DELAY = 0.3          # 대상 미발견 시 재탐색 대기 시간
-ATTACK_INTERVAL = 0.15       # 공격 클릭 후 다음 클릭까지 대기 시간
+ATTACK_INTERVAL = 0.15       # [DEPRECATED] 공격 간격 — profile.combat 사용
 MIN_CLICK_INTERVAL = 0.1     # 최소 클릭 간격
 
 # ══════════════════════════════════════════════
@@ -117,11 +125,13 @@ ROAM_DIRECTION_COUNT = 8         # 이동 방향 수 (8방향)
 # ══════════════════════════════════════════════
 # 캐릭터 HP 물약 자동 사용 설정
 # ══════════════════════════════════════════════
-POTION_ENABLED = True            # 자동 물약 활성화
-POTION_KEY_SCANCODE = 0x02       # 물약 키 스캔코드 (0x02 = 숫자 1키)
-POTION_HP_THRESHOLD = 0.5        # HP가 이 비율 이하이면 물약 사용 (0.0~1.0)
-POTION_COOLDOWN = 3.0            # 물약 사용 후 재사용 대기 (초)
-POTION_CHECK_INTERVAL = 1.0      # HP 확인 주기 (초)
+# DEPRECATION (Phase 1): POTION_ENABLED/KEY_SCANCODE/HP_THRESHOLD/COOLDOWN은
+# profile.potion으로 이전. POTION_CHECK_INTERVAL은 코드 상수로 유지.
+POTION_ENABLED = True            # [DEPRECATED] profile.potion.hp_enabled 사용
+POTION_KEY_SCANCODE = 0x02       # [DEPRECATED] profile.potion.hp_key_scancode 사용
+POTION_HP_THRESHOLD = 0.5        # [DEPRECATED] profile.potion.hp_threshold 사용
+POTION_COOLDOWN = 3.0            # [DEPRECATED] profile.potion.cooldown 사용
+POTION_CHECK_INTERVAL = 1.0      # HP 확인 주기 (초) — 코드 상수, UI 미노출
 
 # 캐릭터 HP바 위치 (게임 창 클라이언트 영역 기준 상대 좌표)
 # 게임마다 다르므로 실제 HP바 위치에 맞게 조정 필요
@@ -145,8 +155,9 @@ PLAYER_MP_COLOR_UPPER2 = (160, 255, 255)  # MP바 HSV 상한2
 # ══════════════════════════════════════════════
 # 매크로 시작/종료 단축키
 # ══════════════════════════════════════════════
-START_KEY = "F5"
-STOP_KEY = "F6"
+# DEPRECATION (Phase 1): profile.hotkeys.start/stop으로 이전. UI 단축키 탭에서 변경.
+START_KEY = "F5"                 # [DEPRECATED] profile.hotkeys.start 사용
+STOP_KEY = "F6"                  # [DEPRECATED] profile.hotkeys.stop 사용
 
 # ══════════════════════════════════════════════
 # 게임 창 설정

@@ -14,7 +14,7 @@ from profile_manager import ProfileManager
 from skill_manager import SkillManager
 from window_manager import activate_window, get_game_region
 from config import (
-    CLICK_METHOD, DEFAULT_DELAY, ATTACK_INTERVAL, DETECT_CONFIDENCE,
+    DEFAULT_DELAY,
     ACTIVATE_WINDOW_ON_START, REACTIVATE_INTERVAL, REGION_REFRESH_INTERVAL,
     GAME_WINDOW_TITLE,
     ROAM_ENABLED, ROAM_AFTER_MISS_COUNT, ROAM_CLICK_DISTANCE,
@@ -293,71 +293,66 @@ class MacroEngine:
         """
         몬스터 사냥 루프.
 
-        1. 게임 창 포그라운드 전환 (SendInput이 게임에 전달되도록)
-        2. 캐릭터 HP 확인 → 낮으면 물약 사용
-        3. 몬스터 감지 → 추적 시작
-        4. 추적 중인 대상 클릭 (공격) — 빠른 반복
-        5. 대상 소실(사망) → 아이템 줍기 → 다음 대상
-        6. 연속 미발견 시 → 랜덤 방향 이동
-        7. self.running=False까지 무한 반복
+        1. 사이클당 1회 atomic 스냅샷 — 사이클 도중 프로필 교체돼도 일관성 유지
+        2. 게임 창 포그라운드 전환
+        3. 스킬 자동 사용
+        4. 캐릭터 HP 확인 → 물약 자동 사용
+        5. 몬스터 감지 → 추적 시작
+        6. 추적 중인 대상 클릭 (공격) — 빠른 반복
+        7. 대상 소실(사망) → 아이템 줍기 → 다음 대상
+        8. 연속 미발견 시 → 랜덤 방향 이동
+        9. self.running=False까지 무한 반복
         """
         self.running = True
         log.info("사냥 루프 시작")
 
-        # 최초 포그라운드 전환
         if ACTIVATE_WINDOW_ON_START:
             activate_window()
             self._last_activate_time = time.time()
-            time.sleep(0.2)  # 포커스 전환 대기
+            time.sleep(0.2)
 
         while self.running:
             try:
-                # 주기적 포그라운드 확인 + 창 영역 갱신
+                # 사이클당 1회 atomic 스냅샷 — 사이클 도중 프로필 교체돼도 일관성 유지
+                profile = self.profile_manager.current
+
                 self._ensure_foreground()
                 self._refresh_region()
 
-                # 캐릭터 HP 확인 → 물약 자동 사용
-                self._check_and_use_potion(self.profile_manager.current)
+                # 스킬 자동 사용 (등록된 스킬을 N초 간격으로 발동)
+                self.skill_manager.tick()
 
+                self._check_and_use_potion(profile)
                 pos, reason = self.tracker.find_and_track()
 
                 if pos and reason == TRACK_OK:
-                    self._miss_count = 0  # 발견 시 미발견 카운터 초기화
-                    # 클릭 직전: 게임 창 포그라운드 확보 (UI가 위에 있으면 클릭이 UI에 감)
+                    self._miss_count = 0
                     activate_window()
-                    # 클릭 직전 ROI 재감지로 위치 보정 (~10ms)
                     refined = self.tracker.refine_position(original_pos=pos)
                     target = refined if refined else pos
-                    click(target[0], target[1], method=self.click_method)
+                    click(target[0], target[1], method=profile.combat.click_method)
                     if refined:
                         log.info(f"공격: ({target[0]}, {target[1]}) (보정됨, 원본: {pos})")
                     else:
                         log.info(f"공격: ({target[0]}, {target[1]})")
-                    # 가우시안 분포 딜레이 (균등분포보다 자연스러움)
-                    delay = max(0.05, random.gauss(ATTACK_INTERVAL, 0.05))
+                    delay = max(0.05, random.gauss(profile.combat.attack_interval, 0.05))
                     time.sleep(delay)
 
                 elif reason == TRACK_MISS_PENDING:
-                    # 감지 대기 중 — 클릭 중단, 줍기 안 함, 짧게 대기 후 재탐색
                     time.sleep(0.1)
 
                 elif reason == TRACK_KILLED:
                     self._miss_count = 0
-                    # 대상 사망 → 아이템 줍기
                     log.info("대상 사망 추정 → 아이템 줍기")
-                    self._loot_items(self.profile_manager.current)
+                    self._loot_items(profile)
 
                 elif reason == TRACK_ABANDONED_HP:
-                    # HP 변화 없음 지속 = 사실상 사망 (ROI false-positive로 TRACK_KILLED 못 잡은 케이스 다수)
-                    # 픽업 시도하되 미스 카운터는 그대로 둬서 다음 사이클에서 자연스럽게 재탐색/이동
                     log.info("대상 HP 정체 → 사실상 사망 추정, 아이템 줍기 시도")
-                    self._loot_items(self.profile_manager.current)
+                    self._loot_items(profile)
 
                 else:
-                    # 미발견 또는 포기
                     self._miss_count += 1
                     if self._miss_count >= ROAM_AFTER_MISS_COUNT:
-                        # 연속 미발견 → 랜덤 이동으로 몬스터 탐색
                         log.info(f"연속 {self._miss_count}회 미발견 → 랜덤 이동")
                         self._roam_random()
                         self._miss_count = 0
@@ -374,6 +369,7 @@ class MacroEngine:
     def stop(self):
         self.running = False
         self.tracker.reset()
+        self.skill_manager.reset()
         self._miss_count = 0
         self.player_hp_ratio = -1.0
         self.player_mp_ratio = -1.0

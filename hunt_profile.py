@@ -86,3 +86,45 @@ class HuntProfile:
     skills: Tuple[SkillEntry, ...]
     hotkeys: HotkeyConfig
     loot: LootConfig
+
+
+# ══════════════════════════════════════════════
+# JSON 직렬화 / 역직렬화
+# ══════════════════════════════════════════════
+
+import json
+from dataclasses import asdict
+
+
+SUPPORTED_SCHEMA_VERSIONS = (1,)
+
+
+def save_profile(profile: HuntProfile, path: str) -> None:
+    """HuntProfile을 JSON으로 저장 (사람 친화적 들여쓰기)."""
+    data = asdict(profile)  # tuple은 list로 변환됨
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+
+
+def load_profile(path: str) -> HuntProfile:
+    """JSON에서 HuntProfile 로드. schema_version 검증."""
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    version = data.get("schema_version")
+    if version not in SUPPORTED_SCHEMA_VERSIONS:
+        raise ValueError(
+            f"지원하지 않는 schema_version={version} "
+            f"(지원 버전: {SUPPORTED_SCHEMA_VERSIONS})"
+        )
+
+    return HuntProfile(
+        schema_version=data["schema_version"],
+        name=data["name"],
+        monsters=tuple(MonsterEntry(**m) for m in data["monsters"]),
+        combat=CombatConfig(**data["combat"]),
+        potion=PotionConfig(**data["potion"]),
+        skills=tuple(SkillEntry(**s) for s in data["skills"]),
+        hotkeys=HotkeyConfig(**data["hotkeys"]),
+        loot=LootConfig(**data["loot"]),
+    )

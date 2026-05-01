@@ -144,3 +144,32 @@ class TestMaskCorpseArea:
         result = picker._mask_corpse_area(diff_mask.copy(), bbox_in_roi, ratio=0.0)
 
         assert np.all(result == 255)
+
+
+# ══════════════════════════════════════════════
+# ItemPicker._is_outlier_diff
+# ══════════════════════════════════════════════
+
+class TestIsOutlierDiff:
+    def test_low_diff_is_not_outlier(self):
+        mask = np.zeros((100, 100), dtype=np.uint8)
+        mask[10:20, 10:20] = 255  # 100 px / 10000 = 1%
+        picker = ItemPicker()
+
+        assert picker._is_outlier_diff(mask, threshold_ratio=0.4) is False
+
+    def test_high_diff_is_outlier(self):
+        mask = np.full((100, 100), 255, dtype=np.uint8)
+        # 90% 채움 (위 10줄만 0)
+        mask[:10, :] = 0
+        picker = ItemPicker()
+
+        assert picker._is_outlier_diff(mask, threshold_ratio=0.4) is True
+
+    def test_at_threshold_is_outlier(self):
+        # 정확히 40% 채움 — 임계값 이상이면 outlier
+        mask = np.zeros((100, 100), dtype=np.uint8)
+        mask[:40, :] = 255  # 40%
+        picker = ItemPicker()
+
+        assert picker._is_outlier_diff(mask, threshold_ratio=0.4) is True

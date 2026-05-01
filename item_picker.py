@@ -154,3 +154,15 @@ class ItemPicker:
 
         diff_mask[y1:y2, x1:x2] = 0
         return diff_mask
+
+    def _is_outlier_diff(self, diff_mask: np.ndarray,
+                         threshold_ratio: float) -> bool:
+        """
+        차분 마스크의 활성 픽셀 비율이 threshold_ratio 이상이면 True.
+        카메라/캐릭터 이동 등으로 ROI 전체가 변한 케이스를 거른다.
+        """
+        total = diff_mask.size
+        if total == 0:
+            return False
+        active = int(np.count_nonzero(diff_mask))
+        return active / total >= threshold_ratio

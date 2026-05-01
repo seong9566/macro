@@ -3,7 +3,10 @@ import random
 import math
 import cv2
 import numpy as np
-from monster_tracker import MonsterTracker, TRACK_OK, TRACK_KILLED, TRACK_MISS_PENDING
+from monster_tracker import (
+    MonsterTracker, TRACK_OK, TRACK_KILLED, TRACK_MISS_PENDING,
+    TRACK_ABANDONED_HP, TRACK_ABANDONED_TIMEOUT,
+)
 from screen_capture import capture_screen
 from clicker import click, press_key
 from item_picker import ItemPicker
@@ -348,6 +351,12 @@ class MacroEngine:
                     self._miss_count = 0
                     # 대상 사망 → 아이템 줍기
                     log.info("대상 사망 추정 → 아이템 줍기")
+                    self._loot_items()
+
+                elif reason == TRACK_ABANDONED_HP:
+                    # HP 변화 없음 지속 = 사실상 사망 (ROI false-positive로 TRACK_KILLED 못 잡은 케이스 다수)
+                    # 픽업 시도하되 미스 카운터는 그대로 둬서 다음 사이클에서 자연스럽게 재탐색/이동
+                    log.info("대상 HP 정체 → 사실상 사망 추정, 아이템 줍기 시도")
                     self._loot_items()
 
                 else:

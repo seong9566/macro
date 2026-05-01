@@ -485,7 +485,8 @@ class MonsterTracker:
             log.info(f"대상 포기: ({cx}, {cy}) → 스킵 목록 등록")
         self.has_target = False
         self._reset_combat_state()
-        self.combat_snapshot = None
+        # 의도적으로 combat_snapshot 보존 — HP-stuck abandon이 사실상 사망인 경우가 많아 픽업 베이스라인으로 사용
+        # 다음 진짜 감지 성공 시 자연 갱신됨
 
     def _reset_combat_state(self):
         """전투 판정 상태 초기화."""

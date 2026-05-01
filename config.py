@@ -76,8 +76,8 @@ LOOT_DIFF_THRESHOLD = 30                # 차분 그레이값 임계값 (0~255)
 LOOT_MIN_BLOB_AREA = 30                 # 최소 블롭 면적 (px²) — 노이즈 컷
 LOOT_MAX_BLOB_AREA = 2500               # 최대 블롭 면적 (px²) — 큰 객체 컷
 LOOT_MAX_DISTANCE_RATIO = 1.5           # bbox 중심에서 블롭 중심까지 허용 거리 (× bbox 대각선 길이)
-LOOT_MAX_TOTAL_DIFF_RATIO = 0.4         # ROI 픽셀 대비 차분 비율 상한 (초과 시 카메라/캐릭터 이동 판단, 픽업 스킵)
-LOOT_SNAPSHOT_MAX_AGE = 0.6             # 베이스라인 최대 허용 나이 (초). 초과 시 시각 픽업 스킵
+LOOT_MAX_TOTAL_DIFF_RATIO = 0.6         # ROI 픽셀 대비 차분 비율 상한 (실측 사이클 ~1s × 4 misses 동안 카메라/캐릭터 이동 누적 허용)
+LOOT_SNAPSHOT_MAX_AGE = 8.0             # 베이스라인 최대 허용 나이 (초). 실측: TRACK_KILLED까지 4-7s 소요
 LOOT_AFTER_CLICK_DELAY = 0.3            # 픽업 클릭 후 대기 (캐릭터 이동/픽업 애니)
 LOOT_DEBUG_SAVE = False                 # 차분 디버그 이미지 저장 (튜닝용 — 부담 큼, 평시 False)
 LOOT_DEBUG_SAMPLE_RATIO = 0.1           # 디버그 저장 샘플링 비율 (0.1 = 10%만 저장, 1.0 = 전부)

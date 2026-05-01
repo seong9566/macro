@@ -747,6 +747,7 @@ class MonsterTracker:
                     self.has_target = False
                     self._detect_miss_count = 0
                     self._reset_combat_state()
+                    # 의도적으로 combat_snapshot 보존 — 픽업 베이스라인으로 사용 후 다음 감지 시 자연 갱신
                     return None, TRACK_KILLED
                 else:
                     # 아직 사망 확정 아님 → 클릭 중단하고 대기 (유령 클릭 방지)

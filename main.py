@@ -1,12 +1,14 @@
 import ctypes
 import keyboard
+import os
 import threading
 from macro_engine import MacroEngine
 from window_manager import get_game_region
+from hunt_profile import migrate_from_legacy_config, load_profile, save_profile
+from profile_manager import ProfileManager
+from hotkey_registrar import HotkeyRegistrar
 from config import (
-    START_KEY, STOP_KEY, CLICK_METHOD,
     GAME_WINDOW_TITLE, AUTO_DETECT_WINDOW, MANUAL_REGION,
-    DETECT_CONFIDENCE,
 )
 from logger import log
 
@@ -34,8 +36,27 @@ def _check_admin():
     return is_admin
 
 
+def _load_or_migrate_profile() -> ProfileManager:
+    """profiles/default.json 로드 또는 legacy config 마이그레이션."""
+    os.makedirs("profiles", exist_ok=True)
+    path = "profiles/default.json"
+    if os.path.exists(path):
+        try:
+            return ProfileManager(load_profile(path))
+        except Exception as e:
+            log.error(f"프로필 로딩 실패 → 마이그레이션 후 백업: {e}")
+            try:
+                os.rename(path, f"{path}.broken")
+            except Exception:
+                pass
+    profile = migrate_from_legacy_config()
+    save_profile(profile, path)
+    return ProfileManager(profile)
+
+
 _lock = threading.Lock()
 engine = None
+profile_manager = _load_or_migrate_profile()
 
 
 def get_region():
@@ -59,18 +80,16 @@ def start_macro():
             log.error("매크로 시작 불가: 게임 창 미감지")
             return
 
-        # 기존 엔진이 돌고 있으면 중지
         if engine and engine.running:
             engine.stop()
 
         engine = MacroEngine(
-            click_method=CLICK_METHOD,
+            profile_manager=profile_manager,
             region=region,
             template_dir="images",
-            confidence=DETECT_CONFIDENCE,
         )
 
-        log.info(f"매크로 시작! (방식: {CLICK_METHOD}, 영역: {region})")
+        log.info(f"매크로 시작! (영역: {region})")
         thread = threading.Thread(target=engine.hunt_loop, daemon=True)
         thread.start()
 
@@ -86,13 +105,20 @@ def stop_macro():
 # 관리자 권한 확인
 _check_admin()
 
-# 단축키 등록
-keyboard.add_hotkey(START_KEY, start_macro)
-keyboard.add_hotkey(STOP_KEY, stop_macro)
+# 핫키 등록 (프로필에서 키 읽음 — 동적 재바인딩 가능)
+hotkey_registrar = HotkeyRegistrar()
+hk = profile_manager.current.hotkeys
+hotkey_registrar.bind(
+    start_key=hk.start,
+    stop_key=hk.stop,
+    on_start=start_macro,
+    on_stop=stop_macro,
+)
 
-log.info(f"[대기중] {START_KEY}=시작 / {STOP_KEY}=중지 / Ctrl+C=종료")
+log.info(f"[대기중] {hk.start}=시작 / {hk.stop}=중지 / Ctrl+C=종료")
 try:
     keyboard.wait()
 except KeyboardInterrupt:
     stop_macro()
+    hotkey_registrar.unbind()
     log.info("프로그램 종료")

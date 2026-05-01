@@ -174,9 +174,16 @@ class MacroWindow(QMainWindow):
         # 글로벌 핫키 (게임 창 포커스 시에도 동작)
         self._start_signal.connect(self._on_start)
         self._stop_signal.connect(self._on_stop)
-        import keyboard
-        keyboard.add_hotkey("F5", lambda: self._start_signal.emit())
-        keyboard.add_hotkey("F6", lambda: self._stop_signal.emit())
+
+        # 핫키 재바인딩 가능하도록 등록 (P1.13)
+        from hotkey_registrar import HotkeyRegistrar
+        self.hotkey_registrar = HotkeyRegistrar()
+        self.hotkey_registrar.bind(
+            start_key=self.profile_manager.current.hotkeys.start,
+            stop_key=self.profile_manager.current.hotkeys.stop,
+            on_start=lambda: self._start_signal.emit(),
+            on_stop=lambda: self._stop_signal.emit(),
+        )
 
     # ══════════════════════════════════════════
     # 프로필 매니저 초기화 (Codex Critical 2: 손상 JSON 백업)
@@ -1203,10 +1210,35 @@ class MacroWindow(QMainWindow):
         return w
 
     def _build_hotkey_tab(self) -> QWidget:
+        from PyQt6.QtWidgets import QFormLayout
         w = QWidget()
-        l = QVBoxLayout(w)
-        l.addWidget(QLabel("(P1.13에서 구현 — 시작/중지 핫키)"))
+        form = QFormLayout(w)
+        hotkeys = self.profile_manager.current.hotkeys
+
+        info = QLabel(
+            "변경 시 즉시 재등록됩니다. (예: F5, F6, F1, Ctrl+Shift+H)"
+        )
+        form.addRow(info)
+
+        self.hotkey_start = QLineEdit(hotkeys.start)
+        self.hotkey_start.editingFinished.connect(self._on_hotkey_changed)
+        form.addRow("시작 핫키:", self.hotkey_start)
+
+        self.hotkey_stop = QLineEdit(hotkeys.stop)
+        self.hotkey_stop.editingFinished.connect(self._on_hotkey_changed)
+        form.addRow("중지 핫키:", self.hotkey_stop)
+
         return w
+
+    def _on_hotkey_changed(self):
+        new_start = self.hotkey_start.text().strip() or "F5"
+        new_stop = self.hotkey_stop.text().strip() or "F6"
+        self.profile_manager.update_hotkeys(start=new_start, stop=new_stop)
+        try:
+            self.hotkey_registrar.rebind(new_start, new_stop)
+            self._append_log("INFO", f"핫키 재등록: 시작={new_start}, 중지={new_stop}")
+        except Exception as e:
+            self._append_log("ERROR", f"핫키 재등록 실패: {e}")
 
     def _build_profile_tab(self) -> QWidget:
         w = QWidget()

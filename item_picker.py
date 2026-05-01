@@ -89,9 +89,6 @@ def build_snapshot(frame: np.ndarray,
 class ItemPicker:
     """프레임 차분 기반 아이템 위치 검출 + 클릭."""
 
-    def __init__(self):
-        self._debug_save_count = 0
-
     def _compute_diff_mask(self, baseline_roi: np.ndarray,
                            after_roi: np.ndarray,
                            threshold: int) -> np.ndarray:

@@ -123,3 +123,34 @@ class ItemPicker:
         mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
 
         return mask
+
+    def _mask_corpse_area(self, diff_mask: np.ndarray,
+                          bbox_in_roi: Tuple[int, int, int, int],
+                          ratio: float) -> np.ndarray:
+        """
+        bbox 중심으로 (bbox_size × ratio) 영역을 0으로 칠해 시체 차분 제거.
+
+        Args:
+            diff_mask: 차분 마스크 (수정됨, in-place)
+            bbox_in_roi: ROI-local bbox (x, y, w, h)
+            ratio: bbox 크기 대비 마스킹 영역 비율 (0.0~) — 0.0이면 마스킹 안 함
+
+        Returns:
+            마스킹된 mask (입력과 동일 객체, in-place 수정)
+        """
+        if ratio <= 0:
+            return diff_mask
+
+        bx, by, bw, bh = bbox_in_roi
+        cx = bx + bw // 2
+        cy = by + bh // 2
+        half_w = int(bw * ratio / 2)
+        half_h = int(bh * ratio / 2)
+
+        x1 = max(0, cx - half_w)
+        y1 = max(0, cy - half_h)
+        x2 = min(diff_mask.shape[1], cx + half_w)
+        y2 = min(diff_mask.shape[0], cy + half_h)
+
+        diff_mask[y1:y2, x1:x2] = 0
+        return diff_mask

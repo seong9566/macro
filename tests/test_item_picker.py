@@ -103,3 +103,44 @@ class TestComputeDiffMask:
         mask = picker._compute_diff_mask(baseline, after, threshold=30)
 
         assert np.count_nonzero(mask) == 0
+
+
+# ══════════════════════════════════════════════
+# ItemPicker._mask_corpse_area
+# ══════════════════════════════════════════════
+
+class TestMaskCorpseArea:
+    def test_zeros_out_full_bbox_area(self):
+        diff_mask = np.full((100, 100), 255, dtype=np.uint8)
+        bbox_in_roi = (40, 40, 20, 20)  # ROI-local (x, y, w, h)
+        picker = ItemPicker()
+
+        result = picker._mask_corpse_area(diff_mask.copy(), bbox_in_roi, ratio=1.0)
+
+        # bbox 영역 (40~60, 40~60)이 0
+        assert np.all(result[40:60, 40:60] == 0)
+        # bbox 바깥은 그대로 255
+        assert np.all(result[:40, :] == 255)
+        assert np.all(result[60:, :] == 255)
+
+    def test_partial_ratio_masks_smaller_center_region(self):
+        diff_mask = np.full((100, 100), 255, dtype=np.uint8)
+        bbox_in_roi = (40, 40, 20, 20)  # 중심 (50, 50)
+        picker = ItemPicker()
+
+        # ratio=0.5 → 마스킹 영역 10×10 중심 (50, 50)
+        result = picker._mask_corpse_area(diff_mask.copy(), bbox_in_roi, ratio=0.5)
+
+        # 중심 10×10 = (45~55, 45~55)이 0
+        assert np.all(result[45:55, 45:55] == 0)
+        # bbox 가장자리(예: (41, 41))는 마스킹 안 됨
+        assert result[41, 41] == 255
+
+    def test_ratio_zero_does_not_mask(self):
+        diff_mask = np.full((100, 100), 255, dtype=np.uint8)
+        bbox_in_roi = (40, 40, 20, 20)
+        picker = ItemPicker()
+
+        result = picker._mask_corpse_area(diff_mask.copy(), bbox_in_roi, ratio=0.0)
+
+        assert np.all(result == 255)

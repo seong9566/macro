@@ -1,9 +1,13 @@
 """
 ProfileManager — HuntProfile 단일 인스턴스 + atomic 통째 교체.
 
-스레드 안전성: frozen dataclass + Python 참조 할당의 GIL atomicity.
-엔진 스레드는 self.current 참조를 한 번 읽고 로컬 변수로 사용.
-UI 스레드는 update_*() 헬퍼로 새 객체 생성 후 통째 교체.
+스레드 안전성 모델:
+- 읽기(reader): self.current 참조 1회 읽기는 GIL atomic. 엔진 스레드는
+  사이클당 1회 읽고 로컬 변수로 사용 (frozen dataclass라 일관성 보장).
+- 쓰기(writer): update_*() 헬퍼는 read-modify-write 패턴이므로 호출자는
+  단일 스레드(예: PyQt6 UI 스레드)여야 함. 두 writer가 동시 호출하면
+  마지막 쓴 사람만 보존되는 lost-update가 발생할 수 있음. 멀티 writer가
+  필요해지면 threading.Lock 추가 필요.
 """
 import dataclasses
 from typing import Tuple

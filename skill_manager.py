@@ -31,11 +31,21 @@ class SkillManager:
             if skill.auto_use_interval <= 0:
                 continue
 
-            last = self._last_use.get(skill.name, 0.0)
-            if last == 0.0 or (now - last) >= skill.auto_use_interval:
+            # 첫 발동(이력 없음) 또는 간격 도래 시 발동
+            # `last == 0.0` 마법 상수 대신 명시적 키 존재 검사 (review 권고)
+            if skill.name not in self._last_use:
+                fire = True
+            else:
+                fire = (now - self._last_use[skill.name]) >= skill.auto_use_interval
+
+            if fire:
                 self._press_key(skill.key_scancode)
                 self._last_use[skill.name] = now
                 log.info(f"스킬 사용: {skill.name} (key=0x{skill.key_scancode:02X})")
+
+        # 프로필에서 제거된 스킬의 이력 정리 (메모리 누수 방지 + 동명 재추가 시 신선한 시작)
+        active_names = {s.name for s in profile.skills}
+        self._last_use = {k: v for k, v in self._last_use.items() if k in active_names}
 
     def reset(self) -> None:
         """발동 이력 초기화 (매크로 정지/재시작 시 호출)."""

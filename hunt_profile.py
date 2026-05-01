@@ -138,7 +138,20 @@ def migrate_from_legacy_config() -> HuntProfile:
     """
     config.py의 현재 상수 값들을 읽어 default HuntProfile 생성.
     첫 실행 시 default.json이 없으면 이 함수 결과를 저장한다.
+
+    config.py 손상/필수 상수 누락 시 RuntimeError로 감싸 진단 메시지 제공.
     """
+    try:
+        return _build_profile_from_legacy_config()
+    except (ImportError, AttributeError) as e:
+        raise RuntimeError(
+            f"legacy config 마이그레이션 실패: {e}. "
+            f"config.py가 손상되었거나 필요한 상수가 없습니다."
+        ) from e
+
+
+def _build_profile_from_legacy_config() -> HuntProfile:
+    """실제 마이그레이션 본문 — RuntimeError 래퍼 없이 raw 호출."""
     import config
 
     wolf = MonsterEntry(

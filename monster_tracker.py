@@ -295,10 +295,13 @@ class MonsterTracker:
         3. 감지 실패 연속 N회 → 사망 판정
     """
 
-    def __init__(self, region=None, template_dir="images", confidence=DETECT_CONFIDENCE):
+    def __init__(self, region=None, template_dir="images",
+                 confidence=DETECT_CONFIDENCE,
+                 profile_provider=None):
         self.region = region
         self.template_dir = template_dir
-        self.confidence = confidence
+        self.confidence = confidence  # 폴백용 정적 값 (profile_provider 없을 때)
+        self.profile_provider = profile_provider
         self.has_target = False              # 현재 타겟이 있는지 여부
         self.last_bbox = None
         # 전투 판정 상태
@@ -325,7 +328,7 @@ class MonsterTracker:
         """
         if self.region is None:
             return
-        snap = build_snapshot(frame, bbox, self.region, LOOT_ROI_EXPAND_RATIO)
+        snap = build_snapshot(frame, bbox, self.region, self._current_roi_expand_ratio())
         if snap is not None:
             self.combat_snapshot = snap
 
@@ -334,6 +337,32 @@ class MonsterTracker:
         if self.region:
             return x + self.region[0], y + self.region[1]
         return x, y
+
+    # ══════════════════════════════════════════════
+    # 프로필 동적 조회 헬퍼 (profile_provider 주입 시 사용)
+    # ══════════════════════════════════════════════
+
+    def _current_confidence(self) -> float:
+        """프로필이 있으면 monsters[0].detect_confidence, 없으면 정적값."""
+        if self.profile_provider is not None:
+            profile = self.profile_provider.current
+            if profile.monsters:
+                return profile.monsters[0].detect_confidence
+        return self.confidence
+
+    def _current_hp_bar_offset_y(self) -> int:
+        """프로필이 있으면 monsters[0].hp_bar_offset_y, 없으면 config 폴백."""
+        if self.profile_provider is not None:
+            profile = self.profile_provider.current
+            if profile.monsters:
+                return profile.monsters[0].hp_bar_offset_y
+        return HP_BAR_OFFSET_Y
+
+    def _current_roi_expand_ratio(self) -> float:
+        """프로필이 있으면 loot.roi_expand_ratio, 없으면 config 폴백."""
+        if self.profile_provider is not None:
+            return self.profile_provider.current.loot.roi_expand_ratio
+        return LOOT_ROI_EXPAND_RATIO
 
     def _bbox_center_screen(self, bbox):
         """bbox 중심을 스크린 절대 좌표로 반환."""
@@ -356,7 +385,7 @@ class MonsterTracker:
         if frame is None:
             return []
 
-        return detect_wolves(frame, self.template_dir, self.confidence)
+        return detect_wolves(frame, self.template_dir, self._current_confidence())
 
     def detect_nearest(self, frame=None, player_pos=None):
         """
@@ -407,8 +436,9 @@ class MonsterTracker:
 
         x, y, w, h = self.last_bbox
         # HP바 영역: bbox 상단 위쪽
-        hp_y1 = max(0, y + HP_BAR_OFFSET_Y)
-        hp_y2 = max(0, y + HP_BAR_OFFSET_Y + HP_BAR_HEIGHT)
+        offset_y = self._current_hp_bar_offset_y()
+        hp_y1 = max(0, y + offset_y)
+        hp_y2 = max(0, y + offset_y + HP_BAR_HEIGHT)
         hp_x1 = max(0, x)
         hp_x2 = min(frame.shape[1], x + w)
 
@@ -545,7 +575,14 @@ class MonsterTracker:
         templates = _load_templates(self.template_dir)
         best_score = 0
         best_result = None
-        min_confidence = TRACKING_CONFIDENCE if tracking else self.confidence
+        if tracking and self.profile_provider is not None:
+            profile = self.profile_provider.current
+            if profile.monsters:
+                min_confidence = profile.monsters[0].tracking_confidence
+            else:
+                min_confidence = TRACKING_CONFIDENCE  # 폴백
+        else:
+            min_confidence = TRACKING_CONFIDENCE if tracking else self._current_confidence()
 
         for fpath, tmpl_color, tmpl_gray in templates:
             th, tw = tmpl_gray.shape[:2]

@@ -41,6 +41,7 @@ class MacroEngine:
             region=region,
             template_dir=template_dir,
             confidence=profile.monsters[0].detect_confidence if profile.monsters else 0.55,
+            profile_provider=profile_manager,
         )
         self.item_picker = ItemPicker()
         self.skill_manager = SkillManager(

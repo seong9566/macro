@@ -341,3 +341,43 @@ class TestTryPickup:
 
         assert picked is False
         assert click_calls == []
+
+    def test_skips_when_diff_too_large_outlier(self, monkeypatch):
+        # ROI 전체가 크게 변하면 카메라/캐릭터 이동으로 판단 → 스킵
+        snap = self._make_snapshot()
+        # after 프레임 — ROI 영역 전체를 베이스라인 대비 크게 다른 값으로 채움
+        after_frame = np.full((200, 200, 3), 100, dtype=np.uint8)
+        # ROI는 frame[20:100, 20:100] (80×80). 전체에 큰 차이 부여
+        after_frame[20:100, 20:100] = 240
+
+        click_calls = []
+        monkeypatch.setattr("item_picker.click",
+                            lambda x, y, method: click_calls.append((x, y)))
+        monkeypatch.setattr("item_picker.capture_screen",
+                            lambda region: after_frame)
+
+        picker = ItemPicker()
+        picked = picker.try_pickup(snap, current_region=(0, 0, 200, 200), click_method="sendinput")
+
+        assert picked is False
+        assert click_calls == []
+
+    def test_corpse_mask_suppresses_blob_inside_bbox(self, monkeypatch):
+        # bbox(frame-local 40~80) 내부에 새 블롭이 생겨도 시체 마스킹으로 무시되어야 함
+        snap = self._make_snapshot()
+        after_frame = np.full((200, 200, 3), 100, dtype=np.uint8)
+        # bbox 정중앙(frame-local 50~70) 안에 작은 블롭 추가 → 시체 영역 마스킹에 걸림
+        after_frame[55:65, 55:65] = 220
+
+        click_calls = []
+        monkeypatch.setattr("item_picker.click",
+                            lambda x, y, method: click_calls.append((x, y)))
+        monkeypatch.setattr("item_picker.capture_screen",
+                            lambda region: after_frame)
+
+        picker = ItemPicker()
+        picked = picker.try_pickup(snap, current_region=(0, 0, 200, 200), click_method="sendinput")
+
+        # bbox 내부 블롭은 마스킹되어 제거 → 클릭 안 함
+        assert picked is False
+        assert click_calls == []

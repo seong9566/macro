@@ -866,8 +866,9 @@ class MacroWindow(QMainWindow):
                 if engine_running and self.engine.tracker.last_bbox:
                     bx, by, bw, bh = self.engine.tracker.last_bbox
                     cv2.rectangle(frame, (bx, by), (bx + bw, by + bh), (0, 0, 255), 3)
-            except Exception:
-                pass
+            except Exception as e:
+                # 미리보기 오버레이 실패는 치명적이지 않음 — 튜닝 디버깅 위해 로그만 남김
+                logging.getLogger("macro").debug(f"미리보기 감지 오버레이 실패: {e}")
 
         self.preview_signal.emit(frame)
 

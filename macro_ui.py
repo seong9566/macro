@@ -1115,6 +1115,13 @@ class MacroWindow(QMainWindow):
         )
         self.mon_conf.sliderReleased.connect(self._on_monster_confidence_changed)
 
+        self.mon_color = QSlider(Qt.Orientation.Horizontal)
+        self.mon_color.setRange(0, 90)
+        self.mon_color.setSingleStep(5)
+        self.mon_color_label = QLabel("0.00 (꺼짐)")
+        self.mon_color.valueChanged.connect(self._on_monster_color_label)
+        self.mon_color.sliderReleased.connect(self._on_monster_color_changed)
+
         rgrid.addWidget(QLabel("이름:"), 0, 0)
         rgrid.addWidget(self.mon_name, 0, 1)
         rgrid.addWidget(QLabel("폴더:"), 1, 0)
@@ -1122,6 +1129,9 @@ class MacroWindow(QMainWindow):
         rgrid.addWidget(QLabel("감지 임계값:"), 2, 0)
         rgrid.addWidget(self.mon_conf, 2, 1)
         rgrid.addWidget(self.mon_conf_label, 2, 2)
+        rgrid.addWidget(QLabel("색상 확인:"), 3, 0)
+        rgrid.addWidget(self.mon_color, 3, 1)
+        rgrid.addWidget(self.mon_color_label, 3, 2)
 
         l.addLayout(left, 1)
         l.addWidget(right, 2)
@@ -1147,6 +1157,8 @@ class MacroWindow(QMainWindow):
         self.mon_dir.setText(m.template_dir)
         self.mon_conf.setValue(int(m.detect_confidence * 100))
         self.mon_conf_label.setText(f"{m.detect_confidence:.2f}")
+        self.mon_color.setValue(int(m.color_confidence * 100))
+        self._on_monster_color_label(int(m.color_confidence * 100))
 
     def _on_monster_add(self):
         from PyQt6.QtWidgets import QInputDialog, QMessageBox
@@ -1284,6 +1296,22 @@ class MacroWindow(QMainWindow):
         import dataclasses
         monsters = list(self.profile_manager.current.monsters)
         monsters[idx] = dataclasses.replace(monsters[idx], detect_confidence=new_conf)
+        self.profile_manager.set_monsters(tuple(monsters))
+
+    def _on_monster_color_label(self, v: int):
+        if v <= 0:
+            self.mon_color_label.setText("0.00 (꺼짐)")
+        else:
+            self.mon_color_label.setText(f"{v/100:.2f}")
+
+    def _on_monster_color_changed(self):
+        idx = self._selected_monster_index()
+        if idx < 0:
+            return
+        new_color = self.mon_color.value() / 100
+        import dataclasses
+        monsters = list(self.profile_manager.current.monsters)
+        monsters[idx] = dataclasses.replace(monsters[idx], color_confidence=new_color)
         self.profile_manager.set_monsters(tuple(monsters))
 
     def _build_combat_tab(self) -> QWidget:

@@ -417,11 +417,11 @@ def _nms_with_scores(bboxes, scores, overlap_thresh=0.3):
 
 class MonsterTracker:
     """
-    늑대 전용 감지 클래스.
+    몬스터 감지/추적 클래스 (등록된 여러 몬스터 종류 지원).
 
     동작 흐름:
-        1. detect_wolves() → 늑대 템플릿 매칭으로 감지
-        2. find_and_track() → 매 프레임 재감지 + ROI 우선 탐색
+        1. detect() → 등록 몬스터별 임계값으로 감지 (detect_per_monster)
+        2. find_and_track() → 매 프레임 재감지 + ROI 우선 탐색, 타겟 종류 고정
         3. 감지 실패 연속 N회 → 사망 판정
     """
 
@@ -554,7 +554,8 @@ class MonsterTracker:
             frame: BGR 이미지. None이면 새로 캡처.
 
         Returns:
-            [(x, y, w, h, score, name), ...] 또는 빈 리스트
+            [(x, y, w, h, score, name, monster_idx), ...] 또는 빈 리스트
+            (monster_idx = profile.monsters 인덱스, 레거시 폴백 시 -1)
         """
         if frame is None:
             frame = capture_screen(region=self.region)
@@ -566,9 +567,10 @@ class MonsterTracker:
                     if self.profile_provider is not None else ())
         if monsters:
             return detect_per_monster(frame, monsters)
-        # 폴백: 레거시 단일 폴더 → monster_idx = -1
+        # 폴백: 레거시 단일 폴더 → monster_idx = -1 (색상 게이트도 일관 적용)
         templates = _load_templates(self.template_dir)
-        res = detect_monsters(frame, templates, self._current_confidence())
+        res = detect_monsters(frame, templates, self._current_confidence(),
+                              color_confidence=self._current_color_confidence())
         return [(r[0], r[1], r[2], r[3], r[4], r[5], -1) for r in res]
 
     def detect_nearest(self, frame=None, player_pos=None):
@@ -603,7 +605,7 @@ class MonsterTracker:
 
         wolves.sort(key=dist)
         w = wolves[0]
-        log.info(f"가장 가까운 늑대: ({w[0]},{w[1]}) score={w[4]:.3f} [{w[5]}]")
+        log.info(f"가장 가까운 몬스터: ({w[0]},{w[1]}) score={w[4]:.3f} [{w[5]}]")
         return (w[0], w[1], w[2], w[3])
 
 

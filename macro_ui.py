@@ -24,14 +24,16 @@ from PyQt6.QtWidgets import (
     QLabel, QPushButton, QTextEdit, QSlider, QComboBox, QGroupBox,
     QGridLayout, QTabWidget, QListWidget, QListWidgetItem, QFileDialog,
     QSystemTrayIcon, QMenu, QSplitter, QProgressBar,
-    QDialog, QDialogButtonBox,
+    QDialog, QDialogButtonBox, QRubberBand,
 )
-from PyQt6.QtCore import Qt, QTimer, pyqtSignal, QObject, QSize
+from PyQt6.QtCore import Qt, QTimer, pyqtSignal, QObject, QSize, QRect, QPoint
 from PyQt6.QtGui import QImage, QPixmap, QColor, QIcon, QAction, QFont, QShortcut, QKeySequence
 
 import config
 from screen_capture import capture_screen
-from monster_tracker import MonsterTracker, detect_wolves, _load_templates, clear_template_cache
+from monster_tracker import (
+    MonsterTracker, detect_per_monster, _load_templates, clear_template_cache,
+)
 from macro_engine import MacroEngine
 from window_manager import get_game_region, activate_window
 from hunt_profile import migrate_from_legacy_config, load_profile, save_profile
@@ -129,6 +131,110 @@ class KeyCaptureLineEdit(QLineEdit):
     def set_scancode(self, scan: int):
         self._scan = scan
         self._update_label()
+
+
+# ══════════════════════════════════════════════
+# 템플릿 캡처 — 크롭 다이얼로그
+# ══════════════════════════════════════════════
+
+class _CropLabel(QLabel):
+    """드래그로 영역을 선택하는 QLabel. selection에 라벨 좌표계 QRect 보관."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._rubber = QRubberBand(QRubberBand.Shape.Rectangle, self)
+        self._origin = None
+        self.selection = None  # QRect (라벨 좌표계)
+
+    def mousePressEvent(self, ev):
+        self._origin = ev.position().toPoint()
+        self._rubber.setGeometry(QRect(self._origin, QSize()))
+        self._rubber.show()
+
+    def mouseMoveEvent(self, ev):
+        if self._origin is not None:
+            self._rubber.setGeometry(
+                QRect(self._origin, ev.position().toPoint()).normalized()
+            )
+
+    def mouseReleaseEvent(self, ev):
+        if self._origin is not None:
+            self.selection = QRect(
+                self._origin, ev.position().toPoint()
+            ).normalized()
+            self._origin = None
+
+
+class CropDialog(QDialog):
+    """
+    캡처한 게임 프레임을 보여주고 드래그로 몬스터 영역을 선택하게 한다.
+    OK 시 result_rect(원본 좌표) + direction을 채운다. 좌표 변환은 template_capture에 위임.
+    """
+
+    def __init__(self, frame_bgr, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("템플릿 영역 선택 — 드래그로 몬스터를 감싸세요")
+        self._frame = frame_bgr
+        self._img_h, self._img_w = frame_bgr.shape[:2]
+        self.result_rect = None   # (x, y, w, h) 원본 좌표계
+        self.direction = "left"
+
+        layout = QVBoxLayout(self)
+        layout.addWidget(QLabel(
+            "게임 화면에서 잡을 몬스터를 마우스로 드래그하세요. "
+            "테두리는 여유 없이 몬스터(말+기수)에 딱 맞게."
+        ))
+
+        rgb = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
+        qimg = QImage(rgb.data, self._img_w, self._img_h,
+                      self._img_w * 3, QImage.Format.Format_RGB888)
+        pix = QPixmap.fromImage(qimg)
+        max_w = 1100
+        if pix.width() > max_w:
+            pix = pix.scaledToWidth(max_w, Qt.TransformationMode.SmoothTransformation)
+        self._disp_w, self._disp_h = pix.width(), pix.height()
+
+        self.image_label = _CropLabel()
+        self.image_label.setPixmap(pix)
+        self.image_label.setFixedSize(self._disp_w, self._disp_h)
+        layout.addWidget(self.image_label)
+
+        dir_row = QHBoxLayout()
+        dir_row.addWidget(QLabel("방향(파일명 접미사):"))
+        self.dir_combo = QComboBox()
+        self.dir_combo.addItems([
+            "left", "right", "top", "bottom",
+            "left_top", "left_bottom", "right_top", "right_bottom",
+        ])
+        dir_row.addWidget(self.dir_combo)
+        dir_row.addStretch()
+        layout.addLayout(dir_row)
+
+        btns = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+        )
+        btns.accepted.connect(self._on_accept)
+        btns.rejected.connect(self.reject)
+        layout.addWidget(btns)
+
+    def _on_accept(self):
+        from PyQt6.QtWidgets import QMessageBox
+        from template_capture import display_rect_to_image_rect
+        sel = self.image_label.selection
+        if sel is None or sel.width() < 5 or sel.height() < 5:
+            QMessageBox.warning(self, "선택 없음", "몬스터 영역을 드래그로 선택하세요.")
+            return
+        self.result_rect = display_rect_to_image_rect(
+            disp_rect=(sel.x(), sel.y(), sel.width(), sel.height()),
+            disp_size=(self._disp_w, self._disp_h),
+            img_size=(self._img_w, self._img_h),
+        )
+        self.direction = self.dir_combo.currentText()
+        self.accept()
+
+    def cropped_frame(self):
+        """OK 후 호출 — 원본 프레임 반환 (저장은 호출자가 save_template로)."""
+        return self._frame
 
 
 # ══════════════════════════════════════════════
@@ -979,9 +1085,12 @@ class MacroWindow(QMainWindow):
         btn_row = QHBoxLayout()
         btn_add = QPushButton("몬스터 추가")
         btn_add.clicked.connect(self._on_monster_add)
+        btn_capture = QPushButton("화면에서 캡처")
+        btn_capture.clicked.connect(self._on_monster_capture)
         btn_del = QPushButton("선택 삭제")
         btn_del.clicked.connect(self._on_monster_delete)
         btn_row.addWidget(btn_add)
+        btn_row.addWidget(btn_capture)
         btn_row.addWidget(btn_del)
         left.addLayout(btn_row)
 
@@ -1095,6 +1204,60 @@ class MacroWindow(QMainWindow):
 
         self._refresh_monster_list()
         self._append_log("INFO", f"몬스터 추가: {name} ({copied}개 이미지)")
+
+    def _on_monster_capture(self):
+        """선택된 몬스터에 대해 게임 화면을 캡처 → 크롭 → 템플릿 저장."""
+        from PyQt6.QtWidgets import QMessageBox
+        from template_capture import save_template
+
+        idx = self._selected_monster_index()
+        if idx < 0:
+            QMessageBox.information(
+                self, "몬스터 선택",
+                "먼저 좌측에서 몬스터를 선택하세요. (없으면 '몬스터 추가'로 만든 뒤)"
+            )
+            return
+
+        monster = self.profile_manager.current.monsters[idx]
+
+        if self.region is None:
+            self.region = get_game_region(config.GAME_WINDOW_TITLE)
+        if self.region is None:
+            QMessageBox.warning(
+                self, "게임 창 미발견",
+                f"게임 창('{config.GAME_WINDOW_TITLE}')을 찾지 못했습니다."
+            )
+            return
+
+        frame = capture_screen(region=self.region)
+        if frame is None:
+            QMessageBox.warning(self, "캡처 실패", "화면 캡처에 실패했습니다.")
+            return
+
+        dlg = CropDialog(frame, self)
+        if dlg.exec() != QDialog.DialogCode.Accepted or dlg.result_rect is None:
+            return
+
+        base = f"{monster.name}_{dlg.direction}"
+        target_dir = monster.template_dir
+        filename = f"{base}.png"
+        n = 2
+        while os.path.exists(os.path.join(target_dir, filename)):
+            filename = f"{base}_{n}.png"
+            n += 1
+
+        try:
+            path = save_template(dlg.cropped_frame(), dlg.result_rect,
+                                 target_dir, filename)
+        except Exception as e:
+            QMessageBox.critical(self, "저장 실패", str(e))
+            return
+
+        clear_template_cache()
+        self._append_log("INFO", f"템플릿 캡처 저장: {path}")
+        QMessageBox.information(
+            self, "저장 완료", f"{filename} 저장됨\n폴더: {target_dir}"
+        )
 
     def _on_monster_delete(self):
         idx = self._selected_monster_index()

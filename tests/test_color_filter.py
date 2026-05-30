@@ -47,3 +47,16 @@ def test_filter_by_color_disabled_passthrough():
     frame = np.zeros((100, 100, 3), dtype=np.uint8)
     results = [(0, 0, 10, 10, 0.9, "x.png")]
     assert filter_by_color(frame, results, {}, threshold=0.0) == results
+
+
+def test_monster_entry_color_confidence_default():
+    from hunt_profile import MonsterEntry
+    legacy = {
+        "name": "wolf",
+        "template_dir": "images",
+        "detect_confidence": 0.55,
+        "tracking_confidence": 0.40,
+        "hp_bar_offset_y": -20,
+    }
+    m = MonsterEntry(**legacy)
+    assert m.color_confidence == 0.0

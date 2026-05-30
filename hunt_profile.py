@@ -16,6 +16,7 @@ class MonsterEntry:
     detect_confidence: float       # 0.0~1.0, 전체 프레임 감지 임계값
     tracking_confidence: float     # 0.0~1.0, ROI 재탐색 임계값
     hp_bar_offset_y: int           # bbox 상단 기준 (음수 = 위쪽)
+    color_confidence: float = 0.0  # HSV 색상 상관도 게이트 (0=비활성, 권장 0.3~0.5)
 
 
 @dataclass(frozen=True)

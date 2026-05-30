@@ -24,6 +24,7 @@ from config import (
 )
 from screen_capture import capture_screen
 from logger import log
+from template_capture import imread_unicode
 
 # ══════════════════════════════════════════════
 # 추적 종료 사유
@@ -79,7 +80,7 @@ def _load_templates(template_dir):
                     log.debug(f"템플릿 스킵 (자동 반전 사용): {basename}")
                     continue
 
-            tmpl_color = cv2.imread(fpath)
+            tmpl_color = imread_unicode(fpath)
             if tmpl_color is None:
                 continue
             tmpl_gray = cv2.cvtColor(tmpl_color, cv2.COLOR_BGR2GRAY)

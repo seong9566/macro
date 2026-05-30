@@ -103,3 +103,27 @@ def test_detect_per_monster_tags_and_independent_thresholds(tmp_path):
     assert 90 <= by_idx[0][0] <= 150   # A → 파랑 위치
     assert 590 <= by_idx[1][0] <= 650  # B → 빨강 위치
     clear_template_cache()
+
+
+def test_tracker_uses_target_monster_settings():
+    import types
+    from hunt_profile import MonsterEntry
+    from monster_tracker import MonsterTracker
+
+    m0 = MonsterEntry("A", "images", 0.55, 0.40, -20, color_confidence=0.1)
+    m1 = MonsterEntry("B", "images", 0.55, 0.30, -30, color_confidence=0.7)
+    provider = types.SimpleNamespace(
+        current=types.SimpleNamespace(monsters=(m0, m1))
+    )
+    t = MonsterTracker(profile_provider=provider)
+
+    # 타겟 없음 → monsters[0] 폴백
+    assert t._current_color_confidence() == 0.1
+    assert t._current_tracking_confidence() == 0.40
+    assert t._current_hp_bar_offset_y() == -20
+
+    # 타겟이 B(idx1) → B 설정
+    t.current_monster_idx = 1
+    assert t._current_color_confidence() == 0.7
+    assert t._current_tracking_confidence() == 0.30
+    assert t._current_hp_bar_offset_y() == -30

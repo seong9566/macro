@@ -433,6 +433,7 @@ class MonsterTracker:
         self.confidence = confidence  # 폴백용 정적 값 (profile_provider 없을 때)
         self.profile_provider = profile_provider
         self.has_target = False              # 현재 타겟이 있는지 여부
+        self.current_monster_idx = -1        # 현재 타겟이 어느 몬스터(profile.monsters 인덱스)인지. -1=미상
         self.last_bbox = None
         # 전투 판정 상태
         self._target_start_time = 0.0       # 현재 대상 추적 시작 시각
@@ -480,28 +481,57 @@ class MonsterTracker:
     # MonsterTracker가 frame 단위가 아닌 메서드 단위로 호출되는 구조상 허용 가능 범위로 판단.
     # 더 엄격한 일관성이 필요하면 find_and_track 시그니처에 profile 인자 추가 (Phase 2 검토).
 
+    def _target_monster(self):
+        """현재 추적 타겟의 MonsterEntry. 없으면 None."""
+        if self.profile_provider is None:
+            return None
+        monsters = self.profile_provider.current.monsters
+        if 0 <= self.current_monster_idx < len(monsters):
+            return monsters[self.current_monster_idx]
+        return None
+
     def _current_confidence(self) -> float:
-        """프로필이 있으면 monsters[0].detect_confidence, 없으면 정적값."""
+        """타겟 몬스터 우선, 없으면 monsters[0], 없으면 정적값."""
+        m = self._target_monster()
+        if m is not None:
+            return m.detect_confidence
         if self.profile_provider is not None:
-            profile = self.profile_provider.current
-            if profile.monsters:
-                return profile.monsters[0].detect_confidence
+            prof = self.profile_provider.current
+            if prof.monsters:
+                return prof.monsters[0].detect_confidence
         return self.confidence
 
     def _current_tracking_confidence(self) -> float:
-        """프로필이 있으면 monsters[0].tracking_confidence, 없으면 config 폴백."""
+        """타겟 몬스터 우선, 없으면 monsters[0], 없으면 config 폴백."""
+        m = self._target_monster()
+        if m is not None:
+            return m.tracking_confidence
         if self.profile_provider is not None:
-            profile = self.profile_provider.current
-            if profile.monsters:
-                return profile.monsters[0].tracking_confidence
+            prof = self.profile_provider.current
+            if prof.monsters:
+                return prof.monsters[0].tracking_confidence
         return TRACKING_CONFIDENCE
 
-    def _current_hp_bar_offset_y(self) -> int:
-        """프로필이 있으면 monsters[0].hp_bar_offset_y, 없으면 config 폴백."""
+    def _current_color_confidence(self) -> float:
+        """타겟 몬스터 우선, 없으면 monsters[0], 없으면 0.0(비활성)."""
+        m = self._target_monster()
+        if m is not None:
+            return m.color_confidence
         if self.profile_provider is not None:
-            profile = self.profile_provider.current
-            if profile.monsters:
-                return profile.monsters[0].hp_bar_offset_y
+            prof = self.profile_provider.current
+            if prof.monsters:
+                return prof.monsters[0].color_confidence
+        return 0.0
+
+    def _current_hp_bar_offset_y(self) -> int:
+        """타겟 몬스터 우선, 없으면 monsters[0], 없으면 config 폴백."""
+        m = self._target_monster()
+        if m is not None:
+            return m.hp_bar_offset_y
+        if self.profile_provider is not None:
+            prof = self.profile_provider.current
+            if prof.monsters:
+                return prof.monsters[0].hp_bar_offset_y
         return HP_BAR_OFFSET_Y
 
     def _current_roi_expand_ratio(self) -> float:
@@ -531,9 +561,15 @@ class MonsterTracker:
         if frame is None:
             return []
 
-        # profile에 등록된 모든 monster의 템플릿을 합쳐 사용
-        templates = _load_all_active_templates(self.profile_provider, self.template_dir)
-        return detect_monsters(frame, templates, self._current_confidence())
+        # profile에 등록된 monster들을 각자 임계값으로 감지 (7-튜플: monster_idx 포함)
+        monsters = (self.profile_provider.current.monsters
+                    if self.profile_provider is not None else ())
+        if monsters:
+            return detect_per_monster(frame, monsters)
+        # 폴백: 레거시 단일 폴더 → monster_idx = -1
+        templates = _load_templates(self.template_dir)
+        res = detect_monsters(frame, templates, self._current_confidence())
+        return [(r[0], r[1], r[2], r[3], r[4], r[5], -1) for r in res]
 
     def detect_nearest(self, frame=None, player_pos=None):
         """
@@ -674,6 +710,7 @@ class MonsterTracker:
         self._hp_no_change_count = 0
         self._edge_only_count = 0
         self._last_detect_was_edge = False
+        self.current_monster_idx = -1
 
     def _is_skipped(self, bbox):
         """해당 위치가 최근 스킵된 대상인지 확인 (30초간 유지)."""
@@ -720,7 +757,13 @@ class MonsterTracker:
         # 그레이스케일 ROI (속도 3배 향상)
         roi_gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
 
-        templates = _load_all_active_templates(self.profile_provider, self.template_dir)
+        # 추적 중이면 타겟 몬스터 폴더만, 아니면 전체 등록 몬스터
+        target = self._target_monster()
+        roi_template_dir = target.template_dir if target is not None else self.template_dir
+        if target is not None:
+            templates = _load_templates(roi_template_dir)
+        else:
+            templates = _load_all_active_templates(self.profile_provider, self.template_dir)
         best_score = 0
         best_result = None
         # 헬퍼로 일관성 있게 — tracking이면 tracking_confidence, 아니면 detect_confidence
@@ -765,7 +808,7 @@ class MonsterTracker:
 
         # === 반투명 변형 폴백 (원본 실패 + 추적 중일 때만) ===
         if tracking and TRANSPARENT_VARIANTS_ENABLED:
-            transparent = _load_transparent_templates(self.template_dir)
+            transparent = _load_transparent_templates(roi_template_dir)
             for fpath, tmpl_color, tmpl_gray in transparent:
                 th, tw = tmpl_gray.shape[:2]
                 for scale in ROI_DETECT_SCALES:
@@ -798,7 +841,7 @@ class MonsterTracker:
             return None
 
         roi_edge = cv2.Canny(roi_gray, EDGE_CANNY_LOW, EDGE_CANNY_HIGH)
-        edge_templates = _load_edge_templates(self.template_dir)
+        edge_templates = _load_edge_templates(roi_template_dir)
         best_edge_score = 0
         best_edge_result = None
 
@@ -916,7 +959,11 @@ class MonsterTracker:
             last_pos = None
             if self.has_target and self.last_bbox is not None:
                 last_pos = self._bbox_center_screen(self.last_bbox)
-            bbox = self._detect_nearest_available(frame=frame, player_pos=last_pos)
+            det = self._detect_nearest_available(frame=frame, player_pos=last_pos)
+            if det is not None:
+                bbox = (det[0], det[1], det[2], det[3])
+                # 전체 프레임 감지로 새로 잡은 대상 → 타겟 몬스터 갱신
+                self.current_monster_idx = det[6]
 
         if bbox is None:
             if self.has_target:
@@ -959,16 +1006,15 @@ class MonsterTracker:
 
     def _detect_nearest_available(self, frame=None, player_pos=None):
         """
-        스킵 목록에 없는 가장 가까운 몬스터를 반환.
+        스킵 목록에 없는 가장 가까운 몬스터의 7-튜플을 반환.
 
         Returns:
-            (x, y, w, h) 또는 None
+            (x, y, w, h, score, name, monster_idx) 또는 None
         """
-        wolves = self.detect(frame=frame)
-        if not wolves:
+        dets = self.detect(frame=frame)  # 7-튜플 리스트
+        if not dets:
             return None
 
-        # 플레이어 위치 기준
         if player_pos is None:
             if self.region:
                 px = self.region[2] // 2
@@ -981,15 +1027,14 @@ class MonsterTracker:
                 px -= self.region[0]
                 py -= self.region[1]
 
-        # 거리 기준 정렬
-        wolves.sort(key=lambda w: (w[0] + w[2] // 2 - px) ** 2 + (w[1] + w[3] // 2 - py) ** 2)
+        dets.sort(key=lambda d: (d[0] + d[2] // 2 - px) ** 2 + (d[1] + d[3] // 2 - py) ** 2)
 
-        # 스킵되지 않은 첫 대상 반환
-        for w in wolves:
-            bbox = (w[0], w[1], w[2], w[3])
+        for d in dets:
+            bbox = (d[0], d[1], d[2], d[3])
             if not self._is_skipped(bbox):
-                log.info(f"가장 가까운 몬스터: ({w[0]},{w[1]}) score={w[4]:.3f} [{w[5]}]")
-                return bbox
+                log.info(f"가장 가까운 몬스터: ({d[0]},{d[1]}) score={d[4]:.3f} "
+                         f"[{d[5]}] idx={d[6]}")
+                return d
 
         log.debug("모든 감지된 몬스터가 스킵 목록에 있음")
         return None

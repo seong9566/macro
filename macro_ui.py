@@ -582,6 +582,10 @@ class MacroWindow(QMainWindow):
         self.preview_label.setMinimumSize(400, 300)
         self.preview_label.setStyleSheet("background: #1a1a1a; border: 1px solid #333;")
         preview_layout.addWidget(self.preview_label)
+
+        from PyQt6.QtWidgets import QCheckBox
+        self.chk_detect_test = QCheckBox("감지 테스트 (엔진 정지 중에도 감지 박스 표시)")
+        preview_layout.addWidget(self.chk_detect_test)
         top_splitter.addWidget(preview_group)
 
         top_splitter.setSizes([300, 500])
@@ -845,18 +849,21 @@ class MacroWindow(QMainWindow):
         if frame is None:
             return
 
-        # 몬스터 감지 결과 오버레이 (엔진이 돌고 있을 때만)
-        if self.engine and self.engine.running:
+        # 몬스터 감지 오버레이 — 엔진 가동 중이거나 '감지 테스트' 체크 시
+        engine_running = bool(self.engine and self.engine.running)
+        show_detect = engine_running or self.chk_detect_test.isChecked()
+        if show_detect:
             try:
-                wolves = detect_wolves(frame, confidence=config.DETECT_CONFIDENCE)
-                for (x, y, w, h, score, name) in wolves:
-                    # 감지된 몬스터: 초록 사각형
+                monsters = self.profile_manager.current.monsters
+                found = detect_per_monster(frame, monsters) if monsters else []
+                for det in found:
+                    x, y, w, h, score, name = det[:6]
                     cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
                     cv2.putText(frame, f"{score:.2f}", (x, y - 5),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
 
-                # 현재 타겟 bbox: 빨간 사각형
-                if self.engine.tracker.last_bbox:
+                # 현재 타겟 bbox: 빨간 사각형 (엔진 가동 중일 때만)
+                if engine_running and self.engine.tracker.last_bbox:
                     bx, by, bw, bh = self.engine.tracker.last_bbox
                     cv2.rectangle(frame, (bx, by), (bx + bw, by + bh), (0, 0, 255), 3)
             except Exception:

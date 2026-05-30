@@ -267,7 +267,8 @@ def detect_wolves(frame, template_dir="images", confidence=0.55,
     return results
 
 
-def detect_monsters(frame, templates, confidence=0.55, scales=None):
+def detect_monsters(frame, templates, confidence=0.55, scales=None,
+                    color_confidence=0.0):
     """
     여러 폴더에서 합쳐진 템플릿으로 감지.
     detect_wolves와 동일 로직이지만 templates를 직접 받음 (외부에서 _load_all_active_templates로 준비).
@@ -322,6 +323,16 @@ def detect_monsters(frame, templates, confidence=0.55, scales=None):
     for i in picked:
         x, y, w, h = bboxes[i]
         results.append((x, y, w, h, scores[i], names[i]))
+
+    # 색상 확인 필터 — 형태는 맞지만 색이 다른 오탐(갈색 게시판/수레 등) 제거
+    if color_confidence > 0 and results:
+        from color_filter import filter_by_color
+        name_to_color = {os.path.basename(fp): col for fp, col, _gray in templates}
+        before = len(results)
+        results = filter_by_color(frame, results, name_to_color, color_confidence)
+        if len(results) < before:
+            log.debug(f"색상 필터: {before} → {len(results)}개 (임계값 {color_confidence:.2f})")
+
     if results:
         log.debug(f"몬스터 감지: {len(results)}마리 (template pool {len(templates)}개)")
     return results

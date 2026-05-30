@@ -338,6 +338,45 @@ def detect_monsters(frame, templates, confidence=0.55, scales=None,
     return results
 
 
+def detect_per_monster(frame, monsters, scales=None):
+    """
+    각 MonsterEntry를 자기 임계값(detect_confidence, color_confidence)으로 감지하고
+    monster_idx 태그를 붙여 합친 뒤, 종류 간 위치 겹침을 전체 NMS로 제거.
+
+    Args:
+        frame: BGR 프레임
+        monsters: MonsterEntry 시퀀스 (profile.monsters)
+        scales: 탐색 스케일 (None이면 DETECT_SCALES)
+
+    Returns:
+        [(x, y, w, h, score, name, monster_idx), ...]
+    """
+    if scales is None:
+        scales = DETECT_SCALES
+
+    merged = []
+    for idx, m in enumerate(monsters):
+        templates = _load_templates(m.template_dir)
+        if not templates:
+            continue
+        res = detect_monsters(frame, templates, m.detect_confidence,
+                              scales=scales, color_confidence=m.color_confidence)
+        for r in res:
+            merged.append((r[0], r[1], r[2], r[3], r[4], r[5], idx))
+
+    if not merged:
+        return []
+
+    # 종류 간 같은 위치 중복 제거 (전체 NMS, 높은 점수 우선)
+    bboxes = [(c[0], c[1], c[2], c[3]) for c in merged]
+    scores = [c[4] for c in merged]
+    picked = _nms_with_scores(bboxes, scores, overlap_thresh=0.3)
+    results = [merged[i] for i in picked]
+    if results:
+        log.debug(f"몬스터별 감지: {len(results)}개 (종류 {len(monsters)})")
+    return results
+
+
 def _nms_with_scores(bboxes, scores, overlap_thresh=0.3):
     """점수 기반 NMS. 높은 점수 우선 유지."""
     if not bboxes:

@@ -62,3 +62,44 @@ def test_detect_monsters_color_gate_filters_mismatch():
                          scales=(1.0,), color_confidence=0.5)
     assert len(on) == 1
     assert 90 <= on[0][0] <= 150
+
+
+def _patch(pattern, dominant):
+    img = np.full((40, 40, 3), 40, dtype=np.uint8)
+    chan = 0 if dominant == "b" else 2
+    img[:, :, chan] = np.clip(120 + pattern * 4, 0, 255).astype(np.uint8)
+    return img
+
+
+# 서로 다른 그레이 패턴 → 종류 간 교차 매칭 안 됨 (각자 자기 위치만 감지)
+_PAT_A = ((_xx + _yy) % 16).astype(np.float32)            # 대각 줄무늬
+_PAT_B = (((_xx // 4) % 2) * 15).astype(np.float32)       # 세로 굵은 줄무늬
+
+
+def test_detect_per_monster_tags_and_independent_thresholds(tmp_path):
+    from hunt_profile import MonsterEntry
+    from monster_tracker import detect_per_monster, clear_template_cache
+    clear_template_cache()
+
+    dir_a = tmp_path / "A"; dir_a.mkdir()
+    dir_b = tmp_path / "B"; dir_b.mkdir()
+    blue = _patch(_PAT_A, "b")
+    red = _patch(_PAT_B, "r")
+    _write_png(str(dir_a / "A_left.png"), blue)
+    _write_png(str(dir_b / "B_left.png"), red)
+
+    frame = np.full((600, 800, 3), 60, dtype=np.uint8)
+    frame[300:340, 100:140] = blue   # A 위치
+    frame[300:340, 600:640] = red    # B 위치
+
+    monsters = (
+        MonsterEntry("A", str(dir_a), 0.9, 0.4, -20, color_confidence=0.5),
+        MonsterEntry("B", str(dir_b), 0.9, 0.4, -20, color_confidence=0.0),
+    )
+    res = detect_per_monster(frame, monsters, scales=(1.0,))
+
+    by_idx = {d[6]: d for d in res}
+    assert set(by_idx.keys()) == {0, 1}
+    assert 90 <= by_idx[0][0] <= 150   # A → 파랑 위치
+    assert 590 <= by_idx[1][0] <= 650  # B → 빨강 위치
+    clear_template_cache()

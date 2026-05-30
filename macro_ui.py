@@ -173,7 +173,7 @@ class CropDialog(QDialog):
 
     def __init__(self, frame_bgr, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("템플릿 영역 선택 — 드래그로 몬스터를 감싸세요")
+        self.setWindowTitle("템플릿 영역 선택 - 드래그로 몬스터를 감싸세요")
         self._frame = frame_bgr
         self._img_h, self._img_w = frame_bgr.shape[:2]
         self.result_rect = None   # (x, y, w, h) 원본 좌표계
@@ -185,9 +185,10 @@ class CropDialog(QDialog):
             "테두리는 여유 없이 몬스터(말+기수)에 딱 맞게."
         ))
 
+        # QImage는 numpy 버퍼를 복사 없이 참조하므로 .copy()로 깊은 복사 (rgb GC 안전)
         rgb = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
         qimg = QImage(rgb.data, self._img_w, self._img_h,
-                      self._img_w * 3, QImage.Format.Format_RGB888)
+                      self._img_w * 3, QImage.Format.Format_RGB888).copy()
         pix = QPixmap.fromImage(qimg)
         max_w = 1100
         if pix.width() > max_w:
@@ -232,8 +233,8 @@ class CropDialog(QDialog):
         self.direction = self.dir_combo.currentText()
         self.accept()
 
-    def cropped_frame(self):
-        """OK 후 호출 — 원본 프레임 반환 (저장은 호출자가 save_template로)."""
+    def source_frame(self):
+        """OK 후 호출 — 원본(크롭 전) 프레임 반환. 크롭은 save_template가 result_rect로 수행."""
         return self._frame
 
 
@@ -1267,7 +1268,7 @@ class MacroWindow(QMainWindow):
             n += 1
 
         try:
-            path = save_template(dlg.cropped_frame(), dlg.result_rect,
+            path = save_template(dlg.source_frame(), dlg.result_rect,
                                  target_dir, filename)
         except Exception as e:
             QMessageBox.critical(self, "저장 실패", str(e))

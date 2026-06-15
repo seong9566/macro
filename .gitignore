@@ -25,6 +25,7 @@ Desktop.ini
 
 # Claude Code
 .claude/settings.local.json
+CLAUDE.local.md
 
 # OMC 상태
 .omc/state/
